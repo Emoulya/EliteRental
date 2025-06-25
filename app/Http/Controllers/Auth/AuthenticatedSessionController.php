@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Route;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,7 +29,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user(); // Dapatkan user yang sedang login
+
+        if ($user->role === 'admin') {
+            // Jika role adalah 'admin', arahkan ke rute admin.dashboard
+            return redirect()->intended(route('admin.dashboard'));
+        } else {
+            // Jika role bukan 'admin' (misal: 'user'), arahkan ke halaman root/index
+            return redirect()->intended('/');
+        }
     }
 
     /**
