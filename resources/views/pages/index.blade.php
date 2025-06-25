@@ -1,101 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('components.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/css/app.css')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <title>Elite Rental - Solusi Rental Berkualitas</title>
-</head>
+@section('content')
+    @include('components.hero')
 
-<body class="bg-white">
-    <!-- Navigation -->
-    <nav class="bg-navy shadow-lg fixed w-full z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Left: Logo -->
-                <div class="flex items-center flex-shrink-0">
-                    <h1 class="text-2xl font-bold text-gold">Elite Rental</h1>
-                </div>
-                <!-- Center: Nav Links -->
-                <div class="hidden md:flex flex-1 justify-center">
-                    <div class="flex space-x-8">
-                        <a href="#beranda" class="text-white hover:text-gold transition duration-300">Beranda</a>
-                        <a href="#tentang" class="text-white hover:text-gold transition duration-300">Tentang</a>
-                        <a href="#layanan" class="text-white hover:text-gold transition duration-300">Layanan</a>
-                        <a href="#kendaraan" class="text-white hover:text-gold transition duration-300">Kendaraan</a>
-                        <a href="#kontak" class="text-white hover:text-gold transition duration-300">Kontak</a>
-                    </div>
-                </div>
-                <!-- Right: User Dropdown or Login -->
-                <div class="flex items-center">
-                    @auth
-                        <div class="relative group">
-                            <button class="flex items-center text-white font-semibold focus:outline-none">
-                                {{ Auth::user()->name }}
-                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div
-                                class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-200">
-                                <a href="#"
-                                    class="block px-4 py-2 text-navy hover:bg-gold hover:text-white">Profile</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="w-full text-left px-4 py-2 text-navy hover:bg-gold hover:text-white">Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="bg-gold text-navy font-bold px-5 py-2 rounded-lg hover:bg-yellow-500 transition duration-300">Login</a>
-                    @endauth
-                    <!-- Mobile menu button -->
-                    <div class="md:hidden ml-4">
-                        <button class="text-white hover:text-gold">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="beranda" class="relative bg-gradient-to-r from-navy to-gray-800 min-h-screen flex items-center">
-        <div class="absolute inset-0 bg-black opacity-50"></div>
-        <div class="absolute inset-0 bg-cover bg-center"
-            style="background-image: url('/placeholder.svg?height=800&width=1200&text=Luxury+Car+Background')">
-        </div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Selamat Datang di <span class="text-gold">Elite Rental</span>
-            </h1>
-            <h2 class="text-xl md:text-2xl text-white mb-8">
-                Solusi Terbaik Rental Kendaraan Anda!
-            </h2>
-            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
-                Menyediakan kendaraan berkualitas dengan harga terjangkau dan layanan ramah, untuk setiap kebutuhan
-                perjalanan Anda.
-            </p>
-            <div class="space-x-4">
-                <button
-                    class="bg-gold hover:bg-yellow-500 text-navy font-bold py-4 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105">
-                    Sewa Sekarang
-                </button>
-                <button
-                    class="border-2 border-gold text-gold hover:bg-gold hover:text-navy font-bold py-4 px-8 rounded-lg text-lg transition duration-300">
-                    Lihat Kendaraan
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tentang Kami -->
     <section id="tentang" class="py-20 bg-light-gray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -131,7 +38,6 @@
         </div>
     </section>
 
-    <!-- Visi & Misi -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -177,7 +83,6 @@
         </div>
     </section>
 
-    <!-- Layanan Kami -->
     <section id="layanan" class="py-20 bg-navy">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -224,7 +129,6 @@
         </div>
     </section>
 
-    <!-- Jenis Kendaraan -->
     <section id="kendaraan" class="py-20 bg-light-gray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -280,7 +184,6 @@
         </div>
     </section>
 
-    <!-- Testimoni -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -349,7 +252,6 @@
         </div>
     </section>
 
-    <!-- Kontak -->
     <section id="kontak" class="py-20 bg-navy">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
@@ -418,152 +320,4 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-black text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold text-gold mb-4">Elite Rental</h3>
-                    <p class="text-gray-300 mb-4">Solusi terbaik untuk kebutuhan rental kendaraan Anda dengan pelayanan
-                        profesional dan armada berkualitas.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gold hover:text-white transition duration-300">
-                            <i class="fab fa-facebook text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gold hover:text-white transition duration-300">
-                            <i class="fab fa-instagram text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gold hover:text-white transition duration-300">
-                            <i class="fab fa-whatsapp text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gold hover:text-white transition duration-300">
-                            <i class="fab fa-youtube text-xl"></i>
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Layanan</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li><a href="#" class="hover:text-gold transition duration-300">Rental Mobil</a></li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">Rental Motor</a></li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">Rental Pick Up</a></li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">Paket Wisata</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Informasi</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li><a href="#tentang" class="hover:text-gold transition duration-300">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">Syarat & Ketentuan</a>
-                        </li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">Kebijakan Privasi</a>
-                        </li>
-                        <li><a href="#" class="hover:text-gold transition duration-300">FAQ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Kontak Cepat</h4>
-                    <div class="space-y-2 text-gray-300">
-                        <p><i class="fas fa-phone text-gold mr-2"></i> +62 21 1234 5678</p>
-                        <p><i class="fas fa-envelope text-gold mr-2"></i> info@eliterental.com</p>
-                        <p><i class="fas fa-map-marker-alt text-gold mr-2"></i> Jakarta, Indonesia</p>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-300">&copy; 2024 Elite Rental. Semua hak dilindungi undang-undang.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scroll to Top Button -->
-    <button id="scrollTop"
-        class="fixed bottom-6 right-6 bg-gold text-navy p-3 rounded-full opacity-0 shadow-lg transition-all duration-300  hover:bg-yellow-500 hover:scale-110">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Scroll to top button
-        const scrollTopBtn = document.getElementById('scrollTop');
-
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollTopBtn.style.opacity = '1';
-                scrollTopBtn.style.transform = 'translateY(0)';
-            } else {
-                scrollTopBtn.style.opacity = '0';
-                scrollTopBtn.style.transform = 'translateY(10px)';
-            }
-        });
-
-        scrollTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.animate-slide-up').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.8s ease-out';
-            observer.observe(el);
-        });
-
-        // Mobile menu toggle
-        const mobileMenuBtn = document.querySelector('.md\\:hidden button');
-        const mobileMenu = document.createElement('div');
-        mobileMenu.className = 'md:hidden bg-navy';
-        mobileMenu.innerHTML = `
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="#beranda" class="block px-3 py-2 text-white hover:text-gold">Beranda</a>
-                <a href="#tentang" class="block px-3 py-2 text-white hover:text-gold">Tentang</a>
-                <a href="#layanan" class="block px-3 py-2 text-white hover:text-gold">Layanan</a>
-                <a href="#kendaraan" class="block px-3 py-2 text-white hover:text-gold">Kendaraan</a>
-                <a href="#kontak" class="block px-3 py-2 text-white hover:text-gold">Kontak</a>
-            </div>
-        `;
-        mobileMenu.style.display = 'none';
-        document.querySelector('nav').appendChild(mobileMenu);
-
-        mobileMenuBtn.addEventListener('click', () => {
-            if (mobileMenu.style.display === 'none') {
-                mobileMenu.style.display = 'block';
-            } else {
-                mobileMenu.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-
-</html>
+@endsection
