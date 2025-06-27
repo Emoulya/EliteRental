@@ -15,14 +15,9 @@
             perjalanan Anda.
         </p>
         <div class="space-x-4">
-            <button
-                class="bg-gold hover:bg-yellow-500 text-navy font-bold py-4 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105">
-                Sewa Sekarang
-            </button>
-            <button
-                class="border-2 border-gold text-gold hover:bg-gold hover:text-navy font-bold py-4 px-8 rounded-lg text-lg transition duration-300">
-                Lihat Kendaraan
-            </button>
+            <a href="#">
+                <x-buttons.primary-button class="py-4 px-8 text-lg hover:scale-105">Sewa Sekarang</x-buttons.primary-button>
+            </a>
         </div>
     </div>
 </section>

@@ -10,7 +10,7 @@
 </head>
 
 <body class="bg-white">
-    @include('components.navbar')
+    @include('components..navigation.navbar')
 
     <main>
         @yield('content')

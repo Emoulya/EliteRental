@@ -34,8 +34,9 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}"
-                        class="bg-gold text-navy font-bold px-5 py-2 rounded-lg hover:bg-yellow-500 transition duration-300">Login</a>
+                    <a href="{{ route('login') }}">
+                        <x-buttons.primary-button>Login</x-buttons.primary-button>
+                    </a>
                 @endauth
                 <div class="md:hidden ml-4">
                     <button class="text-white hover:text-gold">

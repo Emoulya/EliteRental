@@ -174,11 +174,10 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <a href="{{ url('/daftar-kendaraan') }}">
-                    <button
-                        class="bg-gold hover:bg-yellow-500 text-navy font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105">
-                        Lihat Semua Kendaraan
-                    </button>
+                <a href="#">
+                    <x-buttons.primary-button class="py-4 px-8 text-lg hover:scale-105">
+                        Lihat semua Kendaraan
+                    </x-buttons.primary-button>
                 </a>
             </div>
         </div>
