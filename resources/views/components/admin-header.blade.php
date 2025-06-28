@@ -17,16 +17,13 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <!-- Quick Actions -->
-            {{-- Menggunakan komponen primary-button Anda --}}
-            <a href="{{ route('admin.bookings.create') }}"> {{-- Asumsi ada route untuk membuat booking --}}
+            <a href="{{ route('admin.bookings.create') }}">
                 <x-buttons.primary-button>
                     <i class="fas fa-plus mr-2"></i>
                     Tambah Booking
                 </x-buttons.primary-button>
             </a>
 
-            <!-- Notifications -->
             <div class="relative">
                 <button class="flex items-center text-gray-500 hover:text-gray-600">
                     <i class="fas fa-bell text-xl"></i>
@@ -35,22 +32,46 @@
                 </button>
             </div>
 
-            <!-- User Profile Dropdown -->
-            <div class="relative inline-flex items-center group">
-                <img src="https://placehold.co/40x40/{{ str_replace('#', '', config('app.colors.navy', '0A1F33')) }}/{{ str_replace('#', '', config('app.colors.gold', 'F4B000')) }}?text={{ substr(Auth::user()->name ?? 'A', 0, 1) }}"
-                    alt="Admin" class="w-10 h-10 rounded-full cursor-pointer" />
-                {{-- Dropdown untuk profil --}}
-                <div
-                    class="absolute right-0 mt-20 w-40 bg-white rounded-md shadow-lg py-1 z-50 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-200">
-                    <a href="#"
-                        class="block px-4 py-2 text-sm text-navy hover:bg-gold hover:text-white">Profil</a>
+            <x-dropdown align="right" width="48">
+                <x-slot name="trigger">
+                    {{-- Trigger ini yang akan diklik untuk membuka dropdown --}}
+                    {{-- Pastikan ini adalah sebuah <button> atau <a> yang bisa menerima event click --}}
+                    <button
+                        class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
+                        <img src="https://placehold.co/40x40/{{ str_replace('#', '', config('app.colors.navy', '0A1F33')) }}/{{ str_replace('#', '', config('app.colors.gold', 'F4B000')) }}?text={{ substr(Auth::user()->name ?? 'A', 0, 1) }}"
+                            alt="{{ Auth::user()->name ?? 'Admin' }}" class="w-10 h-10 rounded-full cursor-pointer" />
+                        {{-- Opsional: Tambahkan nama pengguna jika Anda ingin teks di samping gambar --}}
+                        <div class="hidden md:block ml-2 text-navy"> {{-- Tambahkan text-navy jika ingin sesuai tema --}}
+                            {{ Auth::user()->name ?? 'Admin' }}
+                        </div>
+                        <div class="ms-1 hidden md:block"> {{-- Sembunyikan SVG di mobile jika tidak perlu --}}
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </button>
+                </x-slot>
+
+                <x-slot name="content">
+                    {{-- Isi dropdown link di sini --}}
+                    {{-- Sesuaikan warna dropdown link dan hovernya --}}
+                    <x-dropdown-link :href="route('profile.edit')" class="text-navy hover:bg-gold hover:text-white">
+                        {{-- Menambahkan kelas override --}}
+                        {{ __('Profil') }}
+                    </x-dropdown-link>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit"
-                            class="block w-full text-left px-4 py-2 text-sm text-navy hover:bg-gold hover:text-white">Logout</button>
+                        <x-dropdown-link :href="route('logout')"
+                            onclick="event.preventDefault(); this.closest('form').submit();"
+                            class="text-navy hover:bg-gold hover:text-white"> {{-- Menambahkan kelas override --}}
+                            {{ __('Logout') }}
+                        </x-dropdown-link>
                     </form>
-                </div>
-            </div>
+                </x-slot>
+            </x-dropdown>
         </div>
     </div>
 </header>

@@ -7,45 +7,65 @@
 
     <nav class="mt-10">
         <div class="px-4 space-y-2">
+            {{-- Item Dashboard --}}
             <a href="{{ route('admin.dashboard') }}"
-                class="flex items-center px-4 py-3 text-white rounded-lg transition duration-300
-                @if (request()->routeIs('admin.dashboard')) bg-gold text-navy @else hover:bg-gray-700 hover:text-white @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.dashboard')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-tachometer-alt mr-3"></i>
                 Dashboard
             </a>
+
+            {{-- Item Kendaraan --}}
             <a href="{{ route('admin.vehicles') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.vehicles')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.vehicles')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-car mr-3"></i>
                 Kendaraan
             </a>
+
+            {{-- Item Booking --}}
             <a href="{{ route('admin.bookings') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.bookings')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.bookings')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-calendar-check mr-3"></i>
                 Booking
             </a>
+
+            {{-- Item Pelanggan --}}
             <a href="{{ route('admin.customers') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.customers')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.customers')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-users mr-3"></i>
                 Pelanggan
             </a>
+
+            {{-- Item Keuangan --}}
             <a href="{{ route('admin.finance') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.finance')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.finance')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-money-bill-wave mr-3"></i>
                 Keuangan
             </a>
+
+            {{-- Item Laporan --}}
             <a href="{{ route('admin.reports') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.reports')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.reports')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-chart-bar mr-3"></i>
                 Laporan
             </a>
+
+            {{-- Item Pengaturan --}}
             <a href="{{ route('admin.settings') }}"
-                class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition duration-300
-                @if (request()->routeIs('admin.settings')) bg-gold text-navy @endif">
+                class="flex items-center px-4 py-3 rounded-lg transition duration-300
+            @if (request()->routeIs('admin.settings')) bg-gold
+            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-cog mr-3"></i>
                 Pengaturan
             </a>
