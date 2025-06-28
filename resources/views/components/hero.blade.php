@@ -1,7 +1,7 @@
 <section id="beranda" class="relative bg-gradient-to-r from-navy to-gray-800 min-h-screen flex items-center">
     <div class="absolute inset-0 bg-black opacity-50"></div>
     <div class="absolute inset-0 bg-cover bg-center"
-        style="background-image: url('/placeholder.svg?height=800&width=1200&text=Luxury+Car+Background')">
+        style="background-image: url('/background-hero.png?height=800&width=1200&text=Luxury+Car+Background')">
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
         <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">

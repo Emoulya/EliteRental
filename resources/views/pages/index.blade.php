@@ -3,10 +3,10 @@
 @section('content')
     @include('components.hero')
 
-    <section id="tentang" class="py-20 bg-light-gray">
+    <section id="tentang" class="py-20 bg-navy">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-slide-up">
-                <h2 class="text-4xl font-bold text-navy mb-4">Tentang Kami</h2>
+                <h2 class="text-4xl font-bold text-white mb-4">Tentang Kami</h2>
                 <div class="w-24 h-1 bg-gold mx-auto"></div>
             </div>
             <div class="grid md:grid-cols-2 gap-12 items-center animate-slide-up">
@@ -15,22 +15,22 @@
                         alt="Tentang Kami" class="rounded-lg shadow-xl">
                 </div>
                 <div>
-                    <p class="text-lg text-gray-custom mb-6 leading-relaxed">
+                    <p class="text-lg text-white mb-6 leading-relaxed">
                         Elite Rental adalah layanan rental kendaraan terpercaya yang telah beroperasi sejak 2015. Kami
                         menyediakan berbagai jenis kendaraan untuk kebutuhan pribadi, bisnis, maupun perjalanan wisata.
                     </p>
-                    <p class="text-lg text-gray-custom mb-8 leading-relaxed">
+                    <p class="text-lg text-white mb-8 leading-relaxed">
                         Dengan pelayanan yang profesional dan armada yang selalu terawat, kami berkomitmen menjadi mitra
                         perjalanan terbaik Anda.
                     </p>
                     <div class="grid grid-cols-2 gap-6">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-gold mb-2">500+</div>
-                            <div class="text-gray-custom">Kendaraan</div>
+                            <div class="text-white">Kendaraan</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-gold mb-2">10K+</div>
-                            <div class="text-gray-custom">Pelanggan Puas</div>
+                            <div class="text-white">Pelanggan Puas</div>
                         </div>
                     </div>
                 </div>
