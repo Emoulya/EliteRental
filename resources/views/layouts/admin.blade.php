@@ -9,12 +9,12 @@
 
     <title>{{ $title ?? config('app.name', 'Elite Rental Admin') }}</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js']) 
+    @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- Pastikan ini memuat app.js --}}
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-light-gray flex min-h-screen"> {{-- Menggunakan min-h-screen agar body mengisi penuh tinggi, dan flex untuk layout sidebar --}}
-
+<body class="bg-light-gray flex min-h-screen">
     <!-- Sidebar Admin -->
     @include('components.navigation.admin-sidebar')
 
@@ -32,13 +32,29 @@
         </main>
     </div>
 
+    {{-- Component Pesan Kustom --}}
+    <x-messages.custom-message />
+
+    {{-- Semua script JS akan di-push ke sini --}}
+    @stack('scripts')
+
     <script>
-        // Sidebar toggle functionality
+        // Sidebar toggle functionality (tetap di layout karena ini global untuk layout)
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebar = document.getElementById("sidebar");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
 
         if (sidebarToggle && sidebar && sidebarOverlay) {
+            // Initial check for large screens to ensure sidebar is visible by default
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove("-translate-x-full");
+                sidebar.classList.add("relative"); // Ensure it takes up space
+                sidebarOverlay.classList.add("hidden");
+            } else {
+                sidebar.classList.add("fixed", "h-screen", "left-0", "top-0"); // Re-add fixed for small screens
+                sidebar.classList.remove("relative");
+            }
+
             sidebarToggle.addEventListener("click", () => {
                 sidebar.classList.toggle("-translate-x-full");
                 sidebarOverlay.classList.toggle("hidden");
@@ -47,6 +63,21 @@
             sidebarOverlay.addEventListener("click", () => {
                 sidebar.classList.add("-translate-x-full");
                 sidebarOverlay.classList.add("hidden");
+            });
+
+            // Handle resize to adjust sidebar behavior
+            window.addEventListener("resize", () => {
+                if (window.innerWidth >= 1024) {
+                    sidebar.classList.remove("-translate-x-full", "fixed", "left-0", "top-0");
+                    sidebar.classList.add("relative", "flex", "flex-col", "h-screen", "shrink-0");
+                    sidebarOverlay.classList.add("hidden");
+                } else {
+                    sidebar.classList.remove("relative", "flex", "flex-col", "h-screen", "shrink-0");
+                    sidebar.classList.add("fixed", "left-0", "top-0", "h-screen");
+                    if (!sidebar.classList.contains("-translate-x-full")) {
+                        sidebar.classList.add("-translate-x-full"); // Hide sidebar by default on small screens
+                    }
+                }
             });
         }
 
@@ -68,28 +99,8 @@
                     bar.style.width = width;
                 }, 100);
             });
-            updateDonutChart(); // Call function to update donut chart on load
+            // updateDonutChart(); // Call function to update donut chart on load (if used)
         });
-
-        // Function to update the donut chart slices based on data
-        function updateDonutChart() {
-            const total = 24;
-            const available = 18;
-            const rented = 4;
-            const maintenance = 2;
-
-            // These percentages are used for the width of the progress bars, not the donut chart slices
-            const availablePercentage = (available / total) * 100;
-            const rentedPercentage = (rented / total) * 100;
-            const maintenancePercentage = (maintenance / total) * 100;
-
-            // The donut chart simulation using clip-path in the original HTML is a visual trick
-            // For a true, accurate donut chart, you would typically use an SVG or a charting library
-            // like Chart.js. The current implementation's clip-path styles are hardcoded and approximate.
-            // I'm leaving the existing CSS styles for the donut slices as they were provided,
-            // as dynamically adjusting complex clip-paths via JS is more involved and usually
-            // handled by dedicated charting libraries.
-        }
     </script>
 </body>
 
