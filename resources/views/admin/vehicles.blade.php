@@ -100,7 +100,7 @@
 
                             <!-- Tombol Hapus (Form) -->
                             <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus kendaraan ini?');">
+                                onsubmit="return handleDelete(event)">
                                 @csrf
                                 @method('DELETE')
                                 <button class="text-red-600 hover:text-red-900" title="Hapus">
@@ -158,14 +158,21 @@
         addVehicleForm.addEventListener("submit", (e) => {
             // Jangan blok pengiriman form
             // Biarkan form submit seperti biasa ke controller Laravel
-
-            // Optional: tampilkan loading/pesan sebelum redirect
             if (typeof showCustomMessage === 'function') {
                 showCustomMessage("Menyimpan kendaraan...", "info");
             }
-
-            // Biarkan Laravel yang redirect dan menampilkan pesan sukses
         });
+
+        function handleDelete(event) {
+            const confirmed = confirm("Yakin ingin menghapus kendaraan ini?");
+            if (confirmed) {
+                if (typeof showCustomMessage === 'function') {
+                    showCustomMessage("Menghapus kendaraan...", "warning");
+                }
+                return true; // lanjutkan form submit
+            }
+            return false; // batal hapus
+        }
 
         // Search and Filter functionality
         const searchInput = document.getElementById("searchInput");
