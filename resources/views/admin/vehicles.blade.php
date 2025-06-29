@@ -6,15 +6,18 @@
 
 @section('content')
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <x-statistics.stat-card title="Total Kendaraan" value="24" icon="car" iconBgColor="bg-blue-100"
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <x-statistics.stat-card title="Total Kendaraan" :value="$total" icon="car" iconBgColor="bg-blue-100"
             iconTextColor="text-blue-600" />
-        <x-statistics.stat-card title="Tersedia" value="18" icon="check-circle" iconBgColor="bg-green-100"
+        <x-statistics.stat-card title="Tersedia" :value="$tersedia" icon="check-circle" iconBgColor="bg-green-100"
             iconTextColor="text-green-600" />
-        <x-statistics.stat-card title="Disewa" value="6" icon="times-circle" iconBgColor="bg-red-100"
+        <x-statistics.stat-card title="Disewa" :value="$disewa" icon="times-circle" iconBgColor="bg-red-100"
             iconTextColor="text-red-600" />
-        <x-statistics.stat-card title="Maintenance" value="2" icon="tools" iconBgColor="bg-yellow-100"
+        <x-statistics.stat-card title="Maintenance" :value="$maintenance" icon="tools" iconBgColor="bg-yellow-100"
             iconTextColor="text-yellow-600" />
+        <x-statistics.stat-card title="Tidak Tersedia" :value="$unavailable" icon="ban" iconBgColor="bg-gray-100"
+            iconTextColor="text-gray-600" />
+
     </div>
 
     @if (session('success'))
@@ -58,8 +61,8 @@
                         @php
                             $statusColor =
                                 [
-                                    'available' => 'green',
-                                    'rented' => 'red',
+                                    'tersedia' => 'green',
+                                    'disewa' => 'red',
                                     'maintenance' => 'yellow',
                                     'unavailable' => 'gray',
                                 ][$vehicle->status] ?? 'gray';
@@ -202,14 +205,14 @@
 
                 if (selectedStatus) {
                     let actualStatusText = "";
-                    if (selectedStatus === "available") {
+                    if (selectedStatus === "tersedia") {
                         actualStatusText = "tersedia";
-                    } else if (selectedStatus === "rented") {
+                    } else if (selectedStatus === "disewa") {
                         actualStatusText = "disewa";
                     } else if (selectedStatus === "maintenance") {
                         actualStatusText = "maintenance";
                     } else if (selectedStatus === "unavailable") {
-                        actualStatusText = "tidak tersedia";
+                        actualStatusText = "unavailable";
                     } // Tambahkan ini
 
                     if (!status.includes(actualStatusText)) {

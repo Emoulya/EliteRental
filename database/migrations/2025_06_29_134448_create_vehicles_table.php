@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('license_plate')->unique();
             $table->year('year');
             $table->string('color');
-            $table->enum('status', ['available', 'rented', 'maintenance', 'unavailable'])->default('available');
+            $table->enum('status', ['tersedia', 'disewa', 'maintenance', 'unavailable'])->default('tersedia');
 
             $table->integer('passenger_capacity')->nullable();
             $table->enum('transmission_type', ['manual', 'automatic'])->nullable();

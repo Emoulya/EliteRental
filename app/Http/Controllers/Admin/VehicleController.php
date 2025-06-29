@@ -11,8 +11,14 @@ class VehicleController extends Controller
 {
     public function index()
     {
+        $total = Vehicle::count();
+        $tersedia = Vehicle::where('status', 'tersedia')->count();
+        $disewa = Vehicle::where('status', 'disewa')->count();
+        $maintenance = Vehicle::where('status', 'maintenance')->count();
+        $unavailable = Vehicle::where('status', 'unavailable')->count();
+
         $vehicles = Vehicle::latest()->get(); // Ambil semua kendaraan, bisa gunakan paginate() juga
-        return view('admin.vehicles', compact('vehicles'));
+        return view('admin.vehicles', compact('vehicles', 'total', 'tersedia', 'disewa', 'maintenance', 'unavailable'));
     }
 
     public function store(Request $request)

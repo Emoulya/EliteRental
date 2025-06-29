@@ -47,8 +47,8 @@
                             <x-forms.text-input label="Warna" id="color" name="color" required
                                 placeholder="Contoh: Putih" />
                             <x-forms.select-input label="Status Ketersediaan" id="status" name="status" required>
-                                <option value="available">Tersedia</option>
-                                <option value="rented">Disewa</option>
+                                <option value="tersedia">Tersedia</option>
+                                <option value="disewa">Disewa</option>
                                 <option value="maintenance">Maintenance</option>
                                 <option value="unavailable">Tidak Tersedia</option>
                             </x-forms.select-input>

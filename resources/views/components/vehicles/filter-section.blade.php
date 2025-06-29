@@ -17,9 +17,10 @@
 
         <x-forms.select-input id="statusFilter" name="status_filter">
             <option value="">Semua Status</option>
-            <option value="available">Tersedia</option>
-            <option value="rented">Disewa</option>
+            <option value="tersedia">Tersedia</option>
+            <option value="disewa">Disewa</option>
             <option value="maintenance">Maintenance</option>
+            <option value="unavailable">Unavailable</option>
         </x-forms.select-input>
 
         <x-buttons.secondary-button id="resetFilters">
