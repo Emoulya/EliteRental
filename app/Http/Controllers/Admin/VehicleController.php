@@ -75,4 +75,26 @@ class VehicleController extends Controller
 
         return redirect()->route('admin.vehicles')->with('success', 'Kendaraan berhasil ditambahkan.');
     }
+
+    public function destroy(Vehicle $vehicle)
+    {
+        // Hapus gambar utama
+        if ($vehicle->main_image && Storage::disk('public')->exists($vehicle->main_image)) {
+            Storage::disk('public')->delete($vehicle->main_image);
+        }
+
+        // Hapus semua gambar galeri
+        if ($vehicle->gallery_images) {
+            foreach (json_decode($vehicle->gallery_images, true) as $path) {
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        }
+
+        // Hapus kendaraan
+        $vehicle->delete();
+
+        return redirect()->route('admin.vehicles')->with('success', 'Kendaraan berhasil dihapus.');
+    }
 }

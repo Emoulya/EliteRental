@@ -17,6 +17,13 @@
             iconTextColor="text-yellow-600" />
     </div>
 
+    @if (session('success'))
+        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+
     <!-- Vehicle Management Section -->
     <div class="bg-white rounded-lg shadow">
         <x-vehicles.management-header title="Daftar Kendaraan" />
@@ -74,15 +81,25 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div class="flex space-x-2">
+                            <!-- Tombol Detail -->
                             <button class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
+
+                            <!-- Tombol Edit -->
                             <button class="text-green-600 hover:text-green-900" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="text-red-600 hover:text-red-900" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
+
+                            <!-- Tombol Hapus (Form) -->
+                            <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus kendaraan ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>
