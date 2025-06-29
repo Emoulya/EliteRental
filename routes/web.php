@@ -25,8 +25,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles');
     Route::post('/vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
-    Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
-
+    Route::delete('/vehicles/{id}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
 
     Route::get('/bookings', function () {
         return view('admin.bookings');

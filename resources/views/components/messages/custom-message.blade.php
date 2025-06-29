@@ -1,7 +1,8 @@
+{{-- resources\views\components\messages\custom-message.blade.php --}}
 @props(['message', 'type' => 'info'])
 
 @php
-    $bgColor = 'bg-blue-500'; // Default
+    $bgColor = 'bg-blue-500';
     if ($type === 'success') {
         $bgColor = 'bg-green-500';
     } elseif ($type === 'error') {
@@ -15,7 +16,7 @@
     class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white z-[9999] {{ $bgColor }} hidden">
     <div class="flex items-center">
         <i class="fas fa-info-circle mr-2"></i>
-        {{-- <span>{{ $message }}</span> --}}
+        <span></span>
     </div>
 </div>
 

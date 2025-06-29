@@ -20,12 +20,16 @@
 
     </div>
 
-    @if (session('success'))
-        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-            {{ session('success') }}
-        </div>
+    @if (session('custom_message'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                showCustomMessage(
+                    @json(session('custom_message')['message']),
+                    @json(session('custom_message')['type'] ?? 'info')
+                );
+            });
+        </script>
     @endif
-
 
     <!-- Vehicle Management Section -->
     <div class="bg-white rounded-lg shadow">
@@ -96,10 +100,10 @@
 
                             <!-- Tombol Hapus (Form) -->
                             <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus kendaraan ini?')">
+                                onsubmit="return confirm('Yakin ingin menghapus kendaraan ini?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                <button class="text-red-600 hover:text-red-900" title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -151,26 +155,17 @@
         }
 
         // Form submission
-        const addVehicleForm = document.getElementById("addVehicleForm");
-        if (addVehicleForm) {
-            addVehicleForm.addEventListener("submit", (e) => {
+        addVehicleForm.addEventListener("submit", (e) => {
+            // Jangan blok pengiriman form
+            // Biarkan form submit seperti biasa ke controller Laravel
 
-                const formData = new FormData(addVehicleForm);
-                console.log("Form data:", Object.fromEntries(formData));
+            // Optional: tampilkan loading/pesan sebelum redirect
+            if (typeof showCustomMessage === 'function') {
+                showCustomMessage("Menyimpan kendaraan...", "info");
+            }
 
-                // showCustomMessage harus tersedia secara global
-                if (typeof showCustomMessage === 'function') {
-                    showCustomMessage("Kendaraan berhasil ditambahkan!", "success");
-                } else {
-                    console.warn("showCustomMessage function is not available.");
-                }
-
-                closeModalFunction();
-                addVehicleForm.reset();
-                // refreshVehicleTable(); // Uncomment this in a real app
-            });
-        }
-
+            // Biarkan Laravel yang redirect dan menampilkan pesan sukses
+        });
 
         // Search and Filter functionality
         const searchInput = document.getElementById("searchInput");
