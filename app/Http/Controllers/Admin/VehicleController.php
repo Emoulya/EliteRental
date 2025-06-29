@@ -74,15 +74,14 @@ class VehicleController extends Controller
             $data['gallery_images'] = json_encode($paths);
         }
 
+        // Pastikan fitur dan elite_features adalah string JSON
         $data['features'] = json_encode($data['features'] ?? []);
         $data['elite_features'] = json_encode($data['elite_features'] ?? []);
 
         Vehicle::create($data);
 
-        return redirect()->route('admin.vehicles')->with('custom_message', [
-            'message' => 'Kendaraan berhasil ditambahkan.',
-            'type' => 'success',
-        ]);
+        // UBAH DARI 'custom_message' MENJADI 'success_message'
+        return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil ditambahkan.');
     }
 
     public function destroy($id)
@@ -106,9 +105,7 @@ class VehicleController extends Controller
 
         $vehicle->delete();
 
-        return redirect()->route('admin.vehicles')->with('custom_message', [
-            'message' => 'Kendaraan berhasil dihapus.',
-            'type' => 'success',
-        ]);
+        // Konsolidasikan pesan menjadi satu 'success_message'
+        return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
     }
 }

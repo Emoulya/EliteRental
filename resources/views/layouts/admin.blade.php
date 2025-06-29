@@ -12,6 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- Pastikan ini memuat app.js --}}
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-light-gray flex min-h-screen">

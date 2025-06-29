@@ -20,13 +20,17 @@
 
     </div>
 
-    @if (session('custom_message'))
+    @if (session('success_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                showCustomMessage(
-                    @json(session('custom_message')['message']),
-                    @json(session('custom_message')['type'] ?? 'info')
-                );
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: @json(session('success_message')),
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
         </script>
     @endif
@@ -38,7 +42,7 @@
 
         <x-vehicles.data-table>
             @foreach ($vehicles as $vehicle)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50" id="vehicle-row-{{ $vehicle->id }}">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <input type="checkbox" class="rounded border-gray-300 text-gold focus:ring-gold" />
                     </td>
@@ -98,12 +102,11 @@
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            <!-- Tombol Hapus (Form) -->
                             <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
-                                onsubmit="return handleDelete(event)">
+                                class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button class="text-red-600 hover:text-red-900" title="Hapus">
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -113,18 +116,29 @@
             @endforeach
         </x-vehicles.data-table>
 
-        <x-pagination /> {{-- Ini adalah komponen pagination Anda --}}
+        <x-pagination />
     </div>
     <x-modals.add-vehicle />
 @endsection
 
 @push('scripts')
     <script>
-        // Pastikan showCustomMessage dideklarasikan di sini atau di file JS utama
-        // dan sudah dipanggil oleh @stack('scripts') di layout.
-        // Jika komponen messageBox Anda belum dipanggil di layout, panggil di sini
-        // atau biarkan di layout dan pastikan Alpinejs dimuat
-        // untuk event click.outside pada modal.
+        // Fungsi untuk menampilkan pesan kustom menggunakan SweetAlert2
+        function showCustomMessage(message, type) {
+            Swal.fire({
+                text: message,
+                icon: type, // 'info', 'warning', 'success', 'error'
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+        }
 
         // Modal functionality
         const addVehicleBtn = document.getElementById("addVehicleBtn");
@@ -154,25 +168,38 @@
             });
         }
 
-        // Form submission
-        addVehicleForm.addEventListener("submit", (e) => {
-            // Jangan blok pengiriman form
-            // Biarkan form submit seperti biasa ke controller Laravel
-            if (typeof showCustomMessage === 'function') {
-                showCustomMessage("Menyimpan kendaraan...", "info");
-            }
-        });
-
-        function handleDelete(event) {
-            const confirmed = confirm("Yakin ingin menghapus kendaraan ini?");
-            if (confirmed) {
-                if (typeof showCustomMessage === 'function') {
-                    showCustomMessage("Menghapus kendaraan...", "warning");
-                }
-                return true; // lanjutkan form submit
-            }
-            return false; // batal hapus
+        // Form submission (Add Vehicle)
+        const addVehicleForm = document.getElementById("addVehicleForm");
+        if (addVehicleForm) {
+            addVehicleForm.addEventListener("submit", () => {
+                showCustomMessage("Menyimpan kendaraan...", "info"); // Menggunakan fungsi yang baru didefinisikan
+            });
         }
+
+        // Handle semua form hapus
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // cegah submit langsung
+
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: 'Data kendaraan akan dihapus secara permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tampilkan pesan loading opsional
+                        showCustomMessage('Menghapus kendaraan...',
+                        'info'); // Menggunakan fungsi yang baru didefinisikan
+                        form.submit();
+                    }
+                });
+            });
+        });
 
         // Search and Filter functionality
         const searchInput = document.getElementById("searchInput");
