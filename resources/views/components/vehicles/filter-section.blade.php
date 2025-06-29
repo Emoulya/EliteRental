@@ -1,3 +1,4 @@
+{{-- resources\views\components\vehicles\filter-section.blade.php --}}
 <div class="px-6 py-4 bg-light-gray border-b border-gray-200">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="relative">

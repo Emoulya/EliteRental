@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\VehicleController;
 
 Route::get('/', function () {
     return view('pages.index');
@@ -22,11 +23,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.dashboard');
     })->name('dashboard'); // Nama rute akan menjadi 'admin.dashboard'
 
-    // Contoh Rute Admin Lainnya (sesuai sidebar yang sudah dibuat)
-    // Pastikan Anda membuat file view yang sesuai di resources/views/admin/
-    Route::get('/vehicles', function () {
-        return view('admin.vehicles');
-    })->name('vehicles'); // Nama rute akan menjadi 'admin.vehicles'
+    Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles');
+    Route::post('/vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
 
     Route::get('/bookings', function () {
         return view('admin.bookings');

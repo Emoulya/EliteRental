@@ -23,53 +23,70 @@
         <x-vehicles.filter-section />
 
         <x-vehicles.data-table>
-            {{-- Vehicle Row 1 (Anda akan mengisi ini dengan data dari database) --}}
-            <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    {{-- <x-forms.checkbox-field name="vehicle_select[]" value="avanza" /> --}}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <img src="/placeholder.svg?height=60&width=80&text=Avanza" alt="Toyota Avanza"
-                            class="w-16 h-12 rounded-lg object-cover" />
-                        <div class="ml-4">
-                            <div class="text-sm font-medium text-navy">Toyota Avanza</div>
-                            <div class="text-sm text-gray-custom">B 1234 ABC</div>
+            @foreach ($vehicles as $vehicle)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" class="rounded border-gray-300 text-gold focus:ring-gold" />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : '/placeholder.svg?height=60&width=80&text=' . $vehicle->model }}"
+                                alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                class="w-16 h-12 rounded-lg object-cover" />
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-navy">{{ $vehicle->brand }} {{ $vehicle->model }}</div>
+                                <div class="text-sm text-gray-custom">{{ $vehicle->license_plate }}</div>
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Mobil
-                        Keluarga</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-navy font-semibold">Rp 300.000</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Tersedia</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="flex text-yellow-400 text-sm">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {{ ucwords(str_replace('-', ' ', $vehicle->category)) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-navy font-semibold">
+                        Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @php
+                            $statusColor =
+                                [
+                                    'available' => 'green',
+                                    'rented' => 'red',
+                                    'maintenance' => 'yellow',
+                                    'unavailable' => 'gray',
+                                ][$vehicle->status] ?? 'gray';
+                        @endphp
+                        <span
+                            class="px-2 py-1 text-xs font-semibold rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-800">
+                            {{ ucfirst($vehicle->status) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400 text-sm">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star{{ $vehicle->rating >= $i ? '' : '-o' }}"></i>
+                                @endfor
+                            </div>
+                            <span class="ml-1 text-sm text-gray-custom">{{ $vehicle->rating ?? '0.0' }}</span>
                         </div>
-                        <span class="ml-1 text-sm text-gray-custom">4.8</span>
-                    </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex space-x-2">
-                        <button class="text-blue-600 hover:text-blue-900 transition duration-300" title="Lihat Detail">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="text-green-600 hover:text-green-900 transition duration-300" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="text-red-600 hover:text-red-900 transition duration-300" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            {{-- Tambahkan baris kendaraan lainnya di sini --}}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="text-green-600 hover:text-green-900" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-900" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
         </x-vehicles.data-table>
 
         <x-pagination /> {{-- Ini adalah komponen pagination Anda --}}
@@ -117,7 +134,6 @@
         const addVehicleForm = document.getElementById("addVehicleForm");
         if (addVehicleForm) {
             addVehicleForm.addEventListener("submit", (e) => {
-                e.preventDefault();
 
                 const formData = new FormData(addVehicleForm);
                 console.log("Form data:", Object.fromEntries(formData));

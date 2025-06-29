@@ -1,3 +1,4 @@
+{{-- resources\views\components\vehicles\management-header.blade.php --}}
 @props(['title'])
 
 <div class="px-6 py-4 border-b border-gray-200">

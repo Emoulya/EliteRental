@@ -1,3 +1,4 @@
+{{-- resources\views\components\modals\add-vehicle.blade.php --}}
 @props(['id' => 'addVehicleModal'])
 
 <div id="{{ $id }}" class="fixed inset-0 z-50 overflow-y-auto hidden">
@@ -19,7 +20,8 @@
                     </button>
                 </div>
 
-                <form id="addVehicleForm" class="space-y-6">
+                <form id="addVehicleForm" method="POST" action="{{ route('admin.vehicles.store') }}" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Informasi Dasar Kendaraan -->
                         <div class="space-y-4">

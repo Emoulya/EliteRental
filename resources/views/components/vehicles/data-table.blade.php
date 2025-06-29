@@ -1,3 +1,4 @@
+{{-- resources\views\components\vehicles\data-table.blade.php --}}
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-light-gray"> {{-- Menggunakan light-gray --}}
