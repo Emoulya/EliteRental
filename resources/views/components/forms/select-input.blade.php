@@ -1,3 +1,4 @@
+{{-- resources\views\components\forms\select-input.blade.php --}}
 @props(['disabled' => false, 'name', 'id' => null, 'label' => null])
 
 <div>
