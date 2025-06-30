@@ -98,7 +98,8 @@
                             </button>
 
                             <!-- Tombol Edit -->
-                            <button class="text-green-600 hover:text-green-900" title="Edit">
+                            <button type="button" class="text-green-600 hover:text-green-900 edit-btn"
+                                data-vehicle='@json($vehicle)' title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
 
@@ -119,6 +120,7 @@
         <x-pagination />
     </div>
     <x-modals.add-vehicle />
+    <x-modals.edit-vehicle />
 @endsection
 
 @push('scripts')
@@ -176,6 +178,42 @@
             });
         }
 
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
+
+                document.getElementById("editBrand").value = vehicle.brand;
+                document.getElementById("editModel").value = vehicle.model;
+                document.getElementById("editLicensePlate").value = vehicle.license_plate;
+                document.getElementById("editYear").value = vehicle.year;
+                document.getElementById("editStatus").value = vehicle.status;
+                document.getElementById("editDailyPrice").value = vehicle.daily_price;
+                document.getElementById("editVehicleId").value = vehicle.id;
+
+                const form = document.getElementById("editVehicleForm");
+                form.action = `/admin/vehicles/${vehicle.id}`;
+
+                document.getElementById("editVehicleModal").classList.remove("hidden");
+                document.body.style.overflow = "hidden";
+            });
+        });
+
+        document.querySelectorAll("#cancelEditModal").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.getElementById("editVehicleModal").classList.add("hidden");
+                document.body.style.overflow = "auto";
+            });
+        });
+
+        // Form submission (Update Vehicle)
+        // Form submission (Update Vehicle)
+        const editVehicleForm = document.getElementById("editVehicleForm");
+        if (editVehicleForm) {
+            editVehicleForm.addEventListener("submit", () => {
+            showCustomMessage("Memperbarui kendaraan...", "info");
+            });
+        }
+
         // Handle semua form hapus
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -194,7 +232,7 @@
                     if (result.isConfirmed) {
                         // Tampilkan pesan loading opsional
                         showCustomMessage('Menghapus kendaraan...',
-                        'info'); // Menggunakan fungsi yang baru didefinisikan
+                            'info'); // Menggunakan fungsi yang baru didefinisikan
                         form.submit();
                     }
                 });

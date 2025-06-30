@@ -108,4 +108,23 @@ class VehicleController extends Controller
         // Konsolidasikan pesan menjadi satu 'success_message'
         return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
     }
+
+    public function update(Request $request, $id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+
+        $data = $request->validate([
+            'brand' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'license_plate' => 'required|string|unique:vehicles,license_plate,' . $id,
+            'year' => 'required|integer',
+            'status' => 'required|string',
+            'daily_price' => 'required|integer',
+        ]);
+
+        $vehicle->update($data);
+
+        return redirect()->route('admin.vehicles')
+            ->with('success_message', 'Kendaraan berhasil diperbarui.');
+    }
 }
