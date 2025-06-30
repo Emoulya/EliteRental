@@ -80,16 +80,6 @@
                             {{ ucfirst($vehicle->status) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex text-yellow-400 text-sm">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star{{ $vehicle->rating >= $i ? '' : '-o' }}"></i>
-                                @endfor
-                            </div>
-                            <span class="ml-1 text-sm text-gray-custom">{{ $vehicle->rating ?? '0.0' }}</span>
-                        </div>
-                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div class="flex space-x-2">
                             <!-- Tombol Detail -->
