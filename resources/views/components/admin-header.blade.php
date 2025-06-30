@@ -1,6 +1,6 @@
 {{-- resources/views/components/admin-header.blade.php --}}
 <header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="flex items-center justify-between px-6 py-4">
+    <div class="flex items-center justify-between px-6 h-20">
         <div class="flex items-center">
             <button id="sidebarToggle" class="text-gray-500 hover:text-gray-600 lg:hidden">
                 <i class="fas fa-bars text-xl"></i>
