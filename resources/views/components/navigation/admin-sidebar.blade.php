@@ -43,15 +43,6 @@
                 Pelanggan
             </a>
 
-            {{-- Item Keuangan --}}
-            <a href="{{ route('admin.finance') }}"
-                class="flex items-center px-4 py-3 rounded-lg transition duration-300
-            @if (request()->routeIs('admin.finance')) bg-gold
-            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
-                <i class="fas fa-money-bill-wave mr-3"></i>
-                Keuangan
-            </a>
-
             {{-- Item Laporan --}}
             <a href="{{ route('admin.reports') }}"
                 class="flex items-center px-4 py-3 rounded-lg transition duration-300
@@ -59,15 +50,6 @@
             @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
                 <i class="fas fa-chart-bar mr-3"></i>
                 Laporan
-            </a>
-
-            {{-- Item Pengaturan --}}
-            <a href="{{ route('admin.settings') }}"
-                class="flex items-center px-4 py-3 rounded-lg transition duration-300
-            @if (request()->routeIs('admin.settings')) bg-gold
-            @else text-gray-300 hover:bg-gray-700 hover:text-white @endif">
-                <i class="fas fa-cog mr-3"></i>
-                Pengaturan
             </a>
         </div>
     </nav>

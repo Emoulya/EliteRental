@@ -23,10 +23,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.dashboard');
     })->name('dashboard'); // Nama rute akan menjadi 'admin.dashboard'
 
-    Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles');
-    Route::post('/vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
-    Route::put('/vehicles/{id}', [VehicleController::class, 'update'])->name('vehicles.update');
-    Route::delete('/vehicles/{id}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
+    Route::resource('vehicles', VehicleController::class)->names([
+        'index' => 'vehicles',
+        'store' => 'vehicles.store',
+        'update' => 'vehicles.update',
+        'destroy' => 'vehicles.destroy',
+    ]);
 
     Route::get('/bookings', function () {
         return view('admin.bookings');
@@ -34,24 +36,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Jika ada halaman untuk membuat booking baru
     Route::get('/bookings/create', function () {
-        return view('admin.bookings.create'); // Contoh: resources/views/admin/bookings/create.blade.php
-    })->name('bookings.create'); // Nama rute akan menjadi 'admin.bookings.create'
+        return view('admin.bookings.create');
+    })->name('bookings.create');
 
     Route::get('/customers', function () {
         return view('admin.customers');
     })->name('customers'); // Nama rute akan menjadi 'admin.customers'
 
-    Route::get('/finance', function () {
-        return view('admin.finance');
-    })->name('finance'); // Nama rute akan menjadi 'admin.finance'
-
     Route::get('/reports', function () {
         return view('admin.reports');
     })->name('reports'); // Nama rute akan menjadi 'admin.reports'
-
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('settings'); // Nama rute akan menjadi 'admin.settings'
 
 });
 
