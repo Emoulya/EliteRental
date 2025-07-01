@@ -81,15 +81,19 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div class="flex space-x-2">
-                            <button class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
+                            {{-- Icon Mata (Lihat Detail) --}}
+                            <a href="{{ route('admin.vehicles.show', $vehicle->id) }}"
+                                class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
-                            </button>
+                            </a>
 
+                            {{-- Tombol Edit --}}
                             <button type="button" class="text-green-600 hover:text-green-900 edit-btn"
                                 data-vehicle='@json($vehicle)' title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
 
+                            {{-- Form Hapus --}}
                             <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
                                 class="delete-form">
                                 @csrf
@@ -118,7 +122,7 @@
         function showCustomMessage(message, type) {
             Swal.fire({
                 text: message,
-                icon: type, // 'info', 'warning', 'success', 'error'
+                icon: type,
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
@@ -133,30 +137,24 @@
 
         // --- Fungsi Helper untuk Menangani Error Validasi Form ---
         function displayErrors(errors) {
-            // Bersihkan semua error yang ada sebelumnya
             clearErrors();
 
             for (const field in errors) {
                 if (errors.hasOwnProperty(field)) {
-                    // Temukan input field
                     const inputElement = document.getElementById(field);
                     if (inputElement) {
-                        inputElement.classList.add('border-red-500'); // Tambahkan border merah
+                        inputElement.classList.add('border-red-500');
                     }
 
-                    // Temukan elemen untuk menampilkan pesan error (komponen input-error Anda)
-                    // Asumsi komponen input-error Anda membuat div setelah input dengan class tertentu atau id yang bisa ditarget
-                    // Atau, jika komponen x-forms.input-error Anda ada di dekat input:
                     const errorElement = document.querySelector(`[name="${field}"] + .text-red-600`);
                     if (errorElement) {
-                        errorElement.innerHTML = ''; // Bersihkan pesan lama
+                        errorElement.innerHTML = '';
                         errors[field].forEach(message => {
                             const p = document.createElement('p');
                             p.textContent = message;
                             errorElement.appendChild(p);
                         });
                     } else {
-                        // Fallback jika tidak ditemukan elemen error khusus, bisa append di bawah input
                         const parentDiv = inputElement ? inputElement.closest('div') : null;
                         if (parentDiv) {
                             const newErrorDiv = document.createElement('div');
@@ -171,13 +169,12 @@
                     }
                 }
             }
-            // Khusus untuk error array seperti features[] atau gallery_images[]
             for (const key in errors) {
                 if (key.includes('.') && errors.hasOwnProperty(key)) {
                     const baseField = key.split('.')[0];
                     const errorElement = document.querySelector(`[name="${baseField}[]"] + .text-red-600`);
                     if (errorElement) {
-                        errorElement.innerHTML = ''; // Bersihkan pesan lama
+                        errorElement.innerHTML = '';
                         errors[key].forEach(message => {
                             const p = document.createElement('p');
                             p.textContent = message;
@@ -193,14 +190,12 @@
                 el.classList.remove('border-red-500');
             });
             document.querySelectorAll('.text-red-600').forEach(el => {
-                el.innerHTML = ''; // Clear all error messages
+                el.innerHTML = '';
             });
             document.querySelectorAll('.validation-error-message').forEach(el => {
-                el.remove(); // Remove dynamically added error messages
+                el.remove();
             });
         }
-        // --- Akhir Fungsi Helper ---
-
 
         // Modal functionality for Add Vehicle
         const addVehicleBtn = document.getElementById("addVehicleBtn");
@@ -209,11 +204,10 @@
         const cancelModal = document.getElementById("cancelModal");
         const addVehicleForm = document.getElementById("addVehicleForm");
 
-
         function openAddVehicleModal() {
             if (addVehicleModal) {
-                clearErrors(); // Bersihkan error setiap kali modal dibuka
-                addVehicleForm.reset(); // Reset form setiap kali modal dibuka
+                clearErrors();
+                addVehicleForm.reset();
                 addVehicleModal.classList.remove("hidden");
                 document.body.style.overflow = "hidden";
             }
@@ -246,40 +240,41 @@
         // === START: AJAX Form Submission for Add Vehicle ===
         if (addVehicleForm) {
             addVehicleForm.addEventListener("submit", async function(e) {
-                e.preventDefault(); // Mencegah pengiriman form default
+                e.preventDefault();
 
-                showCustomMessage("Menyimpan kendaraan...", "info"); // Pesan loading
+                showCustomMessage("Menyimpan kendaraan...", "info");
 
-                clearErrors(); // Bersihkan error sebelumnya sebelum submit
+                clearErrors();
 
-                const formData = new FormData(this); // Mengambil semua data form, termasuk file
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
-                'content'); // Ambil CSRF token
-                formData.append('_token', csrfToken); // Tambahkan CSRF token secara manual
+                const formData = new FormData(this);
+                // Asumsi CSRF token sudah ada di meta tag <meta name="csrf-token">
+                // dan Laravel secara otomatis menambahkannya untuk permintaan AJAX atau form.
+                // Jika tidak, Anda mungkin perlu menambahkannya secara manual:
+                // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                // formData.append('_token', csrfToken);
+
 
                 try {
                     const response = await fetch(this.action, {
                         method: 'POST',
-                        body: formData, // Mengirim FormData
+                        body: formData,
                         headers: {
-                            'Accept': 'application/json', // Memberi tahu server kita mengharapkan JSON
-                            'X-Requested-With': 'XMLHttpRequest', // Mengindikasikan ini adalah permintaan AJAX
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
                         }
                     });
 
                     const result = await response.json();
 
-                    if (response.ok) { // Status 2xx (e.g., 200 OK, 201 Created)
+                    if (response.ok) {
                         showCustomMessage(result.message, "success");
                         closeAddVehicleModal();
-                        // Anda bisa memperbarui tabel di sini tanpa reload,
-                        // atau cukup reload halaman untuk menyederhanakan
-                        location.reload(); // Reload halaman untuk melihat data baru
-                    } else if (response.status === 422) { // Validasi gagal
+                        location.reload();
+                    } else if (response.status === 422) {
                         showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
                             "error");
-                        displayErrors(result.errors); // Tampilkan error yang diterima dari server
-                    } else { // Error lain (e.g., 500 Internal Server Error)
+                        displayErrors(result.errors);
+                    } else {
                         showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
                     }
                 } catch (error) {
@@ -288,15 +283,12 @@
                 }
             });
 
-            // Tambahkan event listener untuk membersihkan error saat input berubah
             addVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
                 input.addEventListener('input', function() {
-                    const fieldName = this.name.replace('[]',
-                    ''); // Untuk array input, gunakan nama field dasar
+                    const fieldName = this.name.replace('[]', '');
                     const errorElement = document.querySelector(`[name="${fieldName}"] + .text-red-600`) ||
                         document.querySelector(`[name="${this.name}"] + .text-red-600`) ||
-                        this.closest('div').querySelector(
-                        '.validation-error-message'); // Fallback for dynamic errors
+                        this.closest('div').querySelector('.validation-error-message');
 
                     if (errorElement) {
                         errorElement.innerHTML = '';
@@ -307,25 +299,28 @@
         }
         // === END: AJAX Form Submission for Add Vehicle ===
 
-        // Modal functionality for Edit Vehicle (jika ingin diubah ke AJAX juga, logikanya mirip)
+        // Modal functionality for Edit Vehicle
         document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
                 const editVehicleModal = document.getElementById("editVehicleModal");
                 const form = document.getElementById("editVehicleForm");
 
-                // Populate all fields (pastikan IDs ini ada di edit-vehicle.blade.php)
                 document.getElementById("editBrand").value = vehicle.brand;
                 document.getElementById("editModel").value = vehicle.model;
                 document.getElementById("editLicensePlate").value = vehicle.license_plate;
                 document.getElementById("editYear").value = vehicle.year;
-                document.getElementById("editColor").value = vehicle.color;
                 document.getElementById("editStatus").value = vehicle.status;
+                document.getElementById("editDailyPrice").value = vehicle.daily_price;
+                document.getElementById("editVehicleId").value = vehicle.id;
+
+                // Populate other fields (add these IDs to edit-vehicle.blade.php)
+                document.getElementById("editCategory").value = vehicle.category;
+                document.getElementById("editColor").value = vehicle.color;
                 document.getElementById("editPassengerCapacity").value = vehicle.passenger_capacity;
                 document.getElementById("editTransmissionType").value = vehicle.transmission_type;
                 document.getElementById("editFuelType").value = vehicle.fuel_type;
                 document.getElementById("editAirConditioning").value = vehicle.air_conditioning;
-                document.getElementById("editDailyPrice").value = vehicle.daily_price;
                 document.getElementById("editOriginalDailyPrice").value = vehicle.original_daily_price;
                 document.getElementById("editWeeklyPrice").value = vehicle.weekly_price;
                 document.getElementById("editMonthlyPrice").value = vehicle.monthly_price;
@@ -366,8 +361,7 @@
                     editMainImagePreview.src = `/storage/${vehicle.main_image}`;
                     editMainImagePreview.classList.remove('hidden');
                     editCurrentMainImagePath.textContent = vehicle.main_image.split('/').pop();
-                    document.getElementById('clearMainImage').checked =
-                    false; // Pastikan checkbox hapus tidak dicentang
+                    document.getElementById('clearMainImage').checked = false;
                 } else {
                     editMainImagePreview.classList.add('hidden');
                     editMainImagePreview.src = '';
@@ -377,9 +371,9 @@
                 // Populate gallery images preview
                 const existingGalleryImagesContainer = document.getElementById(
                     'existingGalleryImagesContainer');
-                existingGalleryImagesContainer.innerHTML = ''; // Clear previous images
+                existingGalleryImagesContainer.innerHTML = '';
                 if (vehicle.gallery_images && vehicle.gallery_images.length > 0) {
-                    vehicle.gallery_images.forEach(imagePath => { // Pastikan ini adalah array
+                    JSON.parse(vehicle.gallery_images).forEach(imagePath => {
                         const div = document.createElement('div');
                         div.className = 'relative inline-block m-1';
                         div.innerHTML = `
@@ -404,8 +398,7 @@
                 });
 
                 form.action = `/admin/vehicles/${vehicle.id}`;
-                document.getElementById("editVehicleId").value = vehicle
-                .id; // Pastikan ID kendaraan di hidden input
+                document.getElementById("editVehicleId").value = vehicle.id;
 
                 editVehicleModal.classList.remove("hidden");
                 document.body.style.overflow = "hidden";
@@ -416,28 +409,24 @@
             btn.addEventListener("click", () => {
                 document.getElementById("editVehicleModal").classList.add("hidden");
                 document.body.style.overflow = "auto";
-                clearErrors(); // Clear errors on modal close
             });
         });
 
-        // Form submission (Update Vehicle)
         const editVehicleForm = document.getElementById("editVehicleForm");
         if (editVehicleForm) {
             editVehicleForm.addEventListener("submit", async function(e) {
-                e.preventDefault(); // Mencegah pengiriman form default
+                e.preventDefault();
 
                 showCustomMessage("Memperbarui kendaraan...", "info");
 
                 clearErrors();
 
                 const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                formData.append('_token', csrfToken); // Tambahkan CSRF token secara manual
-                formData.append('_method', 'PUT'); // Penting untuk PUT request
+                formData.append('_method', 'PUT');
 
                 try {
                     const response = await fetch(this.action, {
-                        method: 'POST', // Method harus POST untuk FormData dengan _method PUT
+                        method: 'POST',
                         body: formData,
                         headers: {
                             'Accept': 'application/json',
@@ -451,7 +440,7 @@
                         showCustomMessage(result.message, "success");
                         document.getElementById("editVehicleModal").classList.add("hidden");
                         document.body.style.overflow = "auto";
-                        location.reload(); // Reload halaman untuk melihat data yang diperbarui
+                        location.reload();
                     } else if (response.status === 422) {
                         showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
                             "error");
@@ -465,11 +454,9 @@
                 }
             });
 
-            // Tambahkan event listener untuk membersihkan error saat input berubah di form edit
             editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
                 input.addEventListener('input', function() {
-                    const fieldName = this.name.replace('[]',
-                    ''); // For array inputs, use the base field name
+                    const fieldName = this.name.replace('[]', '');
                     const errorElement = document.querySelector(`[name="${fieldName}"] + .text-red-600`) ||
                         document.querySelector(`[name="${this.name}"] + .text-red-600`) ||
                         this.closest('div').querySelector('.validation-error-message');
