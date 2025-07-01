@@ -78,7 +78,7 @@
                         <img id="mainImage"
                             src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : '/placeholder.svg?height=300&width=500&text=' . $vehicle->model }}"
                             alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
-                            class="w-full h-64 rounded-lg object-cover" />
+                            class="w-full h-90 rounded-lg object-cover" />
                     </div>
                     <div class="flex space-x-2 overflow-x-auto">
                         @if ($vehicle->gallery_images && count($vehicle->gallery_images) > 0)

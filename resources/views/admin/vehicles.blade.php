@@ -141,49 +141,49 @@
 
             for (const field in errors) {
                 if (errors.hasOwnProperty(field)) {
-                    const inputElement = document.getElementById(field);
-                    if (inputElement) {
-                        inputElement.classList.add('border-red-500');
-                    }
+                    // Cari elemen input berdasarkan atribut 'name' (lebih handal dari ID)
+                    const inputElements = document.querySelectorAll(`[name="${field}"], [name="${field}[]"]`);
 
-                    const errorElement = document.querySelector(`[name="${field}"] + .text-red-600`);
-                    if (errorElement) {
-                        errorElement.innerHTML = '';
-                        errors[field].forEach(message => {
-                            const p = document.createElement('p');
-                            p.textContent = message;
-                            errorElement.appendChild(p);
-                        });
-                    } else {
-                        const parentDiv = inputElement ? inputElement.closest('div') : null;
-                        if (parentDiv) {
-                            const newErrorDiv = document.createElement('div');
-                            newErrorDiv.className = 'text-sm text-red-600 mt-2 validation-error-message';
-                            errors[field].forEach(message => {
-                                const p = document.createElement('p');
-                                p.textContent = message;
-                                newErrorDiv.appendChild(p);
-                            });
-                            parentDiv.appendChild(newErrorDiv);
+                    inputElements.forEach(inputElement => {
+                        if (inputElement) {
+                            inputElement.classList.add('border-red-500'); // Beri highlight merah pada input
+
+                            // Cari elemen error yang merupakan sibling langsung dari input
+                            // atau yang berada di dalam struktur parent-nya
+                            let errorElement = inputElement.nextElementSibling;
+                            if (!errorElement || !errorElement.classList.contains('text-red-600')) {
+                                // Jika sibling langsung bukan elemen error, coba cari di dalam parent div
+                                errorElement = inputElement.closest('div').querySelector('.text-red-600');
+                            }
+
+                            if (errorElement) {
+                                errorElement.innerHTML = ''; // Bersihkan pesan error lama
+                                errors[field].forEach(message => {
+                                    const p = document.createElement('p');
+                                    p.textContent = message;
+                                    errorElement.appendChild(p);
+                                });
+                            } else {
+                                // Fallback: Buat dan tambahkan div error baru jika tidak ditemukan elemen khusus
+                                const parentDiv = inputElement.closest('div');
+                                if (parentDiv) {
+                                    const newErrorDiv = document.createElement('div');
+                                    newErrorDiv.className = 'text-sm text-red-600 mt-2 validation-error-message';
+                                    errors[field].forEach(message => {
+                                        const p = document.createElement('p');
+                                        p.textContent = message;
+                                        newErrorDiv.appendChild(p);
+                                    });
+                                    // Masukkan setelah input
+                                    inputElement.insertAdjacentElement('afterend', newErrorDiv);
+                                }
+                            }
                         }
-                    }
-                }
-            }
-            for (const key in errors) {
-                if (key.includes('.') && errors.hasOwnProperty(key)) {
-                    const baseField = key.split('.')[0];
-                    const errorElement = document.querySelector(`[name="${baseField}[]"] + .text-red-600`);
-                    if (errorElement) {
-                        errorElement.innerHTML = '';
-                        errors[key].forEach(message => {
-                            const p = document.createElement('p');
-                            p.textContent = message;
-                            errorElement.appendChild(p);
-                        });
-                    }
+                    });
                 }
             }
         }
+
 
         function clearErrors() {
             document.querySelectorAll('.border-red-500').forEach(el => {
@@ -203,6 +203,7 @@
         const closeModal = document.getElementById("closeModal");
         const cancelModal = document.getElementById("cancelModal");
         const addVehicleForm = document.getElementById("addVehicleForm");
+
 
         function openAddVehicleModal() {
             if (addVehicleModal) {
@@ -247,11 +248,8 @@
                 clearErrors();
 
                 const formData = new FormData(this);
-                // Asumsi CSRF token sudah ada di meta tag <meta name="csrf-token">
-                // dan Laravel secara otomatis menambahkannya untuk permintaan AJAX atau form.
-                // Jika tidak, Anda mungkin perlu menambahkannya secara manual:
-                // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                // formData.append('_token', csrfToken);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                formData.append('_token', csrfToken);
 
 
                 try {
@@ -286,10 +284,10 @@
             addVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
                 input.addEventListener('input', function() {
                     const fieldName = this.name.replace('[]', '');
-                    const errorElement = document.querySelector(`[name="${fieldName}"] + .text-red-600`) ||
-                        document.querySelector(`[name="${this.name}"] + .text-red-600`) ||
-                        this.closest('div').querySelector('.validation-error-message');
-
+                    // Perbarui pencarian elemen error agar lebih handal
+                    const errorElement = this.closest('div').querySelector('.text-red-600') ||
+                        // Cari di dalam parent terdekat
+                        document.querySelector(`[name="${fieldName}"] + .text-red-600`); // Fallback sibling
                     if (errorElement) {
                         errorElement.innerHTML = '';
                     }
@@ -305,6 +303,8 @@
                 const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
                 const editVehicleModal = document.getElementById("editVehicleModal");
                 const form = document.getElementById("editVehicleForm");
+
+                clearErrors(); // Bersihkan error setiap kali modal dibuka
 
                 document.getElementById("editBrand").value = vehicle.brand;
                 document.getElementById("editModel").value = vehicle.model;
@@ -374,17 +374,17 @@
                 existingGalleryImagesContainer.innerHTML = '';
                 const galleryImages = vehicle.gallery_images || [];
                 galleryImages.forEach(imagePath => {
-                        const div = document.createElement('div');
-                        div.className = 'relative inline-block m-1';
-                        div.innerHTML = `
+                    const div = document.createElement('div');
+                    div.className = 'relative inline-block m-1';
+                    div.innerHTML = `
                             <img src="/storage/${imagePath}" class="w-20 h-20 object-cover rounded" />
                             <input type="hidden" name="existing_gallery_images[]" value="${imagePath}" />
                             <button type="button" class="remove-gallery-image absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs" data-path="${imagePath}">
                                 <i class="fas fa-times"></i>
                             </button>
                         `;
-                        existingGalleryImagesContainer.appendChild(div);
-                    });
+                    existingGalleryImagesContainer.appendChild(div);
+                });
                 if (galleryImages.length === 0) {
                     existingGalleryImagesContainer.innerHTML =
                         '<p class="text-gray-500">Tidak ada gambar galeri.</p>';
@@ -409,6 +409,7 @@
             btn.addEventListener("click", () => {
                 document.getElementById("editVehicleModal").classList.add("hidden");
                 document.body.style.overflow = "auto";
+                clearErrors(); // Bersihkan error saat modal ditutup
             });
         });
 
@@ -459,9 +460,8 @@
             editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
                 input.addEventListener('input', function() {
                     const fieldName = this.name.replace('[]', '');
-                    const errorElement = document.querySelector(`[name="${fieldName}"] + .text-red-600`) ||
-                        document.querySelector(`[name="${this.name}"] + .text-red-600`) ||
-                        this.closest('div').querySelector('.validation-error-message');
+                    const errorElement = this.closest('div').querySelector('.text-red-600') ||
+                        document.querySelector(`[name="${fieldName}"] + .text-red-600`);
 
                     if (errorElement) {
                         errorElement.innerHTML = '';
