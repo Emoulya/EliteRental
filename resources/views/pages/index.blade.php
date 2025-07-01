@@ -189,61 +189,494 @@
                 <h2 class="text-4xl font-bold text-navy mb-4">Testimoni Pelanggan</h2>
                 <div class="w-24 h-1 bg-gold mx-auto"></div>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-light-gray p-6 rounded-lg shadow-lg">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                    </div>
-                    <p class="text-gray-custom mb-4 italic">"Pelayanan sangat memuaskan! Mobil bersih dan terawat.
-                        Proses rental juga cepat dan mudah. Pasti akan sewa lagi di Elite Rental."</p>
-                    <div class="flex items-center">
-                        <img src="/placeholder.svg?height=50&width=50&text=User1" alt="Customer"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="font-semibold text-navy">Budi Santoso</h4>
-                            <p class="text-sm text-gray-custom">Jakarta</p>
+
+            <div class="carousel-container overflow-hidden relative py-3">
+                <div class="flex animate-scroll">
+                    <!-- Set pertama testimoni -->
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pelayanan sangat memuaskan! Mobil bersih dan terawat. Proses rental juga cepat dan
+                                    mudah. Pasti akan sewa lagi di Elite Rental."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">BS</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Budi Santoso</h4>
+                                    <p class="text-sm text-gray-custom">Jakarta</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-light-gray p-6 rounded-lg shadow-lg">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                    </div>
-                    <p class="text-gray-custom mb-4 italic">"Harga kompetitif dengan kualitas terbaik. Staff ramah dan
-                        profesional. Recommended banget untuk yang butuh rental kendaraan!"</p>
-                    <div class="flex items-center">
-                        <img src="/placeholder.svg?height=50&width=50&text=User2" alt="Customer"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="font-semibold text-navy">Sari Dewi</h4>
-                            <p class="text-sm text-gray-custom">Bandung</p>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Harga kompetitif dengan kualitas terbaik. Staff ramah dan profesional. Recommended
+                                    banget untuk yang butuh rental kendaraan!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">SD</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Sari Dewi</h4>
+                                    <p class="text-sm text-gray-custom">Bandung</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-light-gray p-6 rounded-lg shadow-lg">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
-                        <i class="fas fa-star text-gold"></i>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sudah beberapa kali sewa di Elite Rental untuk keperluan bisnis. Selalu puas dengan
+                                    pelayanan dan kondisi kendaraannya."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">AR</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Ahmad Rizki</h4>
+                                    <p class="text-sm text-gray-custom">Surabaya</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-gray-custom mb-4 italic">"Sudah beberapa kali sewa di Elite Rental untuk keperluan
-                        bisnis. Selalu puas dengan pelayanan dan kondisi kendaraannya."</p>
-                    <div class="flex items-center">
-                        <img src="/placeholder.svg?height=50&width=50&text=User3" alt="Customer"
-                            class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="font-semibold text-navy">Ahmad Rizki</h4>
-                            <p class="text-sm text-gray-custom">Surabaya</p>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Motor yang disewa kondisinya prima dan irit bensin. Cocok banget untuk keliling kota.
+                                    Terima kasih Elite Rental!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">DA</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Dina Anggraini</h4>
+                                    <p class="text-sm text-gray-custom">Yogyakarta</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pelayanan 24 jam sangat membantu. Pernah butuh mobil mendadak tengah malam, langsung
+                                    diproses. Top service!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">RF</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Rendi Firmansyah</h4>
+                                    <p class="text-sm text-gray-custom">Medan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sewa Alphard untuk acara keluarga, kondisi interior sangat bersih dan nyaman. Supir
+                                    juga sopan dan berpengalaman."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">LK</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Lisa Kartika</h4>
+                                    <p class="text-sm text-gray-custom">Semarang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pick up yang disewa untuk pindahan sangat membantu. Kondisi mesin bagus dan daya angkut
+                                    sesuai kebutuhan."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">HS</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Hendra Saputra</h4>
+                                    <p class="text-sm text-gray-custom">Makassar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Booking online sangat mudah dan cepat. Tim customer service responsif banget.
+                                    Pengalaman rental terbaik yang pernah saya alami!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">NW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Nina Wijaya</h4>
+                                    <p class="text-sm text-gray-custom">Palembang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sudah langganan Elite Rental selama 3 tahun. Tidak pernah kecewa dengan pelayanan dan
+                                    kualitas kendaraannya. Highly recommended!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">IP</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Indra Pratama</h4>
+                                    <p class="text-sm text-gray-custom">Denpasar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DUPLIKAT SET TESTIMONI UNTUK LOOPING MULUS -->
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pelayanan sangat memuaskan! Mobil bersih dan terawat. Proses rental juga cepat dan
+                                    mudah. Pasti akan sewa lagi di Elite Rental."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">BS</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Budi Santoso</h4>
+                                    <p class="text-sm text-gray-custom">Jakarta</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Harga kompetitif dengan kualitas terbaik. Staff ramah dan profesional. Recommended
+                                    banget untuk yang butuh rental kendaraan!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">SD</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Sari Dewi</h4>
+                                    <p class="text-sm text-gray-custom">Bandung</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sudah beberapa kali sewa di Elite Rental untuk keperluan bisnis. Selalu puas dengan
+                                    pelayanan dan kondisi kendaraannya."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">AR</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Ahmad Rizki</h4>
+                                    <p class="text-sm text-gray-custom">Surabaya</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Motor yang disewa kondisinya prima dan irit bensin. Cocok banget untuk keliling kota.
+                                    Terima kasih Elite Rental!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">DA</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Dina Anggraini</h4>
+                                    <p class="text-sm text-gray-custom">Yogyakarta</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pelayanan 24 jam sangat membantu. Pernah butuh mobil mendadak tengah malam, langsung
+                                    diproses. Top service!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">RF</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Rendi Firmansyah</h4>
+                                    <p class="text-sm text-gray-custom">Medan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sewa Alphard untuk acara keluarga, kondisi interior sangat bersih dan nyaman. Supir
+                                    juga sopan dan berpengalaman."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">LK</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Lisa Kartika</h4>
+                                    <p class="text-sm text-gray-custom">Semarang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Pick up yang disewa untuk pindahan sangat membantu. Kondisi mesin bagus dan daya angkut
+                                    sesuai kebutuhan."
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">HS</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Hendra Saputra</h4>
+                                    <p class="text-sm text-gray-custom">Makassar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Booking online sangat mudah dan cepat. Tim customer service responsif banget.
+                                    Pengalaman rental terbaik yang pernah saya alami!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">NW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Nina Wijaya</h4>
+                                    <p class="text-sm text-gray-custom">Palembang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-80 mx-4">
+                        <div class="bg-light-gray p-6 rounded-lg shadow-lg h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex mb-4">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                    <i class="fas fa-star text-gold"></i>
+                                </div>
+                                <p class="text-gray-custom mb-4 italic">
+                                    "Sudah langganan Elite Rental selama 3 tahun. Tidak pernah kecewa dengan pelayanan dan
+                                    kualitas kendaraannya. Highly recommended!"
+                                </p>
+                            </div>
+                            <div class="flex items-center mt-auto">
+                                <div class="w-12 h-12 rounded-full bg-navy flex items-center justify-center mr-4">
+                                    <span class="text-white font-bold">IP</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-navy">Indra Pratama</h4>
+                                    <p class="text-sm text-gray-custom">Denpasar</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

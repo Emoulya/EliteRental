@@ -7,6 +7,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <title>{{ $title ?? 'Elite Rental - Solusi Rental Berkualitas' }}</title>
+
+    <style>
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-scroll {
+            animation: scroll 40s linear infinite;
+            width: max-content;
+        }
+
+        .carousel-container:hover .animate-scroll {
+            animation-play-state: paused;
+        }
+    </style>
 </head>
 
 <body class="bg-white">
