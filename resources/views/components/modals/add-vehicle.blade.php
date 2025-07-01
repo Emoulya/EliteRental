@@ -3,10 +3,8 @@
 
 <div id="{{ $id }}" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Overlay -->
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
-        <!-- Modal Panel -->
         <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -20,17 +18,21 @@
                     </button>
                 </div>
 
-                <form id="addVehicleForm" method="POST" action="{{ route('admin.vehicles.store') }}" enctype="multipart/form-data" class="space-y-6">
+                <form id="addVehicleForm" method="POST" action="{{ route('admin.vehicles.store') }}"
+                    enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Informasi Dasar Kendaraan -->
                         <div class="space-y-4">
                             <h4 class="text-lg font-semibold text-navy border-b pb-2">Informasi Dasar</h4>
 
                             <x-forms.text-input label="Merk Kendaraan" id="brand" name="brand" required
                                 placeholder="Contoh: Toyota" />
+                            <x-forms.input-error :messages="$errors->get('brand')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.text-input label="Model Kendaraan" id="model" name="model" required
                                 placeholder="Contoh: Avanza" />
+                            <x-forms.input-error :messages="$errors->get('model')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.select-input label="Kategori" id="category" name="category" required>
                                 <option value="">Pilih Kategori</option>
                                 <option value="mobil-keluarga">Mobil Keluarga</option>
@@ -40,85 +42,126 @@
                                 <option value="motor">Motor</option>
                                 <option value="pickup">Pick Up</option>
                             </x-forms.select-input>
+                            <x-forms.input-error :messages="$errors->get('category')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.text-input label="Nomor Polisi" id="license_plate" name="license_plate" required
                                 placeholder="Contoh: B 1234 ABC" />
+                            <x-forms.input-error :messages="$errors->get('license_plate')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.text-input label="Tahun Produksi" id="year" name="year" type="number"
                                 required min="1990" max="2025" placeholder="2023" />
+                            <x-forms.input-error :messages="$errors->get('year')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.text-input label="Warna" id="color" name="color" required
                                 placeholder="Contoh: Putih" />
+                            <x-forms.input-error :messages="$errors->get('color')" class="mt-2" /> {{-- Tambahkan ini --}}
+
                             <x-forms.select-input label="Status Ketersediaan" id="status" name="status" required>
                                 <option value="tersedia">Tersedia</option>
                                 <option value="disewa">Disewa</option>
                                 <option value="maintenance">Maintenance</option>
                                 <option value="unavailable">Tidak Tersedia</option>
                             </x-forms.select-input>
+                            <x-forms.input-error :messages="$errors->get('status')" class="mt-2" /> {{-- Tambahkan ini --}}
                         </div>
 
-                        <!-- Spesifikasi & Harga -->
                         <div class="space-y-4">
                             <h4 class="text-lg font-semibold text-navy border-b pb-2">Spesifikasi & Harga</h4>
 
                             <x-forms.text-input label="Kapasitas Penumpang" id="passenger_capacity"
                                 name="passenger_capacity" type="number" min="1" placeholder="7" />
+                            <x-forms.input-error :messages="$errors->get('passenger_capacity')" class="mt-2" />
+
                             <x-forms.select-input label="Transmisi" id="transmission_type" name="transmission_type"
                                 required>
                                 <option value="">Pilih Transmisi</option>
                                 <option value="manual">Manual</option>
                                 <option value="automatic">Automatic</option>
                             </x-forms.select-input>
+                            <x-forms.input-error :messages="$errors->get('transmission_type')" class="mt-2" />
+
                             <x-forms.select-input label="Jenis Bahan Bakar" id="fuel_type" name="fuel_type" required>
                                 <option value="">Pilih Bahan Bakar</option>
                                 <option value="bensin">Bensin</option>
                                 <option value="diesel">Diesel</option>
                                 <option value="listrik">Listrik</option>
                             </x-forms.select-input>
+                            <x-forms.input-error :messages="$errors->get('fuel_type')" class="mt-2" />
+
                             <x-forms.select-input label="Pendingin Udara" id="air_conditioning" name="air_conditioning"
                                 required>
                                 <option value="">Pilih Pendingin Udara</option>
                                 <option value="ac">AC</option>
                                 <option value="air_vent">Air Vent</option>
                             </x-forms.select-input>
+                            <x-forms.input-error :messages="$errors->get('air_conditioning')" class="mt-2" />
+
                             <x-forms.text-input label="Harga Sewa per Hari (Rp)" id="daily_price" name="daily_price"
                                 type="number" required min="0" placeholder="300000" />
+                            <x-forms.input-error :messages="$errors->get('daily_price')" class="mt-2" />
+
                             <x-forms.text-input label="Harga Normal per Hari (Rp) (untuk diskon, opsional)"
                                 id="original_daily_price" name="original_daily_price" type="number" min="0"
                                 placeholder="350000" />
-                            <x-forms.text-input label="Harga Sewa per Minggu (Rp)" id="weekly_price" name="weekly_price"
-                                type="number" min="0" placeholder="1800000" />
+                            <x-forms.input-error :messages="$errors->get('original_daily_price')" class="mt-2" />
+
+                            <x-forms.text-input label="Harga Sewa per Minggu (Rp)" id="weekly_price"
+                                name="weekly_price" type="number" min="0" placeholder="1800000" />
+                            <x-forms.input-error :messages="$errors->get('weekly_price')" class="mt-2" />
+
                             <x-forms.text-input label="Harga Sewa per Bulan (Rp)" id="monthly_price"
                                 name="monthly_price" type="number" min="0" placeholder="6500000" />
+                            <x-forms.input-error :messages="$errors->get('monthly_price')" class="mt-2" />
 
                             <x-forms.text-input label="Tipe Mesin" id="engine_type" name="engine_type"
                                 placeholder="Contoh: 1.3L DOHC VVT-i" />
+                            <x-forms.input-error :messages="$errors->get('engine_type')" class="mt-2" />
+
                             <x-forms.text-input label="Tenaga Maksimal" id="max_power" name="max_power"
                                 placeholder="Contoh: 96 PS / 6,000 rpm" />
+                            <x-forms.input-error :messages="$errors->get('max_power')" class="mt-2" />
+
                             <x-forms.text-input label="Torsi Maksimal" id="max_torque" name="max_torque"
                                 placeholder="Contoh: 121 Nm / 4,400 rpm" />
+                            <x-forms.input-error :messages="$errors->get('max_torque')" class="mt-2" />
+
                             <x-forms.text-input label="Transmisi" id="transmission" name="transmission"
                                 placeholder="Manual 5-Speed" />
+                            <x-forms.input-error :messages="$errors->get('transmission')" class="mt-2" />
+
                             <x-forms.text-input label="Konsumsi BBM (km/liter)" id="fuel_efficiency"
                                 name="fuel_efficiency" placeholder="Contoh: 13-15 km/liter" />
+                            <x-forms.input-error :messages="$errors->get('fuel_efficiency')" class="mt-2" />
 
                             <h4 class="text-lg font-semibold text-navy border-b pb-2">Dimensi & Kapasitas</h4>
                             <x-forms.text-input label="Panjang (mm)" id="length" name="length" type="number"
                                 min="0" placeholder="4190" />
+                            <x-forms.input-error :messages="$errors->get('length')" class="mt-2" />
+
                             <x-forms.text-input label="Lebar (mm)" id="width" name="width" type="number"
                                 min="0" placeholder="1660" />
+                            <x-forms.input-error :messages="$errors->get('width')" class="mt-2" />
+
                             <x-forms.text-input label="Tinggi (mm)" id="height" name="height" type="number"
                                 min="0" placeholder="1695" />
+                            <x-forms.input-error :messages="$errors->get('height')" class="mt-2" />
+
                             <x-forms.text-input label="Wheelbase (mm)" id="wheelbase" name="wheelbase"
                                 type="number" min="0" placeholder="2655" />
+                            <x-forms.input-error :messages="$errors->get('wheelbase')" class="mt-2" />
+
                             <x-forms.text-input label="Kapasitas Tangki (Liter)" id="tank_capacity"
                                 name="tank_capacity" type="number" min="0" placeholder="45" />
+                            <x-forms.input-error :messages="$errors->get('tank_capacity')" class="mt-2" />
                         </div>
                     </div>
 
-                    <!-- Fitur & Fasilitas Kendaraan -->
                     <div>
                         <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Fitur & Fasilitas</h4>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <x-forms.checkbox-field name="features[]" value="ac_double_blower"
                                 label="AC Double Blower" />
+                            {{-- Kesalahan untuk checkbox array biasanya ditangani di tingkat induk atau secara global --}}
                             <x-forms.checkbox-field name="features[]" value="audio_system"
                                 label="Audio System dengan USB" />
                             <x-forms.checkbox-field name="features[]" value="power_steering"
@@ -138,9 +181,9 @@
                                 label="Child Safety Lock" />
                             <x-forms.checkbox-field name="features[]" value="hazard_lights" label="Lampu Hazard" />
                         </div>
+                        <x-forms.input-error :messages="$errors->get('features')" class="mt-2" />
                     </div>
 
-                    <!-- Fasilitas Tambahan Elite Rental -->
                     <div>
                         <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Fasilitas Tambahan Elite Rental
                         </h4>
@@ -152,32 +195,38 @@
                             <x-forms.checkbox-field name="elite_features[]" value="24_7_support"
                                 label="Support 24/7" />
                         </div>
+                        <x-forms.input-error :messages="$errors->get('elite_features')" class="mt-2" />
                     </div>
 
-                    <!-- Deskripsi Kendaraan -->
                     <x-forms.textarea-input label="Deskripsi Lengkap" id="long_description" name="long_description"
                         rows="4" placeholder="Deskripsi detail tentang kendaraan, keunggulan, dll." />
+                    <x-forms.input-error :messages="$errors->get('long_description')" class="mt-2" />
 
-                    <!-- Syarat & Ketentuan Sewa -->
                     <div>
                         <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Syarat & Ketentuan Sewa</h4>
                         <div class="space-y-4">
                             <x-forms.textarea-input label="Persyaratan Penyewa" id="rental_requirements"
                                 name="rental_requirements" rows="3"
                                 placeholder="Contoh: - Usia minimal 21 tahun&#10;- Memiliki SIM A yang masih berlaku" />
+                            <x-forms.input-error :messages="$errors->get('rental_requirements')" class="mt-2" />
+
                             <x-forms.textarea-input label="Ketentuan Sewa Kendaraan" id="rental_terms"
                                 name="rental_terms" rows="3"
                                 placeholder="Contoh: - Sewa minimal 24 jam&#10;- Overtime dikenakan biaya Rp 25.000/jam" />
+                            <x-forms.input-error :messages="$errors->get('rental_terms')" class="mt-2" />
+
                             <x-forms.textarea-input label="Informasi Deposit & Pembayaran" id="deposit_payment_info"
                                 name="deposit_payment_info" rows="3"
                                 placeholder="Contoh: - Deposit Rp 500.000&#10;- Pembayaran dapat dilakukan tunai atau transfer" />
+                            <x-forms.input-error :messages="$errors->get('deposit_payment_info')" class="mt-2" />
+
                             <x-forms.textarea-input label="Larangan Selama Sewa" id="prohibitions"
                                 name="prohibitions" rows="3"
                                 placeholder="Contoh: - Dilarang merokok di dalam kendaraan&#10;- Dilarang membawa hewan peliharaan" />
+                            <x-forms.input-error :messages="$errors->get('prohibitions')" class="mt-2" />
                         </div>
                     </div>
 
-                    <!-- Upload Gambar -->
                     <div>
                         <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Upload Gambar</h4>
                         <div>
@@ -194,6 +243,7 @@
                                     Pilih Gambar Utama
                                 </button>
                             </div>
+                            <x-forms.input-error :messages="$errors->get('main_image')" class="mt-2" />
                         </div>
                         <div>
                             <label for="galleryImageUpload"
@@ -210,6 +260,11 @@
                                     Pilih Gambar Galeri
                                 </button>
                             </div>
+                            <x-forms.input-error :messages="$errors->get('gallery_images')" class="mt-2" />
+                            {{-- Jika ada error per item galeri, contoh gallery_images.0, gallery_images.1 --}}
+                            @foreach ($errors->get('gallery_images.*') as $message)
+                                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                            @endforeach
                         </div>
                     </div>
                 </form>

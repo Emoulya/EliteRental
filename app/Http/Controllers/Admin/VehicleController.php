@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreVehicleRequest;
+use App\Http\Requests\UpdateVehicleRequest;
 
 class VehicleController extends Controller
 {
@@ -17,52 +19,20 @@ class VehicleController extends Controller
         $maintenance = Vehicle::where('status', 'maintenance')->count();
         $unavailable = Vehicle::where('status', 'unavailable')->count();
 
-        $vehicles = Vehicle::latest()->get(); // Ambil semua kendaraan, bisa gunakan paginate() juga
+        $vehicles = Vehicle::latest()->paginate(10);
+
         return view('admin.vehicles', compact('vehicles', 'total', 'tersedia', 'disewa', 'maintenance', 'unavailable'));
     }
 
-    public function store(Request $request)
+    public function store(StoreVehicleRequest $request) // Menggunakan Form Request
     {
-        $data = $request->validate([
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'category' => 'required|string',
-            'license_plate' => 'required|string|unique:vehicles',
-            'year' => 'required|integer',
-            'color' => 'required|string',
-            'status' => 'required|string',
-            'passenger_capacity' => 'nullable|integer',
-            'transmission_type' => 'nullable|string',
-            'fuel_type' => 'nullable|string',
-            'air_conditioning' => 'nullable|string',
-            'daily_price' => 'nullable|integer',
-            'original_daily_price' => 'nullable|integer',
-            'weekly_price' => 'nullable|integer',
-            'monthly_price' => 'nullable|integer',
-            'engine_type' => 'nullable|string',
-            'max_power' => 'nullable|string',
-            'max_torque' => 'nullable|string',
-            'transmission' => 'nullable|string',
-            'fuel_efficiency' => 'nullable|string',
-            'length' => 'nullable|integer',
-            'width' => 'nullable|integer',
-            'height' => 'nullable|integer',
-            'wheelbase' => 'nullable|integer',
-            'tank_capacity' => 'nullable|integer',
-            'features' => 'nullable|array',
-            'elite_features' => 'nullable|array',
-            'long_description' => 'nullable|string',
-            'rental_requirements' => 'nullable|string',
-            'rental_terms' => 'nullable|string',
-            'deposit_payment_info' => 'nullable|string',
-            'prohibitions' => 'nullable|string',
-            'main_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        $data = $request->validated(); // Data sudah tervalidasi
 
         // Simpan gambar utama
         if ($request->hasFile('main_image')) {
             $data['main_image'] = $request->file('main_image')->store('vehicles/main', 'public');
+        } else {
+            $data['main_image'] = null; // Pastikan null jika tidak ada gambar
         }
 
         // Simpan gambar galeri
@@ -71,16 +41,23 @@ class VehicleController extends Controller
             foreach ($request->file('gallery_images') as $image) {
                 $paths[] = $image->store('vehicles/gallery', 'public');
             }
-            $data['gallery_images'] = json_encode($paths);
+            $data['gallery_images'] = json_encode($paths); // Laravel akan meng-cast ini ke array karena $casts di model
+        } else {
+            $data['gallery_images'] = null; // Pastikan kosong jika tidak ada gambar galeri baru
         }
-
-        // Pastikan fitur dan elite_features adalah string JSON
-        $data['features'] = json_encode($data['features'] ?? []);
-        $data['elite_features'] = json_encode($data['elite_features'] ?? []);
 
         Vehicle::create($data);
 
-        // UBAH DARI 'custom_message' MENJADI 'success_message'
+        // Jika ini adalah permintaan AJAX, kembalikan respons JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Kendaraan berhasil ditambahkan.',
+                'success' => true,
+                'vehicle' => $data // Opsional: kembalikan data kendaraan yang baru dibuat
+            ], 201); // 201 Created
+        }
+
+        // Jika bukan AJAX, lakukan redirect seperti biasa
         return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil ditambahkan.');
     }
 
@@ -109,20 +86,62 @@ class VehicleController extends Controller
         return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateVehicleRequest $request, $id) // Menggunakan Form Request
     {
         $vehicle = Vehicle::findOrFail($id);
+        $data = $request->validated();
 
-        $data = $request->validate([
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'license_plate' => 'required|string|unique:vehicles,license_plate,' . $id,
-            'year' => 'required|integer',
-            'status' => 'required|string',
-            'daily_price' => 'required|integer',
-        ]);
+        // Handle main image update
+        if ($request->hasFile('main_image')) {
+            // Hapus gambar lama jika ada
+            if ($vehicle->main_image && Storage::disk('public')->exists($vehicle->main_image)) {
+                Storage::disk('public')->delete($vehicle->main_image);
+            }
+            $data['main_image'] = $request->file('main_image')->store('vehicles/main', 'public');
+        } elseif ($request->boolean('clear_main_image')) { // Opsional: Tambahkan input hidden untuk menghapus gambar
+            if ($vehicle->main_image && Storage::disk('public')->exists($vehicle->main_image)) {
+                Storage::disk('public')->delete($vehicle->main_image);
+            }
+            $data['main_image'] = null;
+        } else {
+            // Pertahankan gambar lama jika tidak ada gambar baru dan tidak diminta dihapus
+            unset($data['main_image']);
+        }
+
+
+        // Handle gallery images update
+        $existingGalleryImages = $vehicle->gallery_images ?? []; // Sudah di-cast oleh model
+        $updatedGalleryImages = $request->input('existing_gallery_images', []); // Gambar yang masih dipertahankan
+        $newGalleryImages = [];
+
+        // Hapus gambar galeri lama yang tidak ada di updatedGalleryImages
+        foreach ($existingGalleryImages as $imagePath) {
+            if (!in_array($imagePath, $updatedGalleryImages) && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+        }
+
+        // Tambahkan gambar galeri baru
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $image) {
+                $newGalleryImages[] = $image->store('vehicles/gallery', 'public');
+            }
+        }
+
+        // Gabungkan gambar yang dipertahankan dan gambar baru
+        $data['gallery_images'] = array_merge($updatedGalleryImages, $newGalleryImages); // Laravel akan meng-encode ini
 
         $vehicle->update($data);
+
+        // Jika ini adalah permintaan AJAX, kembalikan respons JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'message' => 'Kendaraan berhasil diperbarui.',
+                'success' => true,
+                'vehicle' => $data // Opsional: kembalikan data kendaraan yang baru diperbarui
+            ], 200);
+        }
+
 
         return redirect()->route('admin.vehicles')
             ->with('success_message', 'Kendaraan berhasil diperbarui.');

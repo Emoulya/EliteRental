@@ -14,7 +14,6 @@ Route::get('/dashboard', function () {
 
 // --- Rute Admin ---
 // Menggunakan Route::prefix('admin') dan Route::name('admin.')
-// untuk mengorganisir semua rute admin di bawah satu grup.
 // Middleware 'auth' dan 'role:admin' diterapkan ke seluruh grup ini.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
