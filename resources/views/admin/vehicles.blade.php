@@ -151,9 +151,11 @@
                             // Cari elemen error yang merupakan sibling langsung dari input
                             // atau yang berada di dalam struktur parent-nya
                             let errorElement = inputElement.nextElementSibling;
-                            if (!errorElement || !errorElement.classList.contains('text-red-600')) {
+                            if (!errorElement || (!errorElement.classList.contains('text-red-600') && !errorElement
+                                    .classList.contains('validation-error-list'))) {
                                 // Jika sibling langsung bukan elemen error, coba cari di dalam parent div
-                                errorElement = inputElement.closest('div').querySelector('.text-red-600');
+                                errorElement = inputElement.closest('div').querySelector(
+                                    '.validation-error-list, .validation-error-message');
                             }
 
                             if (errorElement) {
@@ -189,7 +191,7 @@
             document.querySelectorAll('.border-red-500').forEach(el => {
                 el.classList.remove('border-red-500');
             });
-            document.querySelectorAll('.text-red-600').forEach(el => {
+            document.querySelectorAll('.validation-error-list').forEach(el => {
                 el.innerHTML = '';
             });
             document.querySelectorAll('.validation-error-message').forEach(el => {
@@ -285,9 +287,11 @@
                 input.addEventListener('input', function() {
                     const fieldName = this.name.replace('[]', '');
                     // Perbarui pencarian elemen error agar lebih handal
-                    const errorElement = this.closest('div').querySelector('.text-red-600') ||
-                        // Cari di dalam parent terdekat
-                        document.querySelector(`[name="${fieldName}"] + .text-red-600`); // Fallback sibling
+                    const errorElement = this.closest('div').querySelector(
+                            '.validation-error-list, .validation-error-message') ||
+                        document.querySelector(`[name="${fieldName}"] + .validation-error-list`) ||
+                        document.querySelector(`[name="${fieldName}"] + .validation-error-message`);
+
                     if (errorElement) {
                         errorElement.innerHTML = '';
                     }
@@ -460,7 +464,8 @@
             editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
                 input.addEventListener('input', function() {
                     const fieldName = this.name.replace('[]', '');
-                    const errorElement = this.closest('div').querySelector('.text-red-600') ||
+                    const errorElement = this.closest('div').querySelector(
+                            '.validation-error-list, .validation-error-message') ||
                         document.querySelector(`[name="${fieldName}"] + .text-red-600`);
 
                     if (errorElement) {

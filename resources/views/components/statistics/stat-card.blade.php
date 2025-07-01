@@ -1,3 +1,4 @@
+{{-- resources\views\components\statistics\stat-card.blade.php --}}
 @props([
     'title',
     'value',
