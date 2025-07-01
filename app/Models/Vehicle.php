@@ -47,6 +47,7 @@ class Vehicle extends Model
 
         // File upload
         'main_image',
+        'gallery_images',
 
         // Fitur
         'features',
@@ -57,5 +58,6 @@ class Vehicle extends Model
     protected $casts = [
         'features' => 'array',
         'elite_features' => 'array',
+        'gallery_images' => 'array',
     ];
 }

@@ -32,7 +32,7 @@ class VehicleController extends Controller
         if ($request->hasFile('main_image')) {
             $data['main_image'] = $request->file('main_image')->store('vehicles/main', 'public');
         } else {
-            $data['main_image'] = null; // Pastikan null jika tidak ada gambar
+            $data['main_image'] = null;
         }
 
         // Simpan gambar galeri
@@ -41,9 +41,9 @@ class VehicleController extends Controller
             foreach ($request->file('gallery_images') as $image) {
                 $paths[] = $image->store('vehicles/gallery', 'public');
             }
-            $data['gallery_images'] = json_encode($paths); // Laravel akan meng-cast ini ke array karena $casts di model
+            $data['gallery_images'] = $paths; // <--- HAPUS json_encode() DI SINI
         } else {
-            $data['gallery_images'] = null; // Pastikan kosong jika tidak ada gambar galeri baru
+            $data['gallery_images'] = null;
         }
 
         Vehicle::create($data);
@@ -53,8 +53,8 @@ class VehicleController extends Controller
             return response()->json([
                 'message' => 'Kendaraan berhasil ditambahkan.',
                 'success' => true,
-                'vehicle' => $data // Opsional: kembalikan data kendaraan yang baru dibuat
-            ], 201); // 201 Created
+                'vehicle' => $data
+            ], 201);
         }
 
         // Jika bukan AJAX, lakukan redirect seperti biasa
@@ -71,9 +71,8 @@ class VehicleController extends Controller
         }
 
         // Hapus galeri
-        if ($vehicle->gallery_images) {
-            $galleryImages = json_decode($vehicle->gallery_images, true);
-            foreach ($galleryImages as $image) {
+        if ($vehicle->gallery_images) { // Ini sudah array karena $casts
+            foreach ($vehicle->gallery_images as $image) { // Langsung loop array
                 if (Storage::disk('public')->exists($image)) {
                     Storage::disk('public')->delete($image);
                 }
@@ -82,7 +81,6 @@ class VehicleController extends Controller
 
         $vehicle->delete();
 
-        // Konsolidasikan pesan menjadi satu 'success_message'
         return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
     }
 
@@ -93,24 +91,22 @@ class VehicleController extends Controller
 
         // Handle main image update
         if ($request->hasFile('main_image')) {
-            // Hapus gambar lama jika ada
             if ($vehicle->main_image && Storage::disk('public')->exists($vehicle->main_image)) {
                 Storage::disk('public')->delete($vehicle->main_image);
             }
             $data['main_image'] = $request->file('main_image')->store('vehicles/main', 'public');
-        } elseif ($request->boolean('clear_main_image')) { // Opsional: Tambahkan input hidden untuk menghapus gambar
+        } elseif ($request->boolean('clear_main_image')) {
             if ($vehicle->main_image && Storage::disk('public')->exists($vehicle->main_image)) {
                 Storage::disk('public')->delete($vehicle->main_image);
             }
             $data['main_image'] = null;
         } else {
-            // Pertahankan gambar lama jika tidak ada gambar baru dan tidak diminta dihapus
-            unset($data['main_image']);
+            unset($data['main_image']); // Pertahankan gambar lama jika tidak ada gambar baru dan tidak dihapus
         }
 
 
         // Handle gallery images update
-        $existingGalleryImages = $vehicle->gallery_images ?? []; // Sudah di-cast oleh model
+        $existingGalleryImages = $vehicle->gallery_images ?? []; // Sudah array karena $casts
         $updatedGalleryImages = $request->input('existing_gallery_images', []); // Gambar yang masih dipertahankan
         $newGalleryImages = [];
 
@@ -129,7 +125,7 @@ class VehicleController extends Controller
         }
 
         // Gabungkan gambar yang dipertahankan dan gambar baru
-        $data['gallery_images'] = array_merge($updatedGalleryImages, $newGalleryImages); // Laravel akan meng-encode ini
+        $data['gallery_images'] = array_merge($updatedGalleryImages, $newGalleryImages); // <--- HAPUS json_encode() DI SINI
 
         $vehicle->update($data);
 
@@ -138,10 +134,9 @@ class VehicleController extends Controller
             return response()->json([
                 'message' => 'Kendaraan berhasil diperbarui.',
                 'success' => true,
-                'vehicle' => $data // Opsional: kembalikan data kendaraan yang baru diperbarui
+                'vehicle' => $data
             ], 200);
         }
-
 
         return redirect()->route('admin.vehicles')
             ->with('success_message', 'Kendaraan berhasil diperbarui.');

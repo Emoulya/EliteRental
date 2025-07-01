@@ -372,8 +372,8 @@
                 const existingGalleryImagesContainer = document.getElementById(
                     'existingGalleryImagesContainer');
                 existingGalleryImagesContainer.innerHTML = '';
-                if (vehicle.gallery_images && vehicle.gallery_images.length > 0) {
-                    JSON.parse(vehicle.gallery_images).forEach(imagePath => {
+                const galleryImages = vehicle.gallery_images || [];
+                galleryImages.forEach(imagePath => {
                         const div = document.createElement('div');
                         div.className = 'relative inline-block m-1';
                         div.innerHTML = `
@@ -385,7 +385,7 @@
                         `;
                         existingGalleryImagesContainer.appendChild(div);
                     });
-                } else {
+                if (galleryImages.length === 0) {
                     existingGalleryImagesContainer.innerHTML =
                         '<p class="text-gray-500">Tidak ada gambar galeri.</p>';
                 }
@@ -422,6 +422,8 @@
                 clearErrors();
 
                 const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                formData.append('_token', csrfToken);
                 formData.append('_method', 'PUT');
 
                 try {
