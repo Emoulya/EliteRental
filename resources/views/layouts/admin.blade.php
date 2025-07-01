@@ -9,7 +9,7 @@
 
     <title>{{ $title ?? config('app.name', 'Elite Rental Admin') }}</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- Pastikan ini memuat app.js --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -49,10 +49,10 @@
             // Initial check for large screens to ensure sidebar is visible by default
             if (window.innerWidth >= 1024) {
                 sidebar.classList.remove("-translate-x-full");
-                sidebar.classList.add("relative"); // Ensure it takes up space
+                sidebar.classList.add("relative");
                 sidebarOverlay.classList.add("hidden");
             } else {
-                sidebar.classList.add("fixed", "h-screen", "left-0", "top-0"); // Re-add fixed for small screens
+                sidebar.classList.add("fixed", "h-screen", "left-0", "top-0");
                 sidebar.classList.remove("relative");
             }
 
@@ -76,7 +76,7 @@
                     sidebar.classList.remove("relative", "flex", "flex-col", "h-screen", "shrink-0");
                     sidebar.classList.add("fixed", "left-0", "top-0", "h-screen");
                     if (!sidebar.classList.contains("-translate-x-full")) {
-                        sidebar.classList.add("-translate-x-full"); // Hide sidebar by default on small screens
+                        sidebar.classList.add("-translate-x-full");
                     }
                 }
             });
@@ -100,7 +100,6 @@
                     bar.style.width = width;
                 }, 100);
             });
-            // updateDonutChart(); // Call function to update donut chart on load (if used)
         });
     </script>
 </body>

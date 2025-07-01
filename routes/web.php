@@ -46,6 +46,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.reports');
     })->name('reports'); // Nama rute akan menjadi 'admin.reports'
 
+    Route::get('/detail', function () {
+        return view('admin.vehicle-detail');
+    })->name('vehicle-detail'); 
 });
 
 Route::middleware('auth')->group(function () {

@@ -146,4 +146,8 @@ class VehicleController extends Controller
         return redirect()->route('admin.vehicles')
             ->with('success_message', 'Kendaraan berhasil diperbarui.');
     }
+    public function show(Vehicle $vehicle)
+    {
+        return view('admin.vehicle-detail', compact('vehicle'));
+    }
 }
