@@ -87,7 +87,7 @@
                             </x-forms.select-input>
                             <x-forms.input-error :messages="$errors->get('fuel_type')" class="mt-2" />
 
-                            <x-forms.select-input label="Fitur Utama" id="editFeatures" name="editFeatures">
+                            <x-forms.select-input label="Fitur Utama" id="editFeatures" name="features">
                                 <option value="">Pilih Fitur Utama</option>
                                 <option value="ac">AC</option>
                                 <option value="air_vent">Air Vent</option>

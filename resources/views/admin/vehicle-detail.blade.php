@@ -127,11 +127,6 @@
                         </div>
                         <div class="space-y-4">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Fitur Utama:</span>
-                                <span
-                                    class="font-medium text-navy">{{ strtoupper(str_replace('_', ' ', $vehicle->features ?? '-')) }}</span>
-                            </div>
-                            <div class="flex justify-between">
                                 <span class="text-gray-600">Tipe Mesin:</span>
                                 <span class="font-medium text-navy">{{ $vehicle->engine_type ?? '-' }}</span>
                             </div>
@@ -231,7 +226,7 @@
                             @foreach ($vehicle->elite_features as $eliteFeature)
                                 <div class="flex items-center">
                                     {{-- Sesuaikan ikon sesuai fitur --}}
-                                    <i class="fas fa-check-circle text-gold mr-2"></i>
+                                    <i class="fas fa-star text-gold mr-2"></i>
                                     <span class="text-gray-700">{{ ucwords(str_replace('_', ' ', $eliteFeature)) }}</span>
                                 </div>
                             @endforeach
@@ -362,6 +357,55 @@
                                 <li>Tidak ada larangan yang terdaftar.</li>
                             @endif
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h4 class="text-lg font-semibold text-navy">
+                        Fitur Utama Kendaraan
+                    </h4>
+                </div>
+                <div class="p-6">
+                    <div class="text-center">
+                        @if ($vehicle->features)
+                            @php
+                                $featureIcon = '';
+                                $featureColorClass = '';
+                                switch ($vehicle->features) {
+                                    case 'ac':
+                                        $featureIcon = 'fas fa-snowflake';
+                                        $featureColorClass = 'bg-blue-100 text-blue-600';
+                                        break;
+                                    case 'air_vent':
+                                        $featureIcon = 'fas fa-wind';
+                                        $featureColorClass = 'bg-cyan-100 text-cyan-600';
+                                        break;
+                                    case 'helmet':
+                                        $featureIcon = 'fas fa-helmet-safety';
+                                        $featureColorClass = 'bg-yellow-100 text-yellow-600';
+                                        break;
+                                    case 'open_tub':
+                                        $featureIcon = 'fas fa-truck-pickup';
+                                        $featureColorClass = 'bg-green-100 text-green-600';
+                                        break;
+                                    default:
+                                        $featureIcon = 'fas fa-check-circle';
+                                        $featureColorClass = 'bg-gray-100 text-gray-600';
+                                        break;
+                                }
+                            @endphp
+                            <div
+                                class="w-16 h-16 {{ $featureColorClass }} rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="{{ $featureIcon }} text-2xl"></i>
+                            </div>
+                            <div class="text-lg font-semibold {{ explode(' ', $featureColorClass)[1] }} mb-2">
+                                {{ ucwords(str_replace('_', ' ', $vehicle->features)) }}
+                            </div>
+                        @else
+                            <p class="text-gray-500">Tidak ada fitur utama yang terdaftar.</p>
+                        @endif
                     </div>
                 </div>
             </div>
