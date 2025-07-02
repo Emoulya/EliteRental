@@ -3,10 +3,13 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VehicleController;
+use App\Http\Controllers\VehicleListController;
 
 Route::get('/', function () {
     return view('pages.index');
 })->name('home');
+
+Route::get('/kendaraan', [VehicleListController::class, 'index'])->name('vehicles.index');
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');

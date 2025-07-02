@@ -174,7 +174,7 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <a href="#">
+                <a href="{{ route('vehicles.index') }}">
                     <x-buttons.primary-button class="py-4 px-8 text-lg hover:scale-105">
                         Lihat semua Kendaraan
                     </x-buttons.primary-button>
