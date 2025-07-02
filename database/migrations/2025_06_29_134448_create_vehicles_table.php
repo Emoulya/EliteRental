@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('passenger_capacity')->nullable();
             $table->enum('transmission_type', ['manual', 'automatic'])->nullable();
             $table->enum('fuel_type', ['bensin', 'diesel', 'listrik'])->nullable();
-            $table->enum('air_conditioning', ['ac', 'air_vent'])->nullable();
+            $table->enum('features', ['ac', 'air_vent', 'helmet', 'open_tub'])->nullable();
 
             $table->integer('daily_price')->nullable();
             $table->integer('original_daily_price')->nullable();
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->integer('wheelbase')->nullable();
             $table->integer('tank_capacity')->nullable();
 
-            $table->json('features')->nullable();
+            $table->json('additional_features')->nullable();
             $table->json('elite_features')->nullable();
 
             $table->text('long_description')->nullable();
