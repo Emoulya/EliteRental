@@ -194,7 +194,7 @@
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h4 class="text-lg font-semibold text-navy">
-                        Fitur & Fasilitas
+                        Fitur & Fasilitas Tambahan
                     </h4>
                 </div>
                 <div class="p-6">
@@ -209,7 +209,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500">Tidak ada fitur yang terdaftar.</p>
+                        <p class="text-gray-500">Tidak ada fitur tambahan yang terdaftar.</p>
                     @endif
                 </div>
             </div>

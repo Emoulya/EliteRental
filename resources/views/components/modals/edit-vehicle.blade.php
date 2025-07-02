@@ -157,7 +157,7 @@
                     </div>
 
                     <div>
-                        <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Fitur & Fasilitas</h4>
+                        <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Fitur & Fasilitas Tambahan</h4>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <x-forms.checkbox-field name="additional_features[]" value="ac_double_blower"
                                 label="AC Double Blower" />
