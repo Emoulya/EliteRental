@@ -32,7 +32,7 @@ class StoreVehicleRequest extends FormRequest
             'passenger_capacity' => 'nullable|integer|min:1',
             'transmission_type' => 'nullable|string|in:manual,automatic',
             'fuel_type' => 'nullable|string|in:bensin,diesel,listrik',
-            'air_conditioning' => 'nullable|string|in:ac,air_vent',
+            'features' => 'nullable|string|in:ac,air_vent,helmet,open_tub',
             'daily_price' => 'required|integer|min:0',
             'original_daily_price' => 'nullable|integer|min:0|gte:daily_price', // Harga normal harus lebih besar atau sama dari harga sewa
             'weekly_price' => 'nullable|integer|min:0',
@@ -47,8 +47,8 @@ class StoreVehicleRequest extends FormRequest
             'height' => 'nullable|integer|min:0',
             'wheelbase' => 'nullable|integer|min:0',
             'tank_capacity' => 'nullable|integer|min:0',
-            'features' => 'nullable|array',
-            'features.*' => 'string', // Setiap item dalam array fitur harus string
+            'additional_features' => 'nullable|array',
+            'additional_features.*' => 'string', // Setiap item dalam array fitur harus string
             'elite_features' => 'nullable|array',
             'elite_features.*' => 'string', // Setiap item dalam array elite_features harus string
             'long_description' => 'nullable|string',

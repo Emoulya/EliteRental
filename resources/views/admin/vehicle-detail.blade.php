@@ -127,9 +127,9 @@
                         </div>
                         <div class="space-y-4">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Pendingin Udara:</span>
+                                <span class="text-gray-600">Fitur Utama:</span>
                                 <span
-                                    class="font-medium text-navy">{{ strtoupper(str_replace('_', ' ', $vehicle->air_conditioning ?? '-')) }}</span>
+                                    class="font-medium text-navy">{{ strtoupper(str_replace('_', ' ', $vehicle->features ?? '-')) }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Tipe Mesin:</span>
@@ -203,12 +203,13 @@
                     </h4>
                 </div>
                 <div class="p-6">
-                    @if ($vehicle->features && count($vehicle->features) > 0)
+                    @if ($vehicle->additional_features && count($vehicle->additional_features) > 0)
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            @foreach ($vehicle->features as $feature)
+                            @foreach ($vehicle->additional_features as $additionalFeature)
                                 <div class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <span class="text-gray-700">{{ ucwords(str_replace('_', ' ', $feature)) }}</span>
+                                    <span
+                                        class="text-gray-700">{{ ucwords(str_replace('_', ' ', $additionalFeature)) }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -429,25 +430,30 @@
             document.getElementById("mainImage").src = src;
         }
 
-        // Logic untuk membuka modal edit kendaraan (disalin dari vehicles.blade.php)
+        // Modal functionality for Edit Vehicle
         document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", () => {
                 const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
                 const editVehicleModal = document.getElementById("editVehicleModal");
                 const form = document.getElementById("editVehicleForm");
 
-                // Populate all fields (pastikan IDs ini ada di edit-vehicle.blade.php)
+                // clearErrors(); // Bersihkan error setiap kali modal dibuka
+
                 document.getElementById("editBrand").value = vehicle.brand;
                 document.getElementById("editModel").value = vehicle.model;
                 document.getElementById("editLicensePlate").value = vehicle.license_plate;
                 document.getElementById("editYear").value = vehicle.year;
-                document.getElementById("editColor").value = vehicle.color;
                 document.getElementById("editStatus").value = vehicle.status;
+                document.getElementById("editDailyPrice").value = vehicle.daily_price;
+                document.getElementById("editVehicleId").value = vehicle.id;
+
+                // Populate other fields (add these IDs to edit-vehicle.blade.php)
+                document.getElementById("editCategory").value = vehicle.category;
+                document.getElementById("editColor").value = vehicle.color;
                 document.getElementById("editPassengerCapacity").value = vehicle.passenger_capacity;
                 document.getElementById("editTransmissionType").value = vehicle.transmission_type;
                 document.getElementById("editFuelType").value = vehicle.fuel_type;
-                document.getElementById("editAirConditioning").value = vehicle.air_conditioning;
-                document.getElementById("editDailyPrice").value = vehicle.daily_price;
+                document.getElementById("editFeatures").value = vehicle.features;
                 document.getElementById("editOriginalDailyPrice").value = vehicle.original_daily_price;
                 document.getElementById("editWeeklyPrice").value = vehicle.weekly_price;
                 document.getElementById("editMonthlyPrice").value = vehicle.monthly_price;
@@ -468,11 +474,12 @@
                 document.getElementById("editProhibitions").value = vehicle.prohibitions;
 
 
-                // Populate features checkboxes
-                const features = vehicle.features || [];
-                document.querySelectorAll('#editVehicleForm input[name="features[]"]').forEach(checkbox => {
-                    checkbox.checked = features.includes(checkbox.value);
-                });
+                // Populate additional_features checkboxes
+                const additionalFeatures = vehicle.additional_features || [];
+                document.querySelectorAll('#editVehicleForm input[name="additional_features[]"]').forEach(
+                    checkbox => {
+                        checkbox.checked = additionalFeatures.includes(checkbox.value);
+                    });
 
                 // Populate elite_features checkboxes
                 const eliteFeatures = vehicle.elite_features || [];
@@ -488,8 +495,7 @@
                     editMainImagePreview.src = `/storage/${vehicle.main_image}`;
                     editMainImagePreview.classList.remove('hidden');
                     editCurrentMainImagePath.textContent = vehicle.main_image.split('/').pop();
-                    document.getElementById('clearMainImage').checked =
-                    false; // Pastikan checkbox hapus tidak dicentang
+                    document.getElementById('clearMainImage').checked = false;
                 } else {
                     editMainImagePreview.classList.add('hidden');
                     editMainImagePreview.src = '';
@@ -499,21 +505,21 @@
                 // Populate gallery images preview
                 const existingGalleryImagesContainer = document.getElementById(
                     'existingGalleryImagesContainer');
-                existingGalleryImagesContainer.innerHTML = ''; // Clear previous images
-                if (vehicle.gallery_images && vehicle.gallery_images.length > 0) {
-                    vehicle.gallery_images.forEach(imagePath => { // Pastikan ini adalah array
-                        const div = document.createElement('div');
-                        div.className = 'relative inline-block m-1';
-                        div.innerHTML = `
+                existingGalleryImagesContainer.innerHTML = '';
+                const galleryImages = vehicle.gallery_images || [];
+                galleryImages.forEach(imagePath => {
+                    const div = document.createElement('div');
+                    div.className = 'relative inline-block m-1';
+                    div.innerHTML = `
                             <img src="/storage/${imagePath}" class="w-20 h-20 object-cover rounded" />
                             <input type="hidden" name="existing_gallery_images[]" value="${imagePath}" />
                             <button type="button" class="remove-gallery-image absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs" data-path="${imagePath}">
                                 <i class="fas fa-times"></i>
                             </button>
                         `;
-                        existingGalleryImagesContainer.appendChild(div);
-                    });
-                } else {
+                    existingGalleryImagesContainer.appendChild(div);
+                });
+                if (galleryImages.length === 0) {
                     existingGalleryImagesContainer.innerHTML =
                         '<p class="text-gray-500">Tidak ada gambar galeri.</p>';
                 }
@@ -526,38 +532,38 @@
                 });
 
                 form.action = `/admin/vehicles/${vehicle.id}`;
-                document.getElementById("editVehicleId").value = vehicle
-                .id; // Pastikan ID kendaraan di hidden input
+                document.getElementById("editVehicleId").value = vehicle.id;
 
                 editVehicleModal.classList.remove("hidden");
                 document.body.style.overflow = "hidden";
             });
         });
 
-        // Event listener untuk tombol close atau cancel pada modal edit
         document.querySelectorAll("#cancelEditModal, #closeEditModal").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.getElementById("editVehicleModal").classList.add("hidden");
                 document.body.style.overflow = "auto";
-                // Anda mungkin ingin menambahkan clearErrors() di sini juga
+                // clearErrors(); // Bersihkan error saat modal ditutup
             });
         });
 
-        // Handle form submission for Update Vehicle (AJAX)
         const editVehicleForm = document.getElementById("editVehicleForm");
         if (editVehicleForm) {
             editVehicleForm.addEventListener("submit", async function(e) {
                 e.preventDefault();
 
                 showCustomMessage("Memperbarui kendaraan...", "info");
+
                 // clearErrors(); // Bersihkan error sebelumnya
 
                 const formData = new FormData(this);
-                formData.append('_method', 'PUT'); // Penting untuk metode PUT
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                formData.append('_token', csrfToken);
+                formData.append('_method', 'PUT');
 
                 try {
                     const response = await fetch(this.action, {
-                        method: 'POST', // Method harus POST untuk FormData dengan _method PUT
+                        method: 'POST',
                         body: formData,
                         headers: {
                             'Accept': 'application/json',
@@ -571,12 +577,11 @@
                         showCustomMessage(result.message, "success");
                         document.getElementById("editVehicleModal").classList.add("hidden");
                         document.body.style.overflow = "auto";
-                        location.reload(); // Reload halaman untuk melihat data yang diperbarui
+                        location.reload();
                     } else if (response.status === 422) {
                         showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
                             "error");
-                        // Asumsi Anda punya displayErrors() dan clearErrors() di scope global
-                        // displayErrors(result.errors);
+                        displayErrors(result.errors);
                         console.error('Validation Errors:', result.errors);
                     } else {
                         showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
@@ -585,6 +590,20 @@
                     console.error('Error:', error);
                     showCustomMessage("Terjadi kesalahan jaringan atau sistem.", "error");
                 }
+            });
+
+            editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('input', function() {
+                    const fieldName = this.name.replace('[]', '');
+                    const errorElement = this.closest('div').querySelector(
+                            '.validation-error-list, .validation-error-message') ||
+                        document.querySelector(`[name="${fieldName}"] + .text-red-600`);
+
+                    if (errorElement) {
+                        errorElement.innerHTML = '';
+                    }
+                    this.classList.remove('border-red-500');
+                });
             });
         }
 

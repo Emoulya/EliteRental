@@ -1,5 +1,5 @@
 <?php
-
+// app\Models\Vehicle.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +20,6 @@ class Vehicle extends Model
         'passenger_capacity',
         'transmission_type',
         'fuel_type',
-        'air_conditioning',
         'daily_price',
         'original_daily_price',
         'weekly_price',
@@ -50,13 +49,13 @@ class Vehicle extends Model
         'gallery_images',
 
         // Fitur
+        'additional_features',
         'features',
         'elite_features',
     ];
 
-    // Jika 'features' dan 'elite_features' disimpan sebagai array
     protected $casts = [
-        'features' => 'array',
+        'additional_features' => 'array',
         'elite_features' => 'array',
         'gallery_images' => 'array',
     ];

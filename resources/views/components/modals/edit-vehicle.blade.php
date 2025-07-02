@@ -27,11 +27,11 @@
 
                             <x-forms.text-input label="Merk Kendaraan" id="editBrand" name="brand" required
                                 placeholder="Contoh: Toyota" />
-                            <x-forms.input-error :messages="$errors->get('brand')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('brand')" class="mt-2" />
 
                             <x-forms.text-input label="Model Kendaraan" id="editModel" name="model" required
                                 placeholder="Contoh: Avanza" />
-                            <x-forms.input-error :messages="$errors->get('model')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('model')" class="mt-2" />
 
                             <x-forms.select-input label="Kategori" id="editCategory" name="category" required>
                                 <option value="">Pilih Kategori</option>
@@ -42,19 +42,19 @@
                                 <option value="motor">Motor</option>
                                 <option value="pickup">Pick Up</option>
                             </x-forms.select-input>
-                            <x-forms.input-error :messages="$errors->get('category')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('category')" class="mt-2" />
 
                             <x-forms.text-input label="Nomor Polisi" id="editLicensePlate" name="license_plate" required
                                 placeholder="Contoh: B 1234 ABC" />
-                            <x-forms.input-error :messages="$errors->get('license_plate')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('license_plate')" class="mt-2" />
 
                             <x-forms.text-input label="Tahun Produksi" id="editYear" name="year" type="number"
                                 required min="1990" max="2025" placeholder="2023" />
-                            <x-forms.input-error :messages="$errors->get('year')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('year')" class="mt-2" />
 
                             <x-forms.text-input label="Warna" id="editColor" name="color" required
                                 placeholder="Contoh: Putih" />
-                            <x-forms.input-error :messages="$errors->get('color')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('color')" class="mt-2" />
 
                             <x-forms.select-input label="Status Ketersediaan" id="editStatus" name="status" required>
                                 <option value="tersedia">Tersedia</option>
@@ -62,7 +62,7 @@
                                 <option value="maintenance">Maintenance</option>
                                 <option value="unavailable">Tidak Tersedia</option>
                             </x-forms.select-input>
-                            <x-forms.input-error :messages="$errors->get('status')" class="mt-2" /> {{-- Tambahkan ini --}}
+                            <x-forms.input-error :messages="$errors->get('status')" class="mt-2" />
                         </div>
 
                         <div class="space-y-4">
@@ -87,11 +87,12 @@
                             </x-forms.select-input>
                             <x-forms.input-error :messages="$errors->get('fuel_type')" class="mt-2" />
 
-                            <x-forms.select-input label="Pendingin Udara" id="editAirConditioning"
-                                name="air_conditioning">
-                                <option value="">Pilih Pendingin Udara</option>
+                            <x-forms.select-input label="Fitur Utama" id="editFeatures" name="editFeatures">
+                                <option value="">Pilih Fitur Utama</option>
                                 <option value="ac">AC</option>
                                 <option value="air_vent">Air Vent</option>
+                                <option value="helmet">Helm</option>
+                                <option value="open_tub">Open Tub (untuk Pickup)</option>
                             </x-forms.select-input>
                             <x-forms.input-error :messages="$errors->get('air_conditioning')" class="mt-2" />
 
@@ -158,28 +159,28 @@
                     <div>
                         <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">Fitur & Fasilitas</h4>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <x-forms.checkbox-field name="features[]" value="ac_double_blower"
+                            <x-forms.checkbox-field name="additional_features[]" value="ac_double_blower"
                                 label="AC Double Blower" />
-                            <x-forms.checkbox-field name="features[]" value="audio_system"
+                            <x-forms.checkbox-field name="additional_features[]" value="audio_system"
                                 label="Audio System dengan USB" />
-                            <x-forms.checkbox-field name="features[]" value="power_steering"
+                            <x-forms.checkbox-field name="additional_features[]" value="power_steering"
                                 label="Power Steering" />
-                            <x-forms.checkbox-field name="features[]" value="central_lock" label="Central Lock" />
-                            <x-forms.checkbox-field name="features[]" value="electric_mirror"
+                            <x-forms.checkbox-field name="additional_features[]" value="central_lock" label="Central Lock" />
+                            <x-forms.checkbox-field name="additional_features[]" value="electric_mirror"
                                 label="Electric Mirror" />
-                            <x-forms.checkbox-field name="features[]" value="foldable_third_row_seats"
+                            <x-forms.checkbox-field name="additional_features[]" value="foldable_third_row_seats"
                                 label="Kursi Baris Ketiga Lipat" />
-                            <x-forms.checkbox-field name="features[]" value="dual_srs_airbag"
+                            <x-forms.checkbox-field name="additional_features[]" value="dual_srs_airbag"
                                 label="Dual SRS Airbag" />
-                            <x-forms.checkbox-field name="features[]" value="abs_ebd" label="ABS + EBD" />
-                            <x-forms.checkbox-field name="features[]" value="3_point_seatbelts"
+                            <x-forms.checkbox-field name="additional_features[]" value="abs_ebd" label="ABS + EBD" />
+                            <x-forms.checkbox-field name="additional_features[]" value="3_point_seatbelts"
                                 label="Sabuk Pengaman 3-Titik" />
-                            <x-forms.checkbox-field name="features[]" value="immobilizer" label="Immobilizer" />
-                            <x-forms.checkbox-field name="features[]" value="child_safety_lock"
+                            <x-forms.checkbox-field name="additional_features[]" value="immobilizer" label="Immobilizer" />
+                            <x-forms.checkbox-field name="additional_features[]" value="child_safety_lock"
                                 label="Child Safety Lock" />
-                            <x-forms.checkbox-field name="features[]" value="hazard_lights" label="Lampu Hazard" />
+                            <x-forms.checkbox-field name="additional_features[]" value="hazard_lights" label="Lampu Hazard" />
                         </div>
-                        <x-forms.input-error :messages="$errors->get('features')" class="mt-2" /> {{-- Tambahkan ini --}}
+                        <x-forms.input-error :messages="$errors->get('additional_features')" class="mt-2" />
                     </div>
 
                     <div>

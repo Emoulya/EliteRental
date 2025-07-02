@@ -324,7 +324,7 @@
                 document.getElementById("editPassengerCapacity").value = vehicle.passenger_capacity;
                 document.getElementById("editTransmissionType").value = vehicle.transmission_type;
                 document.getElementById("editFuelType").value = vehicle.fuel_type;
-                document.getElementById("editAirConditioning").value = vehicle.air_conditioning;
+                document.getElementById("editFeatures").value = vehicle.features;
                 document.getElementById("editOriginalDailyPrice").value = vehicle.original_daily_price;
                 document.getElementById("editWeeklyPrice").value = vehicle.weekly_price;
                 document.getElementById("editMonthlyPrice").value = vehicle.monthly_price;
@@ -345,10 +345,10 @@
                 document.getElementById("editProhibitions").value = vehicle.prohibitions;
 
 
-                // Populate features checkboxes
-                const features = vehicle.features || [];
-                document.querySelectorAll('#editVehicleForm input[name="features[]"]').forEach(checkbox => {
-                    checkbox.checked = features.includes(checkbox.value);
+                // Populate additional_features checkboxes
+                const additionalFeatures = vehicle.additional_features || [];
+                document.querySelectorAll('#editVehicleForm input[name="additional_features[]"]').forEach(checkbox => {
+                    checkbox.checked = additionalFeatures.includes(checkbox.value);
                 });
 
                 // Populate elite_features checkboxes
@@ -424,7 +424,7 @@
 
                 showCustomMessage("Memperbarui kendaraan...", "info");
 
-                clearErrors();
+                clearErrors(); // Bersihkan error sebelumnya
 
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -452,6 +452,7 @@
                         showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
                             "error");
                         displayErrors(result.errors);
+                        console.error('Validation Errors:', result.errors);
                     } else {
                         showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
                     }
