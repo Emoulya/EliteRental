@@ -41,9 +41,7 @@
                     <x-forms.select-input label="Kategori" id="editCategory" name="category" required>
                         <option value="">Pilih Kategori</option>
                         <option value="mobil-keluarga" @selected(old('category', $vehicle->category) == 'mobil-keluarga')>Mobil Keluarga</option>
-                        <option value="suv" @selected(old('category', $vehicle->category) == 'suv')>SUV</option>
-                        <option value="sedan" @selected(old('category', $vehicle->category) == 'sedan')>Sedan</option>
-                        <option value="hatchback" @selected(old('category', $vehicle->category) == 'hatchback')>Hatchback</option>
+                        <option value="mobil-mewah" @selected(old('category', $vehicle->category) == 'mobil-mewah')>Mobil Mewah</option>
                         <option value="motor" @selected(old('category', $vehicle->category) == 'motor')>Motor</option>
                         <option value="pickup" @selected(old('category', $vehicle->category) == 'pickup')>Pick Up</option>
                     </x-forms.select-input>
