@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="mt-4 sm:mt-0 flex space-x-3">
-                    <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}"
+                    <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}?_referrer=detail"
                         class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-edit mr-2"></i>
                         Edit

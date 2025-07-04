@@ -31,7 +31,7 @@ class VehicleController extends Controller
         return view('admin.vehicles.create');
     }
 
-    public function store(StoreVehicleRequest $request) 
+    public function store(StoreVehicleRequest $request)
     {
         $data = $request->validated();
 
@@ -113,9 +113,16 @@ class VehicleController extends Controller
 
         $vehicle->update($data);
 
-        // Setelah berhasil, redirect ke halaman daftar kendaraan
-        return redirect()->route('admin.vehicles')
-            ->with('success_message', 'Kendaraan berhasil diperbarui.');
+        // Conditional redirect based on _referrer
+        $referrer = $request->input('_referrer');
+        if ($referrer === 'detail') {
+            return redirect()->route('admin.vehicles.show', $vehicle->id)
+                ->with('success_message', 'Kendaraan berhasil diperbarui.');
+        } else {
+            // Default ke halaman daftar kendaraan jika referrer tidak dikenali atau dari 'vehicles'
+            return redirect()->route('admin.vehicles')
+                ->with('success_message', 'Kendaraan berhasil diperbarui.');
+        }
     }
 
     public function destroy($id)

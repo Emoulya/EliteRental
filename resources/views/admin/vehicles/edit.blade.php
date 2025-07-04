@@ -15,12 +15,12 @@
             </a>
         </div>
 
-        {{-- Tambahkan onsubmit untuk menampilkan pesan "Memperbarui kendaraan..." --}}
         <form id="editVehicleForm" method="POST" action="{{ route('admin.vehicles.update', $vehicle->id) }}"
             enctype="multipart/form-data" class="space-y-6"
-            onsubmit="showCustomMessage('Memperbarui kendaraan...', 'info');"> {{-- Baris ini ditambahkan/diubah --}}
+            onsubmit="showCustomMessage('Memperbarui kendaraan...', 'info');">
             @csrf
             @method('PUT')
+            <input type="hidden" name="_referrer" value="{{ request()->query('_referrer') }}">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
@@ -384,7 +384,6 @@
                             Pilih Gambar Galeri Baru
                         </button>
                     </div>
-                    {{-- Jika ada error per item galeri --}}
                     @foreach ($errors->get('gallery_images.*') as $message)
                         <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
                     @endforeach
@@ -423,7 +422,7 @@
                     reader.onload = function(e) {
                         preview.src = e.target.result;
                         preview.classList.remove('hidden');
-                        currentPathText.textContent = event.target.files[0].name; // Tampilkan nama file baru
+                        currentPathText.textContent = event.target.files[0].name;
                     };
                     reader.readAsDataURL(event.target.files[0]);
                 }

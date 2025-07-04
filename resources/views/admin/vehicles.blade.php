@@ -121,7 +121,7 @@
                             </a>
 
                             {{-- Tombol Edit mengarah ke halaman baru --}}
-                            <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}"
+                            <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}?_referrer=vehicles"
                                 class="text-green-600 hover:text-green-900" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
