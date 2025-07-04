@@ -50,6 +50,10 @@
     @endif
 
     <div class="bg-white rounded-lg shadow">
+<<<<<<< HEAD
+=======
+        {{-- Mengubah button Tambah Kendaraan menjadi link ke halaman baru --}}
+>>>>>>> 6ed83226d4c4d2e6f41f7c70aec83092ab70c68e
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-lg font-medium text-navy">
@@ -167,6 +171,10 @@
         }
 
         // --- Fungsi Helper untuk Menangani Error Validasi Form (Jika masih ada form AJAX lain) ---
+<<<<<<< HEAD
+=======
+        // (Tetap pertahankan jika ada form lain yang masih menggunakan AJAX)
+>>>>>>> 6ed83226d4c4d2e6f41f7c70aec83092ab70c68e
         function displayErrors(errors) {
             clearErrors();
             for (const field in errors) {
@@ -219,7 +227,11 @@
             });
         }
 
+<<<<<<< HEAD
         // Handle semua form hapus
+=======
+        // Handle semua form hapus (tetap dipertahankan)
+>>>>>>> 6ed83226d4c4d2e6f41f7c70aec83092ab70c68e
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -242,7 +254,7 @@
             });
         });
 
-        // Search and Filter functionality
+        // Search and Filter functionality (tetap dipertahankan)
         const searchInput = document.getElementById("searchInput");
         const categoryFilter = document.getElementById("categoryFilter");
         const statusFilter = document.getElementById("statusFilter");
