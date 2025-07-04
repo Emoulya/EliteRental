@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreVehicleRequest;
@@ -10,16 +11,51 @@ use App\Http\Requests\UpdateVehicleRequest;
 
 class VehicleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Ambil parameter filter dari request
+        $search = $request->input('search');
+        $categoryFilter = $request->input('category_filter');
+        $statusFilter = $request->input('status_filter');
+
+        // Mulai dengan query dasar untuk Vehicle
+        $query = Vehicle::query();
+
+        // Terapkan filter berdasarkan input
+        $query->when($search, function ($q) use ($search) {
+            $q->where('brand', 'like', '%' . $search . '%')
+                ->orWhere('model', 'like', '%' . $search . '%')
+                ->orWhere('license_plate', 'like', '%' . $search . '%');
+        });
+
+        $query->when($categoryFilter, function ($q) use ($categoryFilter) {
+            $q->where('category', $categoryFilter);
+        });
+
+        $query->when($statusFilter, function ($q) use ($statusFilter) {
+            $q->where('status', $statusFilter);
+        });
+
+        // Ambil kendaraan yang sudah difilter dengan paginasi
+        $vehicles = $query->latest()->paginate(10)->withQueryString(); // Tambahkan withQueryString() agar paginasi mempertahankan filter
+
+        // Hitungan untuk kartu statistik (saat ini tetap global, tidak terpengaruh filter)
         $total = Vehicle::count();
         $tersedia = Vehicle::where('status', 'tersedia')->count();
         $disewa = Vehicle::where('status', 'disewa')->count();
         $maintenance = Vehicle::where('status', 'maintenance')->count();
         $unavailable = Vehicle::where('status', 'unavailable')->count();
 
-        $vehicles = Vehicle::latest()->paginate(10);
+        // Jika ini adalah permintaan AJAX, kembalikan hanya HTML tabel dan paginasi dalam format JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'table_html' => view('admin.vehicles._table_rows', compact('vehicles'))->render(),
+                'pagination_html' => $vehicles->links()->toHtml(),
+                'total_vehicles_count' => $vehicles->total(), // Jumlah kendaraan yang difilter saat ini
+            ]);
+        }
 
+        // Untuk permintaan halaman penuh, kembalikan tampilan lengkap
         return view('admin.vehicles', compact('vehicles', 'total', 'tersedia', 'disewa', 'maintenance', 'unavailable'));
     }
 
@@ -50,7 +86,7 @@ class VehicleController extends Controller
             }
             $data['gallery_images'] = $paths;
         } else {
-            $data['gallery_images'] = [];
+            $data['gallery_images'] = []; // UBAH DARI 'null' MENJADI ARRAY KOSONG '[]' DI SINI
         }
 
         Vehicle::create($data);
@@ -83,15 +119,12 @@ class VehicleController extends Controller
             }
             $data['main_image'] = null;
         } else {
-            // Pertahankan gambar lama jika tidak ada gambar baru dan tidak dihapus
-            // Pastikan kunci 'main_image' tidak ditimpa dengan null jika tidak ada perubahan
             if (!isset($data['main_image'])) {
                 $data['main_image'] = $vehicle->main_image;
             }
         }
 
         // Handle gallery images update
-        // Pastikan $vehicle->gallery_images selalu array sebelum digunakan
         $existingGalleryImages = $vehicle->gallery_images ?? [];
         $updatedGalleryImages = $request->input('existing_gallery_images', []);
         $newGalleryImages = [];
@@ -108,18 +141,15 @@ class VehicleController extends Controller
             }
         }
 
-        // Gabungkan gambar yang dipertahankan dan gambar baru
         $data['gallery_images'] = array_merge($updatedGalleryImages, $newGalleryImages);
 
         $vehicle->update($data);
 
-        // Conditional redirect based on _referrer
         $referrer = $request->input('_referrer');
         if ($referrer === 'detail') {
             return redirect()->route('admin.vehicles.show', $vehicle->id)
                 ->with('success_message', 'Kendaraan berhasil diperbarui.');
         } else {
-            // Default ke halaman daftar kendaraan jika referrer tidak dikenali atau dari 'vehicles'
             return redirect()->route('admin.vehicles')
                 ->with('success_message', 'Kendaraan berhasil diperbarui.');
         }
@@ -135,8 +165,8 @@ class VehicleController extends Controller
         }
 
         // Hapus galeri
-        if ($vehicle->gallery_images) { // Ini sudah array karena $casts
-            foreach ($vehicle->gallery_images as $image) { // Langsung loop array
+        if ($vehicle->gallery_images) {
+            foreach ($vehicle->gallery_images as $image) {
                 if (Storage::disk('public')->exists($image)) {
                     Storage::disk('public')->delete($image);
                 }
@@ -147,6 +177,7 @@ class VehicleController extends Controller
 
         return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
     }
+
     public function show(Vehicle $vehicle)
     {
         return view('admin.vehicle-detail', compact('vehicle'));

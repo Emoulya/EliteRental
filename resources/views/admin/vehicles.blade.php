@@ -6,6 +6,7 @@
 
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        {{-- Stat card tetap menggunakan nilai global, tidak berubah oleh filter AJAX untuk saat ini --}}
         <x-statistics.stat-card title="Total Kendaraan" :value="$total" icon="car" iconBgColor="bg-blue-100"
             iconTextColor="text-blue-600" />
         <x-statistics.stat-card title="Tersedia" :value="$tersedia" icon="check-circle" iconBgColor="bg-green-100"
@@ -72,76 +73,12 @@
         <x-vehicles.filter-section />
 
         <x-vehicles.data-table>
-            @foreach ($vehicles as $vehicle)
-                <tr class="hover:bg-gray-50" id="vehicle-row-{{ $vehicle->id }}" data-category="{{ $vehicle->category }}"
-                    data-status="{{ $vehicle->status }}">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="checkbox" class="rounded border-gray-300 text-gold focus:ring-gold" />
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : '/placeholder.svg?height=60&width=80&text=' . $vehicle->model }}"
-                                alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
-                                class="w-16 h-12 rounded-lg object-cover" />
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-navy">{{ $vehicle->brand }} {{ $vehicle->model }}</div>
-                                <div class="text-sm text-gray-custom">{{ $vehicle->license_plate }}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ ucwords(str_replace('-', ' ', $vehicle->category)) }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-navy font-semibold">
-                        Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @php
-                            $statusColor =
-                                [
-                                    'tersedia' => 'green',
-                                    'disewa' => 'red',
-                                    'maintenance' => 'yellow',
-                                    'unavailable' => 'gray',
-                                ][$vehicle->status] ?? 'gray';
-                        @endphp
-                        <span
-                            class="px-2 py-1 text-xs font-semibold rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-800">
-                            {{ ucfirst($vehicle->status) }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex space-x-2">
-                            {{-- Icon Mata (Lihat Detail) --}}
-                            <a href="{{ route('admin.vehicles.show', $vehicle->id) }}"
-                                class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </a>
-
-                            {{-- Tombol Edit mengarah ke halaman baru --}}
-                            <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}?_referrer=vehicles"
-                                class="text-green-600 hover:text-green-900" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-
-                            {{-- Form Hapus (tetap sama) --}}
-                            <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
-                                class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            @endforeach
+            {{-- Isi tbody akan dimuat oleh partial Blade --}}
+            @include('admin.vehicles._table_rows', ['vehicles' => $vehicles])
         </x-vehicles.data-table>
 
-        <div class="px-6 py-4">
+        {{-- Container untuk link paginasi --}}
+        <div id="paginationLinks" class="px-6 py-4">
             {{ $vehicles->links() }}
         </div>
     </div>
@@ -149,77 +86,8 @@
 
 @push('scripts')
     <script>
-        // Fungsi untuk menampilkan pesan kustom menggunakan SweetAlert2
-        function showCustomMessage(message, type) {
-            Swal.fire({
-                text: message,
-                icon: type,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
-            });
-        }
 
-        // --- Fungsi Helper untuk Menangani Error Validasi Form (Jika masih ada form AJAX lain) ---
-        function displayErrors(errors) {
-            clearErrors();
-            for (const field in errors) {
-                if (errors.hasOwnProperty(field)) {
-                    const inputElements = document.querySelectorAll(`[name="${field}"], [name="${field}[]"]`);
-                    inputElements.forEach(inputElement => {
-                        if (inputElement) {
-                            inputElement.classList.add('border-red-500');
-                            let errorElement = inputElement.nextElementSibling;
-                            if (!errorElement || (!errorElement.classList.contains('text-red-600') && !errorElement
-                                    .classList.contains('validation-error-list'))) {
-                                errorElement = inputElement.closest('div').querySelector(
-                                    '.validation-error-list, .validation-error-message');
-                            }
-                            if (errorElement) {
-                                errorElement.innerHTML = '';
-                                errors[field].forEach(message => {
-                                    const p = document.createElement('p');
-                                    p.textContent = message;
-                                    errorElement.appendChild(p);
-                                });
-                            } else {
-                                const parentDiv = inputElement.closest('div');
-                                if (parentDiv) {
-                                    const newErrorDiv = document.createElement('div');
-                                    newErrorDiv.className = 'text-sm text-red-600 mt-2 validation-error-message';
-                                    errors[field].forEach(message => {
-                                        const p = document.createElement('p');
-                                        p.textContent = message;
-                                        newErrorDiv.appendChild(p);
-                                    });
-                                    inputElement.insertAdjacentElement('afterend', newErrorDiv);
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        }
-
-        function clearErrors() {
-            document.querySelectorAll('.border-red-500').forEach(el => {
-                el.classList.remove('border-red-500');
-            });
-            document.querySelectorAll('.validation-error-list').forEach(el => {
-                el.innerHTML = '';
-            });
-            document.querySelectorAll('.validation-error-message').forEach(el => {
-                el.remove();
-            });
-        }
-
-        // Handle semua form hapus
+        // Fungsi Helper untuk SweetAlert2 pada Delete Form (tetap sama)
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -242,61 +110,93 @@
             });
         });
 
-        // Search and Filter functionality (tetap dipertahankan)
-        const searchInput = document.getElementById("searchInput");
-        const categoryFilter = document.getElementById("categoryFilter");
-        const statusFilter = document.getElementById("statusFilter");
-        const resetFilters = document.getElementById("resetFilters");
+        // --- AJAX Filtering Logic ---
+        const filterForm = document.getElementById('adminVehicleFilterForm');
+        const vehicleTableBody = document.getElementById('vehicleTableBody');
+        const paginationLinksContainer = document.getElementById('paginationLinks');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const resetFiltersBtn = document.getElementById('resetFilters');
 
-        function filterTable() {
-            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-            const selectedCategory = categoryFilter ? categoryFilter.value : '';
-            const selectedStatus = statusFilter ? statusFilter.value : '';
+        // Fungsi untuk mengaplikasikan filter
+        function applyFilters() {
+            // Dapatkan data dari form
+            const formData = new FormData(filterForm);
+            const queryString = new URLSearchParams(formData).toString();
+            const url = `${filterForm.action}?${queryString}`;
 
-            const rows = document.querySelectorAll("#vehicleTableBody tr");
+            fetchFilteredVehicles(url);
+        }
 
-            rows.forEach((row) => {
-                const vehicleName = row.querySelector(".text-navy") ? row.querySelector(".text-navy").textContent
-                    .toLowerCase() : '';
-                const category = row.dataset.category ? row.dataset.category.toLowerCase() : '';
-                const status = row.dataset.status ? row.dataset.status.toLowerCase() : '';
+        // Fungsi untuk melakukan permintaan AJAX dan memperbarui tabel
+        async function fetchFilteredVehicles(url) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
 
-                let showRow = true;
-
-                if (searchTerm && !vehicleName.includes(searchTerm)) {
-                    showRow = false;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                if (selectedCategory && category !== selectedCategory) {
-                    showRow = false;
-                }
+                const result = await response.json();
 
-                if (selectedStatus && status !== selectedStatus) {
-                    showRow = false;
-                }
-                row.style.display = showRow ? "" : "none";
+                // Perbarui isi tabel
+                vehicleTableBody.innerHTML = result.table_html;
+                // Perbarui link paginasi
+                paginationLinksContainer.innerHTML = result.pagination_html;
+
+            } catch (error) {
+                console.error('Error fetching filtered vehicles:', error);
+            }
+        }
+
+        // Event listener untuk input pencarian
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                applyFilters();
             });
         }
 
-        if (searchInput) searchInput.addEventListener("input", filterTable);
-        if (categoryFilter) categoryFilter.addEventListener("change", filterTable);
-        if (statusFilter) statusFilter.addEventListener("change", filterTable);
-        if (resetFilters) resetFilters.addEventListener("click", () => {
-            if (searchInput) searchInput.value = "";
-            if (categoryFilter) categoryFilter.value = "";
-            if (statusFilter) statusFilter.value = "";
-            filterTable();
-        });
+        // Event listener untuk dropdown kategori
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                applyFilters();
+            });
+        }
 
-        // Select all functionality (tetap dipertahankan)
-        const selectAll = document.getElementById("selectAll");
-        const checkboxes = document.querySelectorAll('#vehicleTableBody input[type="checkbox"]');
+        // Event listener untuk dropdown status
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                applyFilters();
+            });
+        }
 
-        if (selectAll) {
-            selectAll.addEventListener("change", () => {
-                checkboxes.forEach((checkbox) => {
-                    checkbox.checked = selectAll.checked;
-                });
+        // Event listener untuk tombol Reset Filter
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+                // Kosongkan semua input filter
+                searchInput.value = '';
+                categoryFilter.value = '';
+                statusFilter.value = '';
+
+                // Terapkan filter kosong (memicu AJAX)
+                applyFilters();
+            });
+        }
+
+        // Menambahkan event listener untuk link paginasi yang baru dimuat
+        if (paginationLinksContainer) {
+            paginationLinksContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.closest('.pagination')) {
+                    e.preventDefault();
+
+                    const url = e.target.href;
+                    fetchFilteredVehicles(url);
+                }
             });
         }
     </script>
