@@ -6,7 +6,6 @@
 
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        {{-- Stat card tetap menggunakan nilai global, tidak berubah oleh filter AJAX untuk saat ini --}}
         <x-statistics.stat-card title="Total Kendaraan" :value="$total" icon="car" iconBgColor="bg-blue-100"
             iconTextColor="text-blue-600" />
         <x-statistics.stat-card title="Tersedia" :value="$tersedia" icon="check-circle" iconBgColor="bg-green-100"
@@ -77,7 +76,6 @@
             @include('admin.vehicles._table_rows', ['vehicles' => $vehicles])
         </x-vehicles.data-table>
 
-        {{-- Container untuk link paginasi --}}
         <div id="paginationLinks" class="px-6 py-4">
             {{ $vehicles->links() }}
         </div>
@@ -86,7 +84,6 @@
 
 @push('scripts')
     <script>
-
         // Fungsi Helper untuk SweetAlert2 pada Delete Form (tetap sama)
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -117,6 +114,7 @@
         const searchInput = document.getElementById('searchInput');
         const categoryFilter = document.getElementById('categoryFilter');
         const statusFilter = document.getElementById('statusFilter');
+        const priceFilter = document.getElementById('priceFilter');
         const resetFiltersBtn = document.getElementById('resetFilters');
 
         // Fungsi untuk mengaplikasikan filter
@@ -164,6 +162,13 @@
         // Event listener untuk dropdown kategori
         if (categoryFilter) {
             categoryFilter.addEventListener('change', function() {
+                applyFilters();
+            });
+        }
+
+        // Event listener untuk dropdown harga (DITAMBAHKAN)
+        if (priceFilter) {
+            priceFilter.addEventListener('change', function() {
                 applyFilters();
             });
         }

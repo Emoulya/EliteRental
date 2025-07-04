@@ -17,6 +17,7 @@ class VehicleController extends Controller
         $search = $request->input('search');
         $categoryFilter = $request->input('category_filter');
         $statusFilter = $request->input('status_filter');
+        $priceFilter = $request->input('price_filter');
 
         // Mulai dengan query dasar untuk Vehicle
         $query = Vehicle::query();
@@ -30,6 +31,14 @@ class VehicleController extends Controller
 
         $query->when($categoryFilter, function ($q) use ($categoryFilter) {
             $q->where('category', $categoryFilter);
+        });
+
+        $query->when($priceFilter, function ($q) use ($priceFilter) {
+            $prices = explode('-', $priceFilter);
+            $minPrice = (int) $prices[0];
+            $maxPrice = (int) $prices[1];
+
+            $q->whereBetween('daily_price', [$minPrice, $maxPrice]);
         });
 
         $query->when($statusFilter, function ($q) use ($statusFilter) {
@@ -51,11 +60,10 @@ class VehicleController extends Controller
             return response()->json([
                 'table_html' => view('admin.vehicles._table_rows', compact('vehicles'))->render(),
                 'pagination_html' => $vehicles->links()->toHtml(),
-                'total_vehicles_count' => $vehicles->total(), // Jumlah kendaraan yang difilter saat ini
+                'total_vehicles_count' => $vehicles->total(),
             ]);
         }
 
-        // Untuk permintaan halaman penuh, kembalikan tampilan lengkap
         return view('admin.vehicles', compact('vehicles', 'total', 'tersedia', 'disewa', 'maintenance', 'unavailable'));
     }
 
@@ -86,7 +94,7 @@ class VehicleController extends Controller
             }
             $data['gallery_images'] = $paths;
         } else {
-            $data['gallery_images'] = []; // UBAH DARI 'null' MENJADI ARRAY KOSONG '[]' DI SINI
+            $data['gallery_images'] = [];
         }
 
         Vehicle::create($data);
