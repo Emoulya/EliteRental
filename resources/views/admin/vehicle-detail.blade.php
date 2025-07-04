@@ -9,6 +9,38 @@
 
 
 @section('content')
+
+    @if (session('success_message'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: @json(session('success_message')),
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('error_message'))
+        {{-- Opsional: Tambahkan juga untuk error jika Anda ingin --}}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: @json(session('error_message')),
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    @endif
+
     <div class="bg-white rounded-lg shadow mb-6">
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
