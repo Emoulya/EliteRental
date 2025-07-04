@@ -34,8 +34,42 @@
         </script>
     @endif
 
+    @if (session('error_message'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: @json(session('error_message')),
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    @endif
+
     <div class="bg-white rounded-lg shadow">
-        <x-vehicles.management-header title="Daftar Kendaraan" />
+        {{-- Mengubah button Tambah Kendaraan menjadi link ke halaman baru --}}
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <h3 class="text-lg font-medium text-navy">
+                    Daftar Kendaraan
+                </h3>
+                <div class="mt-4 sm:mt-0 flex space-x-3">
+                    <a href="{{ route('admin.vehicles.create') }}"
+                        class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300">
+                        <i class="fas fa-plus mr-2"></i>
+                        Tambah Kendaraan
+                    </a>
+                    <x-buttons.secondary-button>
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </x-buttons.secondary-button>
+                </div>
+            </div>
+        </div>
+
         <x-vehicles.filter-section />
 
         <x-vehicles.data-table>
@@ -87,13 +121,13 @@
                                 <i class="fas fa-eye"></i>
                             </a>
 
-                            {{-- Tombol Edit --}}
-                            <button type="button" class="text-green-600 hover:text-green-900 edit-btn"
-                                data-vehicle='@json($vehicle)' title="Edit">
+                            {{-- Tombol Edit mengarah ke halaman baru --}}
+                            <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}"
+                                class="text-green-600 hover:text-green-900" title="Edit">
                                 <i class="fas fa-edit"></i>
-                            </button>
+                            </a>
 
-                            {{-- Form Hapus --}}
+                            {{-- Form Hapus (tetap sama) --}}
                             <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST"
                                 class="delete-form">
                                 @csrf
@@ -112,8 +146,6 @@
             {{ $vehicles->links() }}
         </div>
     </div>
-    <x-modals.add-vehicle />
-    <x-modals.edit-vehicle />
 @endsection
 
 @push('scripts')
@@ -135,38 +167,30 @@
             });
         }
 
-        // --- Fungsi Helper untuk Menangani Error Validasi Form ---
+        // --- Fungsi Helper untuk Menangani Error Validasi Form (Jika masih ada form AJAX lain) ---
+        // (Tetap pertahankan jika ada form lain yang masih menggunakan AJAX)
         function displayErrors(errors) {
             clearErrors();
-
             for (const field in errors) {
                 if (errors.hasOwnProperty(field)) {
-                    // Cari elemen input berdasarkan atribut 'name' (lebih handal dari ID)
                     const inputElements = document.querySelectorAll(`[name="${field}"], [name="${field}[]"]`);
-
                     inputElements.forEach(inputElement => {
                         if (inputElement) {
-                            inputElement.classList.add('border-red-500'); // Beri highlight merah pada input
-
-                            // Cari elemen error yang merupakan sibling langsung dari input
-                            // atau yang berada di dalam struktur parent-nya
+                            inputElement.classList.add('border-red-500');
                             let errorElement = inputElement.nextElementSibling;
                             if (!errorElement || (!errorElement.classList.contains('text-red-600') && !errorElement
                                     .classList.contains('validation-error-list'))) {
-                                // Jika sibling langsung bukan elemen error, coba cari di dalam parent div
                                 errorElement = inputElement.closest('div').querySelector(
                                     '.validation-error-list, .validation-error-message');
                             }
-
                             if (errorElement) {
-                                errorElement.innerHTML = ''; // Bersihkan pesan error lama
+                                errorElement.innerHTML = '';
                                 errors[field].forEach(message => {
                                     const p = document.createElement('p');
                                     p.textContent = message;
                                     errorElement.appendChild(p);
                                 });
                             } else {
-                                // Fallback: Buat dan tambahkan div error baru jika tidak ditemukan elemen khusus
                                 const parentDiv = inputElement.closest('div');
                                 if (parentDiv) {
                                     const newErrorDiv = document.createElement('div');
@@ -176,7 +200,6 @@
                                         p.textContent = message;
                                         newErrorDiv.appendChild(p);
                                     });
-                                    // Masukkan setelah input
                                     inputElement.insertAdjacentElement('afterend', newErrorDiv);
                                 }
                             }
@@ -185,7 +208,6 @@
                 }
             }
         }
-
 
         function clearErrors() {
             document.querySelectorAll('.border-red-500').forEach(el => {
@@ -199,286 +221,7 @@
             });
         }
 
-        // Modal functionality for Add Vehicle
-        const addVehicleBtn = document.getElementById("addVehicleBtn");
-        const addVehicleModal = document.getElementById("addVehicleModal");
-        const closeModal = document.getElementById("closeModal");
-        const cancelModal = document.getElementById("cancelModal");
-        const addVehicleForm = document.getElementById("addVehicleForm");
-
-
-        function openAddVehicleModal() {
-            if (addVehicleModal) {
-                clearErrors();
-                addVehicleForm.reset();
-                addVehicleModal.classList.remove("hidden");
-                document.body.style.overflow = "hidden";
-            }
-        }
-
-        function closeAddVehicleModal() {
-            if (addVehicleModal) {
-                addVehicleModal.classList.add("hidden");
-                document.body.style.overflow = "auto";
-            }
-        }
-
-        if (addVehicleBtn) {
-            addVehicleBtn.addEventListener("click", openAddVehicleModal);
-        }
-        if (closeModal) {
-            closeModal.addEventListener("click", closeAddVehicleModal);
-        }
-        if (cancelModal) {
-            cancelModal.addEventListener("click", closeAddVehicleModal);
-        }
-        if (addVehicleModal) {
-            addVehicleModal.addEventListener("click", (e) => {
-                if (e.target === addVehicleModal) {
-                    closeAddVehicleModal();
-                }
-            });
-        }
-
-        // === START: AJAX Form Submission for Add Vehicle ===
-        if (addVehicleForm) {
-            addVehicleForm.addEventListener("submit", async function(e) {
-                e.preventDefault();
-
-                showCustomMessage("Menyimpan kendaraan...", "info");
-
-                clearErrors();
-
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                formData.append('_token', csrfToken);
-
-
-                try {
-                    const response = await fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        }
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        showCustomMessage(result.message, "success");
-                        closeAddVehicleModal();
-                        location.reload();
-                    } else if (response.status === 422) {
-                        showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
-                            "error");
-                        displayErrors(result.errors);
-                    } else {
-                        showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showCustomMessage("Terjadi kesalahan jaringan atau sistem.", "error");
-                }
-            });
-
-            addVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
-                input.addEventListener('input', function() {
-                    const fieldName = this.name.replace('[]', '');
-                    // Perbarui pencarian elemen error agar lebih handal
-                    const errorElement = this.closest('div').querySelector(
-                            '.validation-error-list, .validation-error-message') ||
-                        document.querySelector(`[name="${fieldName}"] + .validation-error-list`) ||
-                        document.querySelector(`[name="${fieldName}"] + .validation-error-message`);
-
-                    if (errorElement) {
-                        errorElement.innerHTML = '';
-                    }
-                    this.classList.remove('border-red-500');
-                });
-            });
-        }
-        // === END: AJAX Form Submission for Add Vehicle ===
-
-        // Modal functionality for Edit Vehicle
-        document.querySelectorAll(".edit-btn").forEach(button => {
-            button.addEventListener("click", () => {
-                const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
-                const editVehicleModal = document.getElementById("editVehicleModal");
-                const form = document.getElementById("editVehicleForm");
-
-                clearErrors(); // Bersihkan error setiap kali modal dibuka
-
-                document.getElementById("editBrand").value = vehicle.brand;
-                document.getElementById("editModel").value = vehicle.model;
-                document.getElementById("editLicensePlate").value = vehicle.license_plate;
-                document.getElementById("editYear").value = vehicle.year;
-                document.getElementById("editStatus").value = vehicle.status;
-                document.getElementById("editDailyPrice").value = vehicle.daily_price;
-                document.getElementById("editVehicleId").value = vehicle.id;
-
-                // Populate other fields (add these IDs to edit-vehicle.blade.php)
-                document.getElementById("editCategory").value = vehicle.category;
-                document.getElementById("editColor").value = vehicle.color;
-                document.getElementById("editPassengerCapacity").value = vehicle.passenger_capacity;
-                document.getElementById("editTransmissionType").value = vehicle.transmission_type;
-                document.getElementById("editFuelType").value = vehicle.fuel_type;
-                document.getElementById("editFeatures").value = vehicle.features;
-                document.getElementById("editOriginalDailyPrice").value = vehicle.original_daily_price;
-                document.getElementById("editWeeklyPrice").value = vehicle.weekly_price;
-                document.getElementById("editMonthlyPrice").value = vehicle.monthly_price;
-                document.getElementById("editEngineType").value = vehicle.engine_type;
-                document.getElementById("editMaxPower").value = vehicle.max_power;
-                document.getElementById("editMaxTorque").value = vehicle.max_torque;
-                document.getElementById("editTransmission").value = vehicle.transmission;
-                document.getElementById("editFuelEfficiency").value = vehicle.fuel_efficiency;
-                document.getElementById("editLength").value = vehicle.length;
-                document.getElementById("editWidth").value = vehicle.width;
-                document.getElementById("editHeight").value = vehicle.height;
-                document.getElementById("editWheelbase").value = vehicle.wheelbase;
-                document.getElementById("editTankCapacity").value = vehicle.tank_capacity;
-                document.getElementById("editLongDescription").value = vehicle.long_description;
-                document.getElementById("editRentalRequirements").value = vehicle.rental_requirements;
-                document.getElementById("editRentalTerms").value = vehicle.rental_terms;
-                document.getElementById("editDepositPaymentInfo").value = vehicle.deposit_payment_info;
-                document.getElementById("editProhibitions").value = vehicle.prohibitions;
-
-
-                // Populate additional_features checkboxes
-                const additionalFeatures = vehicle.additional_features || [];
-                document.querySelectorAll('#editVehicleForm input[name="additional_features[]"]').forEach(checkbox => {
-                    checkbox.checked = additionalFeatures.includes(checkbox.value);
-                });
-
-                // Populate elite_features checkboxes
-                const eliteFeatures = vehicle.elite_features || [];
-                document.querySelectorAll('#editVehicleForm input[name="elite_features[]"]').forEach(
-                    checkbox => {
-                        checkbox.checked = eliteFeatures.includes(checkbox.value);
-                    });
-
-                // Set main image preview
-                const editMainImagePreview = document.getElementById('editMainImagePreview');
-                const editCurrentMainImagePath = document.getElementById('editCurrentMainImagePath');
-                if (vehicle.main_image) {
-                    editMainImagePreview.src = `/storage/${vehicle.main_image}`;
-                    editMainImagePreview.classList.remove('hidden');
-                    editCurrentMainImagePath.textContent = vehicle.main_image.split('/').pop();
-                    document.getElementById('clearMainImage').checked = false;
-                } else {
-                    editMainImagePreview.classList.add('hidden');
-                    editMainImagePreview.src = '';
-                    editCurrentMainImagePath.textContent = 'Tidak ada gambar utama';
-                }
-
-                // Populate gallery images preview
-                const existingGalleryImagesContainer = document.getElementById(
-                    'existingGalleryImagesContainer');
-                existingGalleryImagesContainer.innerHTML = '';
-                const galleryImages = vehicle.gallery_images || [];
-                galleryImages.forEach(imagePath => {
-                    const div = document.createElement('div');
-                    div.className = 'relative inline-block m-1';
-                    div.innerHTML = `
-                            <img src="/storage/${imagePath}" class="w-20 h-20 object-cover rounded" />
-                            <input type="hidden" name="existing_gallery_images[]" value="${imagePath}" />
-                            <button type="button" class="remove-gallery-image absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs" data-path="${imagePath}">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                    existingGalleryImagesContainer.appendChild(div);
-                });
-                if (galleryImages.length === 0) {
-                    existingGalleryImagesContainer.innerHTML =
-                        '<p class="text-gray-500">Tidak ada gambar galeri.</p>';
-                }
-
-                // Add event listener for removing existing gallery images
-                document.querySelectorAll('.remove-gallery-image').forEach(button => {
-                    button.addEventListener('click', function() {
-                        this.closest('.relative').remove();
-                    });
-                });
-
-                form.action = `/admin/vehicles/${vehicle.id}`;
-                document.getElementById("editVehicleId").value = vehicle.id;
-
-                editVehicleModal.classList.remove("hidden");
-                document.body.style.overflow = "hidden";
-            });
-        });
-
-        document.querySelectorAll("#cancelEditModal, #closeEditModal").forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.getElementById("editVehicleModal").classList.add("hidden");
-                document.body.style.overflow = "auto";
-                clearErrors(); // Bersihkan error saat modal ditutup
-            });
-        });
-
-        const editVehicleForm = document.getElementById("editVehicleForm");
-        if (editVehicleForm) {
-            editVehicleForm.addEventListener("submit", async function(e) {
-                e.preventDefault();
-
-                showCustomMessage("Memperbarui kendaraan...", "info");
-
-                clearErrors(); // Bersihkan error sebelumnya
-
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                formData.append('_token', csrfToken);
-                formData.append('_method', 'PUT');
-
-                try {
-                    const response = await fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        }
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        showCustomMessage(result.message, "success");
-                        document.getElementById("editVehicleModal").classList.add("hidden");
-                        document.body.style.overflow = "auto";
-                        location.reload();
-                    } else if (response.status === 422) {
-                        showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
-                            "error");
-                        displayErrors(result.errors);
-                        console.error('Validation Errors:', result.errors);
-                    } else {
-                        showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showCustomMessage("Terjadi kesalahan jaringan atau sistem.", "error");
-                }
-            });
-
-            editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
-                input.addEventListener('input', function() {
-                    const fieldName = this.name.replace('[]', '');
-                    const errorElement = this.closest('div').querySelector(
-                            '.validation-error-list, .validation-error-message') ||
-                        document.querySelector(`[name="${fieldName}"] + .text-red-600`);
-
-                    if (errorElement) {
-                        errorElement.innerHTML = '';
-                    }
-                    this.classList.remove('border-red-500');
-                });
-            });
-        }
-
-
-        // Handle semua form hapus
+        // Handle semua form hapus (tetap dipertahankan)
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -501,7 +244,7 @@
             });
         });
 
-        // Search and Filter functionality
+        // Search and Filter functionality (tetap dipertahankan)
         const searchInput = document.getElementById("searchInput");
         const categoryFilter = document.getElementById("categoryFilter");
         const statusFilter = document.getElementById("statusFilter");
@@ -547,7 +290,7 @@
             filterTable();
         });
 
-        // Select all functionality
+        // Select all functionality (tetap dipertahankan)
         const selectAll = document.getElementById("selectAll");
         const checkboxes = document.querySelectorAll('#vehicleTableBody input[type="checkbox"]');
 

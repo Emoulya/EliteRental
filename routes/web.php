@@ -1,5 +1,5 @@
 <?php
-
+// routes\web.php
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VehicleController;
@@ -23,18 +23,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Dashboard Admin
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    })->name('dashboard'); // Nama rute akan menjadi 'admin.dashboard'
+    })->name('dashboard');
+
+    Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
+    Route::get('/vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
+    Route::get('/vehicles/{vehicle}/detail', [VehicleController::class, 'show'])->name('vehicles.show');
 
     Route::resource('vehicles', VehicleController::class)->names([
         'index' => 'vehicles',
         'store' => 'vehicles.store',
         'update' => 'vehicles.update',
         'destroy' => 'vehicles.destroy',
-    ]);
+    ])->except(['create', 'edit']);
 
     Route::get('/bookings', function () {
         return view('admin.bookings');
-    })->name('bookings'); // Nama rute akan menjadi 'admin.bookings'
+    })->name('bookings');
 
     // Jika ada halaman untuk membuat booking baru
     Route::get('/bookings/create', function () {
@@ -43,13 +47,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/customers', function () {
         return view('admin.customers');
-    })->name('customers'); // Nama rute akan menjadi 'admin.customers'
+    })->name('customers');
 
     Route::get('/reports', function () {
         return view('admin.reports');
-    })->name('reports'); // Nama rute akan menjadi 'admin.reports'
-
-    Route::get('/vehicles/{vehicle}/detail', [VehicleController::class, 'show'])->name('vehicles.show');
+    })->name('reports');
 });
 
 Route::middleware('auth')->group(function () {

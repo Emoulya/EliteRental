@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody id="vehicleTableBody" class="bg-white divide-y divide-gray-200">
-            {{ $slot }} {{-- Ini akan merender baris data kendaraan --}}
+            {{ $slot }}
         </tbody>
     </table>
 </div>
