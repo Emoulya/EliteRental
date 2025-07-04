@@ -14,10 +14,7 @@ class VehicleListController extends Controller
      */
     public function index()
     {
-        // Mengambil semua data kendaraan dari database.
-        // Anda bisa menambahkan filter atau paginasi di sini sesuai kebutuhan.
-        // Contoh: $vehicles = Vehicle::where('status', 'available')->paginate(12);
-        $vehicles = Vehicle::all(); // Mengambil semua kendaraan tanpa filter status untuk demo filter JS
+        $vehicles = Vehicle::paginate(12);
 
         // Meneruskan data kendaraan ke view
         return view('pages.vehicles', compact('vehicles'));
