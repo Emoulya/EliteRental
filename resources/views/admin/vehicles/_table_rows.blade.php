@@ -18,8 +18,17 @@
             </div>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                {{ ucwords(str_replace('-', ' ', $vehicle->category)) }}
+            @php
+            $categoryColors = [
+                'mobil-keluarga' => 'blue',
+                'motor' => 'green',
+                'mobil-mewah' => 'purple',
+                'pickup' => 'gray',
+            ];
+            $catColor = $categoryColors[$vehicle->category] ?? 'gray';
+            @endphp
+            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-{{ $catColor }}-100 text-{{ $catColor }}-800">
+            {{ ucwords(str_replace('-', ' ', $vehicle->category)) }}
             </span>
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm text-navy font-semibold">

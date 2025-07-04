@@ -1,11 +1,11 @@
 {{-- resources/views/components/navigation/admin-sidebar.blade.php --}}
 <div id="sidebar"
-    class="fixed inset-y-0 left-0 z-50 w-64 bg-navy transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex-shrink-0">
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-navy transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex lg:flex-col lg:h-screen lg:shrink-0">
     <div class="flex items-center justify-center h-20 shadow-md">
         <h1 class="text-2xl font-bold text-gold">Elite Rental</h1>
     </div>
 
-    <nav class="mt-10">
+    <nav class="mt-10 flex-grow">
         <div class="px-4 space-y-2">
             {{-- Item Dashboard --}}
             <a href="{{ route('admin.dashboard') }}"
