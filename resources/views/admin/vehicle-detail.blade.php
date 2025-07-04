@@ -45,12 +45,11 @@
                     </div>
                 </div>
                 <div class="mt-4 sm:mt-0 flex space-x-3">
-                    <button
-                        class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300 edit-btn"
-                        data-vehicle='@json($vehicle)' {{-- Memuat data vehicle untuk modal edit --}}>
+                    <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}"
+                        class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-edit mr-2"></i>
                         Edit
-                    </button>
+                    </a>
                     <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST" class="delete-form">
                         @csrf
                         @method('DELETE')
@@ -461,196 +460,14 @@
         </div>
     </div>
 
-    {{-- Sisipkan modal edit kendaraan di sini agar bisa digunakan --}}
-    <x-modals.edit-vehicle />
-
 @endsection
 
 @push('scripts')
-    {{-- JavaScript spesifik halaman detail kendaraan --}}
     <script>
         // Fungsi untuk mengganti gambar utama di galeri
         function changeMainImage(src) {
             document.getElementById("mainImage").src = src;
         }
-
-        // Modal functionality for Edit Vehicle
-        document.querySelectorAll(".edit-btn").forEach(button => {
-            button.addEventListener("click", () => {
-                const vehicle = JSON.parse(button.getAttribute("data-vehicle"));
-                const editVehicleModal = document.getElementById("editVehicleModal");
-                const form = document.getElementById("editVehicleForm");
-
-                // clearErrors(); // Bersihkan error setiap kali modal dibuka
-
-                document.getElementById("editBrand").value = vehicle.brand;
-                document.getElementById("editModel").value = vehicle.model;
-                document.getElementById("editLicensePlate").value = vehicle.license_plate;
-                document.getElementById("editYear").value = vehicle.year;
-                document.getElementById("editStatus").value = vehicle.status;
-                document.getElementById("editDailyPrice").value = vehicle.daily_price;
-                document.getElementById("editVehicleId").value = vehicle.id;
-
-                // Populate other fields (add these IDs to edit-vehicle.blade.php)
-                document.getElementById("editCategory").value = vehicle.category;
-                document.getElementById("editColor").value = vehicle.color;
-                document.getElementById("editPassengerCapacity").value = vehicle.passenger_capacity;
-                document.getElementById("editTransmissionType").value = vehicle.transmission_type;
-                document.getElementById("editFuelType").value = vehicle.fuel_type;
-                document.getElementById("editFeatures").value = vehicle.features;
-                document.getElementById("editOriginalDailyPrice").value = vehicle.original_daily_price;
-                document.getElementById("editWeeklyPrice").value = vehicle.weekly_price;
-                document.getElementById("editMonthlyPrice").value = vehicle.monthly_price;
-                document.getElementById("editEngineType").value = vehicle.engine_type;
-                document.getElementById("editMaxPower").value = vehicle.max_power;
-                document.getElementById("editMaxTorque").value = vehicle.max_torque;
-                document.getElementById("editTransmission").value = vehicle.transmission;
-                document.getElementById("editFuelEfficiency").value = vehicle.fuel_efficiency;
-                document.getElementById("editLength").value = vehicle.length;
-                document.getElementById("editWidth").value = vehicle.width;
-                document.getElementById("editHeight").value = vehicle.height;
-                document.getElementById("editWheelbase").value = vehicle.wheelbase;
-                document.getElementById("editTankCapacity").value = vehicle.tank_capacity;
-                document.getElementById("editLongDescription").value = vehicle.long_description;
-                document.getElementById("editRentalRequirements").value = vehicle.rental_requirements;
-                document.getElementById("editRentalTerms").value = vehicle.rental_terms;
-                document.getElementById("editDepositPaymentInfo").value = vehicle.deposit_payment_info;
-                document.getElementById("editProhibitions").value = vehicle.prohibitions;
-
-
-                // Populate additional_features checkboxes
-                const additionalFeatures = vehicle.additional_features || [];
-                document.querySelectorAll('#editVehicleForm input[name="additional_features[]"]').forEach(
-                    checkbox => {
-                        checkbox.checked = additionalFeatures.includes(checkbox.value);
-                    });
-
-                // Populate elite_features checkboxes
-                const eliteFeatures = vehicle.elite_features || [];
-                document.querySelectorAll('#editVehicleForm input[name="elite_features[]"]').forEach(
-                    checkbox => {
-                        checkbox.checked = eliteFeatures.includes(checkbox.value);
-                    });
-
-                // Set main image preview
-                const editMainImagePreview = document.getElementById('editMainImagePreview');
-                const editCurrentMainImagePath = document.getElementById('editCurrentMainImagePath');
-                if (vehicle.main_image) {
-                    editMainImagePreview.src = `/storage/${vehicle.main_image}`;
-                    editMainImagePreview.classList.remove('hidden');
-                    editCurrentMainImagePath.textContent = vehicle.main_image.split('/').pop();
-                    document.getElementById('clearMainImage').checked = false;
-                } else {
-                    editMainImagePreview.classList.add('hidden');
-                    editMainImagePreview.src = '';
-                    editCurrentMainImagePath.textContent = 'Tidak ada gambar utama';
-                }
-
-                // Populate gallery images preview
-                const existingGalleryImagesContainer = document.getElementById(
-                    'existingGalleryImagesContainer');
-                existingGalleryImagesContainer.innerHTML = '';
-                const galleryImages = vehicle.gallery_images || [];
-                galleryImages.forEach(imagePath => {
-                    const div = document.createElement('div');
-                    div.className = 'relative inline-block m-1';
-                    div.innerHTML = `
-                            <img src="/storage/${imagePath}" class="w-20 h-20 object-cover rounded" />
-                            <input type="hidden" name="existing_gallery_images[]" value="${imagePath}" />
-                            <button type="button" class="remove-gallery-image absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs" data-path="${imagePath}">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                    existingGalleryImagesContainer.appendChild(div);
-                });
-                if (galleryImages.length === 0) {
-                    existingGalleryImagesContainer.innerHTML =
-                        '<p class="text-gray-500">Tidak ada gambar galeri.</p>';
-                }
-
-                // Add event listener for removing existing gallery images
-                document.querySelectorAll('.remove-gallery-image').forEach(button => {
-                    button.addEventListener('click', function() {
-                        this.closest('.relative').remove();
-                    });
-                });
-
-                form.action = `/admin/vehicles/${vehicle.id}`;
-                document.getElementById("editVehicleId").value = vehicle.id;
-
-                editVehicleModal.classList.remove("hidden");
-                document.body.style.overflow = "hidden";
-            });
-        });
-
-        document.querySelectorAll("#cancelEditModal, #closeEditModal").forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.getElementById("editVehicleModal").classList.add("hidden");
-                document.body.style.overflow = "auto";
-                // clearErrors(); // Bersihkan error saat modal ditutup
-            });
-        });
-
-        const editVehicleForm = document.getElementById("editVehicleForm");
-        if (editVehicleForm) {
-            editVehicleForm.addEventListener("submit", async function(e) {
-                e.preventDefault();
-
-                showCustomMessage("Memperbarui kendaraan...", "info");
-
-                // clearErrors(); // Bersihkan error sebelumnya
-
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                formData.append('_token', csrfToken);
-                formData.append('_method', 'PUT');
-
-                try {
-                    const response = await fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        }
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        showCustomMessage(result.message, "success");
-                        document.getElementById("editVehicleModal").classList.add("hidden");
-                        document.body.style.overflow = "auto";
-                        location.reload();
-                    } else if (response.status === 422) {
-                        showCustomMessage("Terjadi kesalahan validasi. Mohon periksa kembali input Anda.",
-                            "error");
-                        displayErrors(result.errors);
-                        console.error('Validation Errors:', result.errors);
-                    } else {
-                        showCustomMessage(result.message || "Terjadi kesalahan server.", "error");
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showCustomMessage("Terjadi kesalahan jaringan atau sistem.", "error");
-                }
-            });
-
-            editVehicleForm.querySelectorAll('input, select, textarea').forEach(input => {
-                input.addEventListener('input', function() {
-                    const fieldName = this.name.replace('[]', '');
-                    const errorElement = this.closest('div').querySelector(
-                            '.validation-error-list, .validation-error-message') ||
-                        document.querySelector(`[name="${fieldName}"] + .text-red-600`);
-
-                    if (errorElement) {
-                        errorElement.innerHTML = '';
-                    }
-                    this.classList.remove('border-red-500');
-                });
-            });
-        }
-
 
         // Handle semua form hapus (SweetAlert2)
         document.querySelectorAll('.delete-form').forEach(form => {
@@ -668,6 +485,7 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Memanggil fungsi showCustomMessage dari custom-message.blade.php
                         showCustomMessage('Menghapus kendaraan...', 'info');
                         form.submit(); // Lanjutkan pengiriman form jika dikonfirmasi
                     }
