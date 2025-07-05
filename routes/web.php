@@ -5,12 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
+use App\Http\Controllers\VehicleDetailController;
 
 Route::get('/', function () {
     return view('pages.index');
 })->name('home');
 
 Route::get('/kendaraan', [VehicleListController::class, 'index'])->name('vehicles.index');
+
+Route::get('/kendaraan/{vehicle}', [VehicleDetailController::class, 'show'])->name('vehicles.show_public');
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');

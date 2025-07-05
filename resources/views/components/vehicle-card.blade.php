@@ -4,15 +4,16 @@
     data-total-units="{{ $vehicle->total_units_count }}" data-available-units="{{ $vehicle->available_units_count }}">
     <div class="relative">
         {{-- Menggunakan helper asset('storage/...') untuk gambar yang disimpan di storage/app/public --}}
-        <img src="{{ asset('storage/' . $vehicle->main_image) }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
-            class="w-full h-48 object-cover"
+        <img src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : asset('placeholder.svg?height=200&width=300&text=' . urlencode($vehicle->brand . ' ' . $vehicle->model)) }}"
+            alt="{{ $vehicle->brand }} {{ $vehicle->model }}" class="w-full h-48 object-cover"
             onerror="this.onerror=null;this.src='https://placehold.co/300x200/e0e0e0/5a5a5a?text={{ urlencode($vehicle->brand . ' ' . $vehicle->model) }}';" />
         <div class="absolute top-4 left-4">
             @if ($vehicle->available_units_count > 0)
-                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Tersedia
+                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Tersedia
                     ({{ $vehicle->available_units_count }} Unit)</span>
             @else
-                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Tidak Tersedia</span>
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Tidak
+                    Tersedia</span>
             @endif
         </div>
         <div class="absolute top-4 right-4">
@@ -39,7 +40,6 @@
             @if ($vehicle->passenger_capacity)
                 • {{ $vehicle->passenger_capacity }} Penumpang
             @endif
-            {{-- Hapus logika angkut barang yang tidak relevan dengan struktur data baru --}}
         </p>
 
         <div class="flex items-center justify-between mb-4">
@@ -101,17 +101,17 @@
 
         <div class="flex space-x-2">
             @if ($vehicle->available_units_count > 0)
-                <button
-                    class="flex-1 bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded transition duration-300">
+                <a href="{{ route('vehicles.show_public', $vehicle->id) }}"
+                    class="flex-1 bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded text-center transition duration-300">
                     Sewa Sekarang
-                </button>
+                </a>
             @else
                 <button class="flex-1 bg-gray-400 text-white font-semibold py-2 px-4 rounded cursor-not-allowed"
                     disabled>
                     Tidak Tersedia
                 </button>
             @endif
-            <a href="{{ route('admin.vehicles.show', $vehicle->id) }}"
+            <a href="{{ route('vehicles.show_public', $vehicle->id) }}"
                 class="px-4 py-2 border border-gold text-gold hover:bg-gold hover:text-navy rounded transition duration-300 flex items-center justify-center">
                 <i class="fas fa-info-circle"></i>
             </a>
