@@ -1,25 +1,21 @@
 {{-- resources\views\components\vehicle-card.blade.php --}}
 <div class="vehicle-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300"
     data-category="{{ $vehicle->category }}" data-price="{{ $vehicle->daily_price }}"
-    data-availability="{{ $vehicle->status }}">
+    data-total-units="{{ $vehicle->total_units_count }}" data-available-units="{{ $vehicle->available_units_count }}">
     <div class="relative">
         {{-- Menggunakan helper asset('storage/...') untuk gambar yang disimpan di storage/app/public --}}
         <img src="{{ asset('storage/' . $vehicle->main_image) }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
             class="w-full h-48 object-cover"
             onerror="this.onerror=null;this.src='https://placehold.co/300x200/e0e0e0/5a5a5a?text={{ urlencode($vehicle->brand . ' ' . $vehicle->model) }}';" />
         <div class="absolute top-4 left-4">
-            @if ($vehicle->status === 'tersedia')
-                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Tersedia</span>
-            @elseif($vehicle->status === 'disewa')
-                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Disewa</span>
+            @if ($vehicle->available_units_count > 0)
+                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Tersedia
+                    ({{ $vehicle->available_units_count }} Unit)</span>
             @else
-                {{-- Untuk status lain seperti 'maintenance', 'unavailable' --}}
-                <span
-                    class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-semibold">{{ ucfirst($vehicle->status) }}</span>
+                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Tidak Tersedia</span>
             @endif
         </div>
         <div class="absolute top-4 right-4">
-            <!-- icon love -->
             <label class="ui-like">
                 <input type="checkbox" />
                 <div class="like">
@@ -43,16 +39,19 @@
             @if ($vehicle->passenger_capacity)
                 • {{ $vehicle->passenger_capacity }} Penumpang
             @endif
-            @if ($vehicle->category === 'pickup' && $vehicle->features && in_array('Angkut Barang', $vehicle->features))
-                • Angkut Barang
-            @endif
+            {{-- Hapus logika angkut barang yang tidak relevan dengan struktur data baru --}}
         </p>
 
         <div class="flex items-center justify-between mb-4">
             <div class="text-gold font-bold text-lg">
-                Rp {{ number_format($vehicle->daily_price / 1000, 0, ',', '.') }}K<span
+                Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}<span
                     class="text-sm text-gray-custom">/hari</span>
             </div>
+            @if ($vehicle->original_daily_price && $vehicle->original_daily_price > $vehicle->daily_price)
+                <div class="text-sm text-gray-500 line-through">
+                    Rp {{ number_format($vehicle->original_daily_price, 0, ',', '.') }}
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-2 gap-2 mb-4 text-sm text-gray-custom">
@@ -64,11 +63,11 @@
             @endif
             <div class="flex items-center">
                 <i class="fas fa-cog mr-2 text-gold"></i>
-                {{ ucfirst($vehicle->transmission_type) }}
+                {{ ucfirst($vehicle->transmission_type ?? '-') }}
             </div>
             <div class="flex items-center">
                 <i class="fas fa-gas-pump mr-2 text-gold"></i>
-                {{ ucfirst ($vehicle->fuel_type) }}
+                {{ ucfirst($vehicle->fuel_type ?? '-') }}
             </div>
             <div class="flex items-center">
                 @if ($vehicle->features)
@@ -101,7 +100,7 @@
         </div>
 
         <div class="flex space-x-2">
-            @if ($vehicle->status === 'tersedia')
+            @if ($vehicle->available_units_count > 0)
                 <button
                     class="flex-1 bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded transition duration-300">
                     Sewa Sekarang
@@ -112,10 +111,10 @@
                     Tidak Tersedia
                 </button>
             @endif
-            <button
-                class="px-4 py-2 border border-gold text-gold hover:bg-gold hover:text-navy rounded transition duration-300">
+            <a href="{{ route('admin.vehicles.show', $vehicle->id) }}"
+                class="px-4 py-2 border border-gold text-gold hover:bg-gold hover:text-navy rounded transition duration-300 flex items-center justify-center">
                 <i class="fas fa-info-circle"></i>
-            </button>
+            </a>
         </div>
     </div>
 </div>
