@@ -36,12 +36,10 @@
 
                     <x-forms.select-input label="Kategori" id="category" name="category" required>
                         <option value="">Pilih Kategori</option>
-                        <option value="mobil-keluarga" @selected(old('category') == 'mobil-keluarga')>Mobil Keluarga</option>
-                        <option value="suv" @selected(old('category') == 'suv')>SUV</option>
-                        <option value="sedan" @selected(old('category') == 'sedan')>Sedan</option>
-                        <option value="hatchback" @selected(old('category') == 'hatchback')>Hatchback</option>
-                        <option value="motor" @selected(old('category') == 'motor')>Motor</option>
-                        <option value="pickup" @selected(old('category') == 'pickup')>Pick Up</option>
+                        <option value="mobil-keluarga">Mobil Keluarga</option>
+                        <option value="mobil-mewah">Mobil Mewah</option>
+                        <option value="motor">Motor</option>
+                        <option value="pickup">Pick Up</option>
                     </x-forms.select-input>
                     @error('category')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
