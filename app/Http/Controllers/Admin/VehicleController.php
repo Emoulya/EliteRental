@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Vehicle;
+use App\Models\VehicleUnit;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
@@ -19,20 +20,26 @@ class VehicleController extends Controller
         $statusFilter = $request->input('status_filter');
         $priceFilter = $request->input('price_filter');
 
-        // Mulai dengan query dasar untuk Vehicle
         $query = Vehicle::query();
 
-        // Terapkan filter berdasarkan input
+        // Terapkan filter berdasarkan atribut Model Kendaraan
         $query->when($search, function ($q) use ($search) {
             $q->where('brand', 'like', '%' . $search . '%')
-                ->orWhere('model', 'like', '%' . $search . '%')
-                ->orWhere('license_plate', 'like', '%' . $search . '%');
+                ->orWhere('model', 'like', '%' . $search . '%');
         });
 
         $query->when($categoryFilter, function ($q) use ($categoryFilter) {
             $q->where('category', $categoryFilter);
         });
 
+        // Logika filter berdasarkan status unit kendaraan
+        $query->when($statusFilter, function ($q) use ($statusFilter) {
+            $q->whereHas('units', function ($unitQuery) use ($statusFilter) {
+                $unitQuery->where('status', $statusFilter);
+            });
+        });
+
+        // Logika filter harga berdasarkan daily_price Model Kendaraan
         $query->when($priceFilter, function ($q) use ($priceFilter) {
             $prices = explode('-', $priceFilter);
             $minPrice = (int) $prices[0];
@@ -41,34 +48,38 @@ class VehicleController extends Controller
             $q->whereBetween('daily_price', [$minPrice, $maxPrice]);
         });
 
-        $query->when($statusFilter, function ($q) use ($statusFilter) {
-            $q->where('status', $statusFilter);
-        });
+        // Ambil model kendaraan yang sudah difilter dengan paginasi
+        $vehicles = $query->withCount('units')->latest()->paginate(10)->withQueryString();
 
-        // Ambil kendaraan yang sudah difilter dengan paginasi
-        $vehicles = $query->latest()->paginate(10)->withQueryString(); // Tambahkan withQueryString() agar paginasi mempertahankan filter
-
-        // Hitungan untuk kartu statistik (saat ini tetap global, tidak terpengaruh filter)
-        $total = Vehicle::count();
-        $tersedia = Vehicle::where('status', 'tersedia')->count();
-        $disewa = Vehicle::where('status', 'disewa')->count();
-        $maintenance = Vehicle::where('status', 'maintenance')->count();
-        $unavailable = Vehicle::where('status', 'unavailable')->count();
+        // Hitungan untuk kartu statistik (sekarang berasal dari VehicleUnit)
+        $totalUnits = VehicleUnit::count();
+        $tersediaUnits = VehicleUnit::where('status', 'tersedia')->count();
+        $disewaUnits = VehicleUnit::where('status', 'disewa')->count();
+        $maintenanceUnits = VehicleUnit::where('status', 'maintenance')->count();
+        $unavailableUnits = VehicleUnit::where('status', 'unavailable')->count();
 
         // Jika ini adalah permintaan AJAX, kembalikan hanya HTML tabel dan paginasi dalam format JSON
         if ($request->ajax()) {
             return response()->json([
                 'table_html' => view('admin.vehicles._table_rows', compact('vehicles'))->render(),
                 'pagination_html' => $vehicles->links()->toHtml(),
-                'total_vehicles_count' => $vehicles->total(),
+                'total_models_count' => $vehicles->total(),
             ]);
         }
 
-        return view('admin.vehicles', compact('vehicles', 'total', 'tersedia', 'disewa', 'maintenance', 'unavailable'));
+        // Untuk permintaan halaman penuh, kembalikan tampilan lengkap
+        return view('admin.vehicles', compact(
+            'vehicles',
+            'totalUnits',
+            'tersediaUnits',
+            'disewaUnits',
+            'maintenanceUnits',
+            'unavailableUnits'
+        ));
     }
 
     /**
-     * Menampilkan formulir untuk membuat kendaraan baru.
+     * Menampilkan formulir untuk membuat model kendaraan baru.
      */
     public function create()
     {
@@ -99,11 +110,11 @@ class VehicleController extends Controller
 
         Vehicle::create($data);
 
-        return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil ditambahkan.');
+        return redirect()->route('admin.vehicles')->with('success_message', 'Model Kendaraan berhasil ditambahkan.');
     }
 
     /**
-     * Menampilkan formulir untuk mengedit kendaraan yang spesifik.
+     * Menampilkan formulir untuk mengedit model kendaraan yang spesifik.
      */
     public function edit(Vehicle $vehicle)
     {
@@ -156,10 +167,10 @@ class VehicleController extends Controller
         $referrer = $request->input('_referrer');
         if ($referrer === 'detail') {
             return redirect()->route('admin.vehicles.show', $vehicle->id)
-                ->with('success_message', 'Kendaraan berhasil diperbarui.');
+                ->with('success_message', 'Model Kendaraan berhasil diperbarui.');
         } else {
             return redirect()->route('admin.vehicles')
-                ->with('success_message', 'Kendaraan berhasil diperbarui.');
+                ->with('success_message', 'Model Kendaraan berhasil diperbarui.');
         }
     }
 
@@ -180,14 +191,16 @@ class VehicleController extends Controller
                 }
             }
         }
-
+        
         $vehicle->delete();
 
-        return redirect()->route('admin.vehicles')->with('success_message', 'Kendaraan berhasil dihapus!');
+        return redirect()->route('admin.vehicles')->with('success_message', 'Model Kendaraan berhasil dihapus!');
     }
 
     public function show(Vehicle $vehicle)
     {
+        // Muat unit-unit kendaraan terkait untuk ditampilkan di halaman detail
+        $vehicle->load('units');
         return view('admin.vehicle-detail', compact('vehicle'));
     }
 }

@@ -7,7 +7,7 @@
                     <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-gold focus:ring-gold" />
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Kendaraan
+                    Model Kendaraan
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Kategori
@@ -16,7 +16,7 @@
                     Harga/Hari
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Jumlah Unit
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi

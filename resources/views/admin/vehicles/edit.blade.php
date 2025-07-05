@@ -49,12 +49,6 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
 
-                    <x-forms.text-input label="Nomor Polisi" id="editLicensePlate" name="license_plate" required
-                        placeholder="Contoh: B 1234 ABC" value="{{ old('license_plate', $vehicle->license_plate) }}" />
-                    @error('license_plate')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
                     <x-forms.text-input label="Tahun Produksi" id="editYear" name="year" type="number" required
                         min="1990" max="{{ date('Y') + 1 }}" placeholder="2023"
                         value="{{ old('year', $vehicle->year) }}" />
@@ -65,16 +59,6 @@
                     <x-forms.text-input label="Warna" id="editColor" name="color" required placeholder="Contoh: Putih"
                         value="{{ old('color', $vehicle->color) }}" />
                     @error('color')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
-                    <x-forms.select-input label="Status Ketersediaan" id="editStatus" name="status" required>
-                        <option value="tersedia" @selected(old('status', $vehicle->status) == 'tersedia')>Tersedia</option>
-                        <option value="disewa" @selected(old('status', $vehicle->status) == 'disewa')>Disewa</option>
-                        <option value="maintenance" @selected(old('status', $vehicle->status) == 'maintenance')>Maintenance</option>
-                        <option value="unavailable" @selected(old('status', $vehicle->status) == 'unavailable')>Tidak Tersedia</option>
-                    </x-forms.select-input>
-                    @error('status')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

@@ -5,11 +5,10 @@
 @section('title', $vehicle->brand . ' ' . $vehicle->model . ' - Elite Rental')
 
 {{-- Mengatur judul halaman utama yang akan ditampilkan oleh components.admin-header --}}
-@section('page_title', 'Detail Kendaraan')
+@section('page_title', 'Detail Model Kendaraan')
 
 
 @section('content')
-
     @if (session('success_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
@@ -26,7 +25,6 @@
     @endif
 
     @if (session('error_message'))
-        {{-- Opsional: Tambahkan juga untuk error jika Anda ingin --}}
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 Swal.fire({
@@ -51,28 +49,18 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-navy">
-                            {{ $vehicle->brand }} {{ $vehicle->model }}
+                            {{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->year }})
                         </h3>
-                        <p class="text-gray-500">{{ $vehicle->license_plate }}</p>
+                        <p class="text-gray-500">{{ ucwords(str_replace('-', ' ', $vehicle->category)) }} |
+                            {{ $vehicle->color }}</p>
                         <div class="flex items-center space-x-2 mt-1">
-                            @php
-                                $statusColor =
-                                    [
-                                        'tersedia' => 'green',
-                                        'disewa' => 'red',
-                                        'maintenance' => 'yellow',
-                                        'unavailable' => 'gray',
-                                    ][$vehicle->status] ?? 'gray';
-                            @endphp
-                            <span
-                                class="px-2 py-1 text-xs font-semibold rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-800">
-                                {{ ucfirst($vehicle->status) }}
+                            {{-- Menampilkan jumlah unit yang tersedia dan total --}}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ $vehicle->units->where('status', 'tersedia')->count() }} Tersedia
                             </span>
-                            @if ($vehicle->category)
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    {{ ucwords(str_replace('-', ' ', $vehicle->category)) }}
-                                </span>
-                            @endif
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {{ $vehicle->units->count() }} Total Unit
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -80,7 +68,7 @@
                     <a href="{{ route('admin.vehicles.edit', $vehicle->id) }}?_referrer=detail"
                         class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-edit mr-2"></i>
-                        Edit
+                        Edit Model
                     </a>
                     <form action="{{ route('admin.vehicles.destroy', $vehicle->id) }}" method="POST" class="delete-form">
                         @csrf
@@ -88,7 +76,7 @@
                         <button type="submit"
                             class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
                             <i class="fas fa-trash mr-2"></i>
-                            Hapus
+                            Hapus Model
                         </button>
                     </form>
                 </div>
@@ -440,56 +428,88 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h4 class="text-lg font-semibold text-navy">
-                        Status Ketersediaan
-                    </h4>
-                </div>
-                <div class="p-6">
-                    <div class="text-center">
-                        @php
-                            $statusColorClass =
-                                [
-                                    'tersedia' => 'bg-green-100 text-green-600',
-                                    'disewa' => 'bg-red-100 text-red-600',
-                                    'maintenance' => 'bg-yellow-100 text-yellow-600',
-                                    'unavailable' => 'bg-gray-100 text-gray-600',
-                                ][$vehicle->status] ?? 'bg-gray-100 text-gray-600';
+    {{-- MANAJEMEN UNIT KENDARAAN --}}
+    <div class="bg-white rounded-lg shadow mt-6 p-6">
+        <h4 class="text-lg font-semibold text-navy border-b pb-2 mb-4">
+            Manajemen Unit Kendaraan (Plat Nomor)
+        </h4>
 
-                            $statusIconClass =
-                                [
-                                    'tersedia' => 'fas fa-check-circle',
-                                    'disewa' => 'fas fa-times-circle',
-                                    'maintenance' => 'fas fa-tools',
-                                    'unavailable' => 'fas fa-ban',
-                                ][$vehicle->status] ?? 'fas fa-info-circle';
-                        @endphp
-                        <div
-                            class="w-16 h-16 {{ $statusColorClass }} rounded-full flex items-center justify-center mx-auto mb-3">
-                            <i class="{{ $statusIconClass }} text-2xl"></i>
-                        </div>
-                        <div class="text-lg font-semibold {{ explode(' ', $statusColorClass)[1] }} mb-2">
-                            {{ ucfirst($vehicle->status) }}
-                        </div>
-                        <div class="text-sm text-gray-500">
-                            @if ($vehicle->status == 'tersedia')
-                                Siap untuk disewa
-                            @elseif($vehicle->status == 'disewa')
-                                Sedang dalam penyewaan
-                            @elseif($vehicle->status == 'maintenance')
-                                Sedang dalam perawatan
-                            @elseif($vehicle->status == 'unavailable')
-                                Tidak tersedia untuk disewa
-                            @else
-                                Status tidak diketahui
-                            @endif
-                        </div>
-                    </div>
+        {{-- Formulir Tambah Unit Kendaraan Baru --}}
+        <h5 class="font-semibold text-navy mb-3">Tambah Unit Baru:</h5>
+        <form id="addUnitForm" action="{{ route('admin.vehicles.units.store', $vehicle->id) }}" method="POST"
+            class="space-y-4 mb-6">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <x-forms.text-input label="Nomor Plat Kendaraan" id="new_license_plate" name="license_plate" required
+                    placeholder="Contoh: B 1234 ABC" value="{{ old('license_plate') }}" />
+                <x-forms.select-input label="Status Unit" id="new_unit_status" name="status" required>
+                    <option value="tersedia" @selected(old('status') == 'tersedia')>Tersedia</option>
+                    <option value="disewa" @selected(old('status') == 'disewa')>Disewa</option>
+                    <option value="maintenance" @selected(old('status') == 'maintenance')>Maintenance</option>
+                    <option value="unavailable" @selected(old('status') == 'unavailable')>Tidak Tersedia</option>
+                </x-forms.select-input>
+                <div>
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 w-full">
+                        <i class="fas fa-plus mr-2"></i> Tambah Unit
+                    </button>
                 </div>
             </div>
-        </div>
+            @error('license_plate')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+            @error('status')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </form>
+
+        {{-- Daftar Unit Kendaraan --}}
+        <h5 class="font-semibold text-navy mb-3">Daftar Unit Tersedia:</h5>
+        @forelse ($vehicle->units as $unit)
+            <div class="flex justify-between items-center bg-light-gray p-4 rounded-lg shadow-sm mb-3">
+                <div>
+                    <p class="text-lg font-semibold text-navy">{{ $unit->license_plate }}</p>
+                    @php
+                        $unitStatusColor =
+                            [
+                                'tersedia' => 'green',
+                                'disewa' => 'red',
+                                'maintenance' => 'yellow',
+                                'unavailable' => 'gray',
+                            ][$unit->status] ?? 'gray';
+                    @endphp
+                    <span
+                        class="px-2 py-1 text-xs font-semibold rounded-full bg-{{ $unitStatusColor }}-100 text-{{ $unitStatusColor }}-800">
+                        {{ ucfirst($unit->status) }}
+                    </span>
+                </div>
+                <div class="flex space-x-2">
+                    {{-- Tombol Edit Unit --}}
+                    <button type="button" class="text-green-600 hover:text-green-900 edit-unit-btn p-1"
+                        data-unit-id="{{ $unit->id }}" data-license-plate="{{ $unit->license_plate }}"
+                        data-status="{{ $unit->status }}" title="Edit Unit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    {{-- Form Hapus Unit --}}
+                    <form
+                        action="{{ route('admin.vehicles.units.destroy', ['vehicle' => $vehicle->id, 'unit' => $unit->id]) }}"
+                        method="POST" class="delete-unit-form inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="text-red-600 hover:text-red-900 p-1 delete-unit-btn"
+                            title="Hapus Unit" data-license-plate="{{ $unit->license_plate }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <p class="text-gray-500">Belum ada unit kendaraan terdaftar untuk model ini.</p>
+        @endforelse
     </div>
 
 @endsection
@@ -501,14 +521,14 @@
             document.getElementById("mainImage").src = src;
         }
 
-        // Handle semua form hapus (SweetAlert2)
+        // Handle semua form hapus Model Kendaraan (SweetAlert2)
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // cegah submit langsung
+                e.preventDefault();
 
                 Swal.fire({
                     title: 'Yakin ingin menghapus?',
-                    text: 'Data kendaraan akan dihapus secara permanen!',
+                    text: 'Data model kendaraan ini dan SEMUA UNIT terkait akan dihapus secara permanen!',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#e3342f',
@@ -517,9 +537,192 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Memanggil fungsi showCustomMessage dari custom-message.blade.php
-                        showCustomMessage('Menghapus kendaraan...', 'info');
-                        form.submit(); // Lanjutkan pengiriman form jika dikonfirmasi
+                        showLoading('Menghapus model kendaraan...');
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Handle semua form hapus Unit Kendaraan (SweetAlert2)
+        document.querySelectorAll('.delete-unit-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const licensePlate = form.closest('.flex').querySelector('p.text-lg').textContent;
+
+                Swal.fire({
+                    title: 'Yakin ingin menghapus unit ini?',
+                    html: `Unit kendaraan dengan plat nomor <strong>${licensePlate}</strong> akan dihapus secara permanen!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showLoading('Menghapus unit kendaraan...');
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // --- Logika Modal Edit Unit Kendaraan ---
+        document.querySelectorAll('.edit-unit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const unitId = this.dataset.unitId;
+                const licensePlate = this.dataset.licensePlate;
+                const status = this.dataset.status;
+                const vehicleId = {{ $vehicle->id }};
+                const updateUrl = `/admin/vehicles/${vehicleId}/units/${unitId}`;
+
+                Swal.fire({
+                    title: `Edit Unit ${licensePlate}`,
+                    html: `
+                    <form id="editUnitForm" class="space-y-4 text-left px-4">
+                        <div class="mb-4">
+                            <label for="edit_unit_license_plate" class="block text-sm font-medium text-gray-700 mb-2">Nomor Plat</label>
+                            <input type="text" id="edit_unit_license_plate" name="license_plate" value="${licensePlate}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold" required>
+                            <p id="edit_license_plate_error" class="text-sm text-red-600 mt-1 hidden"></p>
+                        </div>
+                        <div class="mb-4">
+                            <label for="edit_unit_status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="edit_unit_status" name="status"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold" required>
+                                <option value="tersedia" ${status === 'tersedia' ? 'selected' : ''}>Tersedia</option>
+                                <option value="disewa" ${status === 'disewa' ? 'selected' : ''}>Disewa</option>
+                                <option value="maintenance" ${status === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+                                <option value="unavailable" ${status === 'unavailable' ? 'selected' : ''}>Tidak Tersedia</option>
+                            </select>
+                            <p id="edit_status_error" class="text-sm text-red-600 mt-1 hidden"></p>
+                        </div>
+                        @csrf
+                        @method('PUT')
+                    </form>
+                `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Simpan Perubahan',
+                    cancelButtonText: 'Batal',
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        const form = document.getElementById('editUnitForm');
+                        const formData = new FormData(form);
+
+                        try {
+                            const response = await fetch(updateUrl, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            });
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                if (response.status === 404) {
+                                    throw new Error(
+                                        'Unit tidak ditemukan. Muat ulang halaman.');
+                                }
+                                if (response.status === 422 && errorData.errors) {
+                                    handleValidationErrors(errorData.errors);
+                                    return false;
+                                }
+                                throw new Error(errorData.message ||
+                                    'Terjadi kesalahan saat menyimpan.');
+                            }
+                            return response.json();
+                        } catch (error) {
+                            Swal.showValidationMessage(`Gagal: ${error.message}`);
+                            return false;
+                        }
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showSuccess(result.value.message || 'Unit kendaraan berhasil diperbarui.');
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                });
+            });
+        });
+
+        // Fungsi untuk menampilkan loading
+        function showLoading(message) {
+            Swal.fire({
+                title: 'Memproses...',
+                html: message,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        // Fungsi untuk menampilkan pesan sukses
+        function showSuccess(message) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
+
+        // Fungsi untuk menangani error validasi
+        function handleValidationErrors(errors) {
+            // Reset error messages
+            document.getElementById('edit_license_plate_error').classList.add('hidden');
+            document.getElementById('edit_status_error').classList.add('hidden');
+
+            // Show new errors
+            if (errors.license_plate) {
+                const errorElement = document.getElementById('edit_license_plate_error');
+                errorElement.textContent = errors.license_plate[0];
+                errorElement.classList.remove('hidden');
+            }
+            if (errors.status) {
+                const errorElement = document.getElementById('edit_status_error');
+                errorElement.textContent = errors.status[0];
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        // Handle tombol hapus unit
+        document.querySelectorAll('.delete-unit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+                const licensePlate = this.dataset.licensePlate;
+
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    html: `Unit dengan plat <strong>${licensePlate}</strong> akan dihapus permanen!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tambahkan loading state
+                        Swal.fire({
+                            title: 'Menghapus...',
+                            text: 'Sedang memproses penghapusan unit',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit form
+                        form.submit();
                     }
                 });
             });

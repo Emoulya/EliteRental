@@ -22,18 +22,12 @@ class UpdateVehicleRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Ambil ID kendaraan dari route parameter
-        $vehicleId = $this->route('vehicle'); // Pastikan nama parameter route adalah 'vehicle'
-
         return [
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'category' => 'required|string',
-            // Unique rule diabaikan untuk ID kendaraan saat ini
-            'license_plate' => ['required', 'string', Rule::unique('vehicles')->ignore($vehicleId)],
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'color' => 'required|string|max:255',
-            'status' => 'required|string|in:tersedia,disewa,maintenance,unavailable',
             'passenger_capacity' => 'nullable|integer|min:1',
             'transmission_type' => 'nullable|string|in:manual,automatic',
             'fuel_type' => 'nullable|string|in:bensin,diesel,listrik',
@@ -72,7 +66,6 @@ class UpdateVehicleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'license_plate.unique' => 'Nomor plat kendaraan ini sudah terdaftar.',
             'daily_price.required' => 'Harga sewa per hari wajib diisi.',
             'year.max' => 'Tahun produksi tidak boleh melebihi tahun sekarang.',
             'original_daily_price.gte' => 'Harga normal harus lebih besar atau sama dengan harga sewa per hari.',

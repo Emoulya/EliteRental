@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\VehicleController;
+use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
 
 Route::get('/', function () {
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Rute eksplisit untuk create/edit model kendaraan
     Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
     Route::get('/vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
     Route::get('/vehicles/{vehicle}/detail', [VehicleController::class, 'show'])->name('vehicles.show');
@@ -36,11 +38,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'destroy' => 'vehicles.destroy',
     ])->except(['create', 'edit']);
 
+    Route::resource('vehicles.units', VehicleUnitController::class)->only(['store', 'update', 'destroy'])
+        ->parameters(['units' => 'unit'])
+        ->names([
+            'store' => 'vehicles.units.store',
+            'update' => 'vehicles.units.update',
+            'destroy' => 'vehicles.units.destroy',
+        ]);
+
     Route::get('/bookings', function () {
         return view('admin.bookings');
     })->name('bookings');
 
-    // Jika ada halaman untuk membuat booking baru
     Route::get('/bookings/create', function () {
         return view('admin.bookings.create');
     })->name('bookings.create');

@@ -15,9 +15,8 @@
             </a>
         </div>
 
-        {{-- Tambahkan onsubmit untuk menampilkan pesan "Menambah kendaraan..." --}}
         <form id="addVehicleForm" method="POST" action="{{ route('admin.vehicles.store') }}" enctype="multipart/form-data"
-            class="space-y-6" onsubmit="showCustomMessage('Menambah kendaraan...', 'info');"> {{-- Baris ini ditambahkan/diubah --}}
+            class="space-y-6" onsubmit="showCustomMessage('Menambah kendaraan...', 'info');">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
@@ -38,17 +37,13 @@
                     <x-forms.select-input label="Kategori" id="category" name="category" required>
                         <option value="">Pilih Kategori</option>
                         <option value="mobil-keluarga" @selected(old('category') == 'mobil-keluarga')>Mobil Keluarga</option>
-                        <option value="mobil-mewah" @selected(old('category') == 'mobil-mewah')>Mobil Mewah</option>
+                        <option value="suv" @selected(old('category') == 'suv')>SUV</option>
+                        <option value="sedan" @selected(old('category') == 'sedan')>Sedan</option>
+                        <option value="hatchback" @selected(old('category') == 'hatchback')>Hatchback</option>
                         <option value="motor" @selected(old('category') == 'motor')>Motor</option>
                         <option value="pickup" @selected(old('category') == 'pickup')>Pick Up</option>
                     </x-forms.select-input>
                     @error('category')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
-                    <x-forms.text-input label="Nomor Polisi" id="license_plate" name="license_plate" required
-                        placeholder="Contoh: B 1234 ABC" value="{{ old('license_plate') }}" />
-                    @error('license_plate')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
 
@@ -61,16 +56,6 @@
                     <x-forms.text-input label="Warna" id="color" name="color" required placeholder="Contoh: Putih"
                         value="{{ old('color') }}" />
                     @error('color')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-
-                    <x-forms.select-input label="Status Ketersediaan" id="status" name="status" required>
-                        <option value="tersedia" @selected(old('status') == 'tersedia')>Tersedia</option>
-                        <option value="disewa" @selected(old('status') == 'disewa')>Disewa</option>
-                        <option value="maintenance" @selected(old('status') == 'maintenance')>Maintenance</option>
-                        <option value="unavailable" @selected(old('status') == 'unavailable')>Tidak Tersedia</option>
-                    </x-forms.select-input>
-                    @error('status')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

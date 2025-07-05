@@ -11,7 +11,7 @@ class StoreVehicleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Sesuaikan dengan logika otorisasi Anda, misal: auth()->user()->isAdmin();
+        return true;
     }
 
     /**
@@ -25,10 +25,8 @@ class StoreVehicleRequest extends FormRequest
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'category' => 'required|string',
-            'license_plate' => 'required|string|unique:vehicles',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1), // Max tahun sekarang + 1
             'color' => 'required|string|max:255',
-            'status' => 'required|string|in:tersedia,disewa,maintenance,unavailable',
             'passenger_capacity' => 'nullable|integer|min:1',
             'transmission_type' => 'nullable|string|in:manual,automatic',
             'fuel_type' => 'nullable|string|in:bensin,diesel,listrik',
@@ -48,9 +46,9 @@ class StoreVehicleRequest extends FormRequest
             'wheelbase' => 'nullable|integer|min:0',
             'tank_capacity' => 'nullable|integer|min:0',
             'additional_features' => 'nullable|array',
-            'additional_features.*' => 'string', // Setiap item dalam array fitur harus string
+            'additional_features.*' => 'string',
             'elite_features' => 'nullable|array',
-            'elite_features.*' => 'string', // Setiap item dalam array elite_features harus string
+            'elite_features.*' => 'string',
             'long_description' => 'nullable|string',
             'rental_requirements' => 'nullable|string',
             'rental_terms' => 'nullable|string',
@@ -65,7 +63,6 @@ class StoreVehicleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'license_plate.unique' => 'Nomor plat kendaraan ini sudah terdaftar.',
             'daily_price.required' => 'Harga sewa per hari wajib diisi.',
             'year.max' => 'Tahun produksi tidak boleh melebihi tahun sekarang.',
             'original_daily_price.gte' => 'Harga normal harus lebih besar atau sama dengan harga sewa per hari.',

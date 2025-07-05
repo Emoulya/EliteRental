@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
@@ -11,10 +12,8 @@ class Vehicle extends Model
         'brand',
         'model',
         'category',
-        'license_plate',
         'year',
         'color',
-        'status',
 
         // Spesifikasi & Harga
         'passenger_capacity',
@@ -59,4 +58,12 @@ class Vehicle extends Model
         'elite_features' => 'array',
         'gallery_images' => 'array',
     ];
+
+    /**
+     * Dapatkan unit-unit kendaraan untuk model kendaraan ini.
+     */
+    public function units(): HasMany
+    {
+        return $this->hasMany(VehicleUnit::class); // Relasi ke model VehicleUnit
+    }
 }

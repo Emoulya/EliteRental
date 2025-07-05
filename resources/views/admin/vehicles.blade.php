@@ -6,15 +6,15 @@
 
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <x-statistics.stat-card title="Total Kendaraan" :value="$total" icon="car" iconBgColor="bg-blue-100"
+        <x-statistics.stat-card title="Total Unit" :value="$totalUnits" icon="car" iconBgColor="bg-blue-100"
             iconTextColor="text-blue-600" />
-        <x-statistics.stat-card title="Tersedia" :value="$tersedia" icon="check-circle" iconBgColor="bg-green-100"
+        <x-statistics.stat-card title="Tersedia" :value="$tersediaUnits" icon="check-circle" iconBgColor="bg-green-100"
             iconTextColor="text-green-600" />
-        <x-statistics.stat-card title="Disewa" :value="$disewa" icon="times-circle" iconBgColor="bg-red-100"
+        <x-statistics.stat-card title="Disewa" :value="$disewaUnits" icon="times-circle" iconBgColor="bg-red-100"
             iconTextColor="text-red-600" />
-        <x-statistics.stat-card title="Maintenance" :value="$maintenance" icon="tools" iconBgColor="bg-yellow-100"
+        <x-statistics.stat-card title="Maintenance" :value="$maintenanceUnits" icon="tools" iconBgColor="bg-yellow-100"
             iconTextColor="text-yellow-600" />
-        <x-statistics.stat-card title="Tidak Tersedia" :value="$unavailable" icon="ban" iconBgColor="bg-gray-100"
+        <x-statistics.stat-card title="Tidak Tersedia" :value="$unavailableUnits" icon="ban" iconBgColor="bg-gray-100"
             iconTextColor="text-gray-600" />
 
     </div>
@@ -53,13 +53,13 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-lg font-medium text-navy">
-                    Daftar Kendaraan
+                    Daftar Kendaraan (Model)
                 </h3>
                 <div class="mt-4 sm:mt-0 flex space-x-3">
                     <a href="{{ route('admin.vehicles.create') }}"
                         class="bg-gold hover:bg-yellow-500 text-navy font-semibold py-2 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-plus mr-2"></i>
-                        Tambah Kendaraan
+                        Tambah Model Kendaraan
                     </a>
                     <x-buttons.secondary-button>
                         <i class="fas fa-download mr-2"></i>
@@ -117,9 +117,19 @@
         const priceFilter = document.getElementById('priceFilter');
         const resetFiltersBtn = document.getElementById('resetFilters');
 
-        // Fungsi untuk mengaplikasikan filter
+        let debounceTimeout;
+
+        // Fungsi debounce
+        function debounce(func, delay) {
+            return function(...args) {
+                const context = this;
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        // Fungsi untuk mengaplikasikan filter (dipanggil saat input berubah)
         function applyFilters() {
-            // Dapatkan data dari form
             const formData = new FormData(filterForm);
             const queryString = new URLSearchParams(formData).toString();
             const url = `${filterForm.action}?${queryString}`;
@@ -129,6 +139,8 @@
 
         // Fungsi untuk melakukan permintaan AJAX dan memperbarui tabel
         async function fetchFilteredVehicles(url) {
+            showCustomMessage('Memfilter kendaraan...', 'info'); // Tampilkan pesan loading
+
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -149,26 +161,20 @@
 
             } catch (error) {
                 console.error('Error fetching filtered vehicles:', error);
+                showCustomMessage('Gagal memfilter kendaraan. Silakan coba lagi.', 'error');
             }
         }
 
-        // Event listener untuk input pencarian
+        // Event listener untuk input pencarian (dengan debounce)
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', debounce(function() {
                 applyFilters();
-            });
+            }, 500));
         }
 
         // Event listener untuk dropdown kategori
         if (categoryFilter) {
             categoryFilter.addEventListener('change', function() {
-                applyFilters();
-            });
-        }
-
-        // Event listener untuk dropdown harga (DITAMBAHKAN)
-        if (priceFilter) {
-            priceFilter.addEventListener('change', function() {
                 applyFilters();
             });
         }
@@ -180,6 +186,13 @@
             });
         }
 
+        // Event listener untuk dropdown harga
+        if (priceFilter) {
+            priceFilter.addEventListener('change', function() {
+                applyFilters();
+            });
+        }
+
         // Event listener untuk tombol Reset Filter
         if (resetFiltersBtn) {
             resetFiltersBtn.addEventListener('click', function() {
@@ -187,8 +200,8 @@
                 searchInput.value = '';
                 categoryFilter.value = '';
                 statusFilter.value = '';
+                priceFilter.value = '';
 
-                // Terapkan filter kosong (memicu AJAX)
                 applyFilters();
             });
         }
@@ -196,12 +209,25 @@
         // Menambahkan event listener untuk link paginasi yang baru dimuat
         if (paginationLinksContainer) {
             paginationLinksContainer.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A' && e.target.closest('.pagination')) {
+                if (e.target.tagName === 'A' && e.target.closest(
+                        '.pagination')) {
                     e.preventDefault();
 
                     const url = e.target.href;
                     fetchFilteredVehicles(url);
                 }
+            });
+        }
+
+        // Select all functionality
+        const selectAll = document.getElementById("selectAll");
+        const checkboxes = document.querySelectorAll('#vehicleTableBody input[type="checkbox"]');
+
+        if (selectAll) {
+            selectAll.addEventListener("change", () => {
+                checkboxes.forEach((checkbox) => {
+                    checkbox.checked = selectAll.checked;
+                });
             });
         }
     </script>
