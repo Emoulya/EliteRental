@@ -22,7 +22,7 @@ class StoreVehicleUnitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'license_plate' => 'required|string|max:255|unique:vehicle_units',
+            'license_plate' => ['required', 'string', 'max:255', 'unique:vehicle_units', 'regex:/^[A-Z]{1,2}\s[0-9]{1,5}\s?[A-Z]{0,3}$/i'],
             'status' => 'required|string|in:tersedia,disewa,maintenance,unavailable',
         ];
     }
@@ -32,6 +32,7 @@ class StoreVehicleUnitRequest extends FormRequest
         return [
             'license_plate.unique' => 'Nomor plat kendaraan ini sudah terdaftar untuk unit lain.',
             'license_plate.required' => 'Nomor plat kendaraan wajib diisi.',
+            'license_plate.regex' => 'Format nomor plat kendaraan tidak valid. Contoh: B 1234 ABC atau B 1234.',
             'status.required' => 'Status ketersediaan wajib diisi.',
             'status.in' => 'Status yang dipilih tidak valid.',
         ];
