@@ -81,6 +81,68 @@
                             @endforeach
                         @endif
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        @if ($vehicle->passenger_capacity)
+                            <div class="flex items-center p-3 bg-white rounded-lg shadow">
+                                <i class="fas fa-users text-gold text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-navy">{{ $vehicle->passenger_capacity }} Penumpang
+                                    </div>
+                                    <div class="text-sm text-gray-custom">Kapasitas maksimal</div>
+                                </div>
+                            </div>
+                        @endif
+                        @if ($vehicle->transmission_type)
+                            <div class="flex items-center p-3 bg-white rounded-lg shadow">
+                                <i class="fas fa-cog text-gold text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-navy">{{ ucfirst($vehicle->transmission_type) }}
+                                    </div>
+                                    <div class="text-sm text-gray-custom">Transmisi</div>
+                                </div>
+                            </div>
+                        @endif
+                        @if ($vehicle->fuel_type)
+                            <div class="flex items-center p-3 bg-white rounded-lg shadow">
+                                <i class="fas fa-gas-pump text-gold text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-navy">{{ ucfirst($vehicle->fuel_type) }}</div>
+                                    <div class="text-sm text-gray-custom">Bahan bakar</div>
+                                </div>
+                            </div>
+                        @endif
+                        @if ($vehicle->features)
+                            @php
+                                $featureIcon = '';
+                                switch ($vehicle->features) {
+                                    case 'ac':
+                                        $featureIcon = 'fas fa-snowflake';
+                                        break;
+                                    case 'air_vent':
+                                        $featureIcon = 'fas fa-wind';
+                                        break;
+                                    case 'helmet':
+                                        $featureIcon = 'fas fa-helmet-safety';
+                                        break;
+                                    case 'open_tub':
+                                        $featureIcon = 'fas fa-truck-pickup';
+                                        break;
+                                    default:
+                                        $featureIcon = 'fas fa-check-circle';
+                                        break;
+                                }
+                            @endphp
+                            <div class="flex items-center p-3 bg-white rounded-lg shadow">
+                                <i class="{{ $featureIcon }} text-gold text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-navy">
+                                        {{ ucwords(str_replace('_', ' ', $vehicle->features)) }}</div>
+                                    <div class="text-sm text-gray-custom">Fitur Utama</div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="space-y-6">
@@ -97,153 +159,12 @@
                             @if ($vehicle->transmission_type)
                                 • {{ ucfirst($vehicle->transmission_type) }}
                             @endif
+                            @if ($vehicle->color)
+                                • Warna {{ ucfirst($vehicle->color) }}
+                            @endif
                         </p>
 
-                        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <span class="text-3xl font-bold text-gold">Rp
-                                        {{ number_format($vehicle->daily_price, 0, ',', '.') }}</span>
-                                    <span class="text-gray-custom">/hari</span>
-                                </div>
-                                @if ($vehicle->original_daily_price && $vehicle->original_daily_price > $vehicle->daily_price)
-                                    <div class="text-right">
-                                        <div class="text-sm text-gray-custom line-through">
-                                            Rp {{ number_format($vehicle->original_daily_price, 0, ',', '.') }}
-                                        </div>
-                                        <div class="text-sm text-green-600 font-semibold">
-                                            Hemat
-                                            {{ round((($vehicle->original_daily_price - $vehicle->daily_price) / $vehicle->original_daily_price) * 100) }}%
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-2 mb-4">
-                                @if ($vehicle->daily_price)
-                                    <div
-                                        class="text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300">
-                                        <div class="font-semibold text-navy">Harian</div>
-                                        <div class="text-sm text-gray-custom">Rp
-                                            {{ number_format($vehicle->daily_price, 0, ',', '.') }}</div>
-                                    </div>
-                                @endif
-                                @if ($vehicle->weekly_price)
-                                    <div
-                                        class="text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300">
-                                        <div class="font-semibold text-navy">Mingguan</div>
-                                        <div class="text-sm text-gray-custom">Rp
-                                            {{ number_format($vehicle->weekly_price, 0, ',', '.') }}</div>
-                                    </div>
-                                @endif
-                                @if ($vehicle->monthly_price)
-                                    <div
-                                        class="text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300">
-                                        <div class="font-semibold text-navy">Bulanan</div>
-                                        <div class="text-sm text-gray-custom">Rp
-                                            {{ number_format($vehicle->monthly_price, 0, ',', '.') }}</div>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="platOption" class="block text-navy font-semibold mb-2">Pilih Plat
-                                    Nomor</label>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    {{-- Filter units to only show 'tersedia' ones --}}
-                                    @php
-                                        $availableUnits = $vehicle->units->where('status', 'tersedia');
-                                    @endphp
-                                    @forelse ($availableUnits as $unit)
-                                        <label
-                                            class="flex items-center bg-white border rounded-lg px-3 py-2 cursor-pointer hover:border-gold transition">
-                                            <input type="radio" name="platOption" value="{{ $unit->license_plate }}"
-                                                class="form-radio text-gold mr-2" />
-                                            {{ $unit->license_plate }}
-                                        </label>
-                                    @empty
-                                        <p class="col-span-full text-gray-500">Tidak ada unit tersedia untuk model ini.</p>
-                                    @endforelse
-                                </div>
-                            </div>
-
-                            @if ($availableUnits->isNotEmpty())
-                                <button
-                                    class="w-full bg-gold hover:bg-yellow-500 text-navy font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105">
-                                    <i class="fas fa-calendar-check mr-2"></i>
-                                    Pesan Sekarang
-                                </button>
-                            @else
-                                <button
-                                    class="w-full bg-gray-400 text-white font-bold py-3 px-6 rounded-lg text-lg cursor-not-allowed"
-                                    disabled>
-                                    <i class="fas fa-ban mr-2"></i>
-                                    Tidak Tersedia
-                                </button>
-                            @endif
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            @if ($vehicle->passenger_capacity)
-                                <div class="flex items-center p-3 bg-white rounded-lg shadow">
-                                    <i class="fas fa-users text-gold text-xl mr-3"></i>
-                                    <div>
-                                        <div class="font-semibold text-navy">{{ $vehicle->passenger_capacity }} Penumpang
-                                        </div>
-                                        <div class="text-sm text-gray-custom">Kapasitas maksimal</div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if ($vehicle->transmission_type)
-                                <div class="flex items-center p-3 bg-white rounded-lg shadow">
-                                    <i class="fas fa-cog text-gold text-xl mr-3"></i>
-                                    <div>
-                                        <div class="font-semibold text-navy">{{ ucfirst($vehicle->transmission_type) }}
-                                        </div>
-                                        <div class="text-sm text-gray-custom">Transmisi</div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if ($vehicle->fuel_type)
-                                <div class="flex items-center p-3 bg-white rounded-lg shadow">
-                                    <i class="fas fa-gas-pump text-gold text-xl mr-3"></i>
-                                    <div>
-                                        <div class="font-semibold text-navy">{{ ucfirst($vehicle->fuel_type) }}</div>
-                                        <div class="text-sm text-gray-custom">Bahan bakar</div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if ($vehicle->features)
-                                @php
-                                    $featureIcon = '';
-                                    switch ($vehicle->features) {
-                                        case 'ac':
-                                            $featureIcon = 'fas fa-snowflake';
-                                            break;
-                                        case 'air_vent':
-                                            $featureIcon = 'fas fa-wind';
-                                            break;
-                                        case 'helmet':
-                                            $featureIcon = 'fas fa-helmet-safety';
-                                            break;
-                                        case 'open_tub':
-                                            $featureIcon = 'fas fa-truck-pickup';
-                                            break;
-                                        default:
-                                            $featureIcon = 'fas fa-check-circle';
-                                            break;
-                                    }
-                                @endphp
-                                <div class="flex items-center p-3 bg-white rounded-lg shadow">
-                                    <i class="{{ $featureIcon }} text-gold text-xl mr-3"></i>
-                                    <div>
-                                        <div class="font-semibold text-navy">
-                                            {{ ucwords(str_replace('_', ' ', $vehicle->features)) }}</div>
-                                        <div class="text-sm text-gray-custom">Fitur Utama</div>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
+                        <x-public.vehicle-rental-calculator :vehicle="$vehicle" />
                     </div>
                 </div>
             </div>
@@ -568,7 +489,7 @@
                     // Untuk gambar asli yang di-load dari storage, tidak perlu perubahan URL
                 }
                 mainImage.src = newSrc;
-                
+
                 // Remove active border from all thumbnails
                 thumbnails.forEach((thumb) =>
                     thumb.classList.remove("border-gold", "active-thumbnail")

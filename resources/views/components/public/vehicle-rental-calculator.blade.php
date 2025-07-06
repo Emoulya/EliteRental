@@ -1,0 +1,214 @@
+{{-- resources/views/components/public/vehicle-rental-calculator.blade.php --}}
+@props(['vehicle'])
+
+<div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <span id="displayPrice" class="text-3xl font-bold text-gold">
+                Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}
+            </span>
+            <span id="displayDurationLabel" class="text-gray-custom">/hari</span>
+        </div>
+        @if ($vehicle->original_daily_price && $vehicle->original_daily_price > $vehicle->daily_price)
+            <div class="text-right">
+                <div class="text-sm text-gray-custom line-through" id="originalPriceDisplay">
+                    Rp {{ number_format($vehicle->original_daily_price, 0, ',', '.') }}
+                </div>
+                <div class="text-sm text-green-600 font-semibold" id="discountPercentage">
+                    Hemat
+                    {{ round((($vehicle->original_daily_price - $vehicle->daily_price) / $vehicle->original_daily_price) * 100) }}%
+                </div>
+            </div>
+        @endif
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 mb-4">
+        @if ($vehicle->daily_price)
+            <div id="dailyOption" data-duration-type="daily" data-price="{{ $vehicle->daily_price }}"
+                class="duration-option text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300 active-duration">
+                <div class="font-semibold text-navy">Harian</div>
+                <div class="text-sm text-gray-custom">Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}</div>
+            </div>
+        @endif
+        @if ($vehicle->weekly_price)
+            <div id="weeklyOption" data-duration-type="weekly" data-price="{{ $vehicle->weekly_price }}"
+                class="duration-option text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300">
+                <div class="font-semibold text-navy">Mingguan</div>
+                <div class="text-sm text-gray-custom">Rp {{ number_format($vehicle->weekly_price, 0, ',', '.') }}</div>
+            </div>
+        @endif
+        @if ($vehicle->monthly_price)
+            <div id="monthlyOption" data-duration-type="monthly" data-price="{{ $vehicle->monthly_price }}"
+                class="duration-option text-center p-2 border rounded hover:border-gold cursor-pointer transition duration-300">
+                <div class="font-semibold text-navy">Bulanan</div>
+                <div class="text-sm text-gray-custom">Rp {{ number_format($vehicle->monthly_price, 0, ',', '.') }}</div>
+            </div>
+        @endif
+    </div>
+
+    <div class="mb-4">
+        <label for="quantityInput" id="quantityLabel" class="block text-navy font-semibold mb-2">Jumlah Hari</label>
+        <input type="number" id="quantityInput" value="1" min="1"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold" />
+    </div>
+
+    <div class="flex items-center justify-between mb-6 border-t pt-4">
+        <span class="text-lg font-semibold text-navy">Total Harga:</span>
+        <span id="totalPriceDisplay" class="text-2xl font-bold text-gold">
+            Rp {{ number_format($vehicle->daily_price, 0, ',', '.') }}
+        </span>
+    </div>
+
+    <div class="mb-4">
+        <label for="platOption" class="block text-navy font-semibold mb-2">Pilih Plat Nomor</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            @php
+                $availableUnits = $vehicle->units->where('status', 'tersedia');
+            @endphp
+            @forelse ($availableUnits as $unit)
+                <label
+                    class="flex items-center bg-white border rounded-lg px-3 py-2 cursor-pointer hover:border-gold transition">
+                    <input type="radio" name="platOption" value="{{ $unit->license_plate }}"
+                        class="form-radio text-gold mr-2" />
+                    {{ $unit->license_plate }}
+                </label>
+            @empty
+                <p class="col-span-full text-gray-500">Tidak ada unit tersedia untuk model ini.</p>
+            @endforelse
+        </div>
+    </div>
+
+    @if ($availableUnits->isNotEmpty())
+        <button
+            class="w-full bg-gold hover:bg-yellow-500 text-navy font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105">
+            <i class="fas fa-calendar-check mr-2"></i>
+            Pesan Sekarang
+        </button>
+    @else
+        <button class="w-full bg-gray-400 text-white font-bold py-3 px-6 rounded-lg text-lg cursor-not-allowed"
+            disabled>
+            <i class="fas fa-ban mr-2"></i>
+            Tidak Tersedia
+        </button>
+    @endif
+</div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const durationOptions = document.querySelectorAll('.duration-option');
+            const displayPrice = document.getElementById('displayPrice');
+            const displayDurationLabel = document.getElementById('displayDurationLabel');
+            const quantityInput = document.getElementById('quantityInput');
+            const quantityLabel = document.getElementById('quantityLabel');
+            const totalPriceDisplay = document.getElementById('totalPriceDisplay');
+
+            // Data harga dari props, diakses via elemen HTML atau bisa juga langsung dari Blade ke JS
+            const vehiclePrices = {
+                daily: {{ $vehicle->daily_price ?? 0 }},
+                weekly: {{ $vehicle->weekly_price ?? 0 }},
+                monthly: {{ $vehicle->monthly_price ?? 0 }}
+            };
+
+            // Menginisialisasi durasi dan harga yang dipilih
+            let currentDurationType = 'daily';
+            let currentBasePrice = vehiclePrices.daily;
+            let currentQuantity = parseInt(quantityInput.value);
+
+            // Fungsi untuk format angka ke Rupiah
+            function formatRupiah(number) {
+                return 'Rp ' + number.toLocaleString('id-ID');
+            }
+
+            // Fungsi untuk mengupdate tampilan harga utama dan total
+            function updatePriceAndTotal() {
+                // Update label jumlah
+                let labelText = '';
+                let durationUnit = ''; // Variabel baru untuk label durasi
+                switch (currentDurationType) {
+                    case 'daily':
+                        labelText = 'Jumlah Hari';
+                        durationUnit = '/hari';
+                        break;
+                    case 'weekly':
+                        labelText = 'Jumlah Minggu';
+                        durationUnit = '/minggu';
+                        break;
+                    case 'monthly':
+                        labelText = 'Jumlah Bulan';
+                        durationUnit = '/bulan';
+                        break;
+                }
+                quantityLabel.textContent = labelText;
+
+                // Pastikan kuantitas minimal 1
+                if (currentQuantity < 1) {
+                    currentQuantity = 1;
+                    quantityInput.value = 1;
+                }
+
+                // Update harga dasar yang ditampilkan
+                displayPrice.textContent = formatRupiah(currentBasePrice);
+                displayDurationLabel.textContent = durationUnit; // Menggunakan variabel durationUnit yang benar
+
+                // Hitung dan update total harga
+                let total = currentBasePrice * currentQuantity;
+                totalPriceDisplay.textContent = formatRupiah(total);
+            }
+
+            // Event listener untuk pilihan durasi (harian, mingguan, bulanan)
+            durationOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Hapus kelas aktif dari semua opsi
+                    durationOptions.forEach(opt => opt.classList.remove('active-duration'));
+                    // Tambahkan kelas aktif ke opsi yang diklik
+                    this.classList.add('active-duration');
+
+                    currentDurationType = this.dataset.durationType;
+                    currentBasePrice = parseInt(this.dataset.price);
+
+                    // Reset kuantitas ke 1 setiap kali durasi diubah
+                    currentQuantity = 1;
+                    quantityInput.value = 1;
+
+                    updatePriceAndTotal();
+                });
+            });
+
+            // Event listener untuk perubahan kuantitas
+            quantityInput.addEventListener('input', function() {
+                currentQuantity = parseInt(this.value);
+                // Pastikan input tidak kosong dan merupakan angka valid
+                if (isNaN(currentQuantity) || currentQuantity < 1) {
+                    currentQuantity = 1;
+                    this.value = 1;
+                }
+                updatePriceAndTotal();
+            });
+
+            // Inisialisasi tampilan awal
+            // Menandai 'Harian' sebagai aktif saat pertama kali dimuat
+            const initialDailyOption = document.getElementById('dailyOption');
+            if (initialDailyOption) {
+                initialDailyOption.classList.add('active-duration');
+            }
+            updatePriceAndTotal();
+        });
+    </script>
+    <style>
+        /* CSS untuk menandai durasi yang aktif */
+        .duration-option.active-duration {
+            border-color: var(--color-gold);
+            /* Menggunakan variabel CSS untuk warna gold */
+            background-color: var(--color-gold);
+            /* Menggunakan variabel CSS untuk warna gold */
+            color: var(--color-navy);
+            /* Menggunakan variabel CSS untuk warna navy */
+        }
+
+        .duration-option.active-duration div {
+            color: var(--color-navy);
+            /* Memastikan teks di dalamnya juga navy */
+        }
+    </style>
+@endpush
