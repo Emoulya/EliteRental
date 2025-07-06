@@ -1,5 +1,5 @@
 <?php
-
+// app\Http\Middleware\RoleMiddleware.php
 namespace App\Http\Middleware;
 
 use Closure;
@@ -18,15 +18,17 @@ class RoleMiddleware
     {
         // Cek apakah user sudah login
         if (!Auth::check()) {
-            return redirect('/login'); // Redirect ke halaman login jika belum login
+            return redirect()->route('login'); // Gunakan named route
         }
 
         $user = Auth::user(); // Dapatkan user yang sedang login
 
         // Cek apakah role user ada di dalam daftar role yang diizinkan untuk rute ini
         if (!in_array($user->role, $roles)) {
-            // Jika role tidak diizinkan, tampilkan halaman 403 (Akses Ditolak)
-            abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
+            // Redirect ke halaman yang sesuai berdasarkan role
+            return $user->role === 'admin'
+                ? redirect()->route('admin.dashboard')
+                : redirect('/');
         }
 
         return $next($request); // Lanjutkan permintaan jika user memiliki role yang sesuai

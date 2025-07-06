@@ -4,6 +4,11 @@
         style="background-image: url('/background-hero.png?height=800&width=1200&text=Luxury+Car+Background')">
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
+        @if(Auth::check())
+            <div class="mb-4 inline-block text-white text-lg font-semibold bg-navy rounded-lg p-3 shadow-lg">
+            Halo, <span class="text-gold">{{ Auth::user()->name }}</span>
+            </div>
+        @endif
         <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
             Selamat Datang di <span class="text-gold">Elite Rental</span>
         </h1>

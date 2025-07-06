@@ -1,5 +1,5 @@
 <?php
-
+// app\Http\Controllers\Auth\AuthenticatedSessionController.php
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -8,7 +8,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Route;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -26,18 +25,42 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        $user = Auth::user(); // Dapatkan user yang sedang login
+        $user = Auth::user();
 
-        if ($user->role === 'admin') {
-            // Jika role adalah 'admin', arahkan ke rute admin.dashboard
-            return redirect()->intended(route('admin.dashboard'));
-        } else {
-            // Jika role bukan 'admin' (misal: 'user'), arahkan ke halaman root/index
-            return redirect()->intended('/');
-        }
+        // Redirect berdasarkan role dengan intended URL fallback
+        return match ($user->role) {
+            'admin' => $this->redirectAdmin($request),
+            'user'  => $this->redirectUser($request),
+            default => $this->redirectDefault($request)
+        };
+    }
+
+    /**
+     * Redirect untuk admin
+     */
+    protected function redirectAdmin(Request $request): RedirectResponse
+    {
+        return redirect()->intended(route('admin.dashboard'));
+    }
+
+    /**
+     * Redirect untuk user biasa
+     */
+    protected function redirectUser(Request $request): RedirectResponse
+    {
+        return redirect()->intended('/');
+    }
+
+    /**
+     * Redirect default jika role tidak dikenali
+     */
+    protected function redirectDefault(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        return redirect('/login')
+            ->with('error', 'Role tidak valid, silahkan hubungi administrator');
     }
 
     /**
@@ -46,9 +69,7 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

@@ -6,30 +6,26 @@ use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
 use App\Http\Controllers\VehicleDetailController;
+use App\Http\Middleware\RoleMiddleware;
 
+// --- Rute Publik (Bisa diakses siapa saja: Guest, User, Admin) ---
 Route::get('/', function () {
     return view('pages.index');
 })->name('home');
 
 Route::get('/kendaraan', [VehicleListController::class, 'index'])->name('vehicles.index');
-
 Route::get('/kendaraan/{vehicle}', [VehicleDetailController::class, 'show'])->name('vehicles.show_public');
 
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-// --- Rute Admin ---
-// Menggunakan Route::prefix('admin') dan Route::name('admin.')
-// Middleware 'auth' dan 'role:admin' diterapkan ke seluruh grup ini.
+// --- Rute Admin (Hanya bisa diakses oleh user dengan role 'admin') ---
+// Middleware 'auth' memastikan user sudah login.
+// Middleware 'role:admin' memastikan user memiliki role 'admin'.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-
     // Dashboard Admin
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // Rute eksplisit untuk create/edit model kendaraan
+    // Rute manajemen kendaraan (model)
     Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
     Route::get('/vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
     Route::get('/vehicles/{vehicle}/detail', [VehicleController::class, 'show'])->name('vehicles.show');
@@ -39,8 +35,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'store' => 'vehicles.store',
         'update' => 'vehicles.update',
         'destroy' => 'vehicles.destroy',
-    ])->except(['create', 'edit']);
+    ])->except(['create', 'edit', 'show']);
 
+    // Rute manajemen unit kendaraan
     Route::resource('vehicles.units', VehicleUnitController::class)->only(['store', 'update', 'destroy'])
         ->parameters(['units' => 'unit'])
         ->names([
@@ -49,6 +46,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'destroy' => 'vehicles.units.destroy',
         ]);
 
+    // Rute lainnya untuk admin
     Route::get('/bookings', function () {
         return view('admin.bookings');
     })->name('bookings');
@@ -66,10 +64,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     })->name('reports');
 });
 
-Route::middleware('auth')->group(function () {
+
+// --- Rute Pengguna Terautentikasi (Hanya bisa diakses oleh user yang sudah login DAN memiliki role 'user') ---
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+// --- Rute Autentikasi (Login, Register, dll.) ---
 require __DIR__ . '/auth.php';
