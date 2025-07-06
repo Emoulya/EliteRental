@@ -312,7 +312,7 @@
                     <div class="bg-gray-50 p-4 rounded-lg mb-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">ID Pesanan</span>
-                            <span class="font-mono text-sm font-bold">{{ $orderId }}</span> {{-- Menggunakan variabel $orderId --}}
+                            <span class="font-mono text-sm font-bold">{{ $orderId }}</span>
                         </div>
                     </div>
 
@@ -530,7 +530,8 @@
             }
 
             // Redirect ke halaman konfirmasi
-            // window.location.href = '{{-- route('booking.confirmation') --}}';
+            window.location.href =
+                `{{ route('booking.confirmation') }}?vehicle_id={{ $vehicle->id }}&plate_number={{ $plateNumber }}&duration_type={{ $durationType }}&quantity={{ $quantity }}&sub_total_price={{ $subTotalPrice }}&tax_admin_fee={{ $taxAdminFee }}&final_total_price={{ $finalTotalPrice }}&order_id={{ $orderId }}&payment_method=${selectedMethod.value}`;
         };
 
         // Go back (fungsi ini terpanggil oleh onclick)
@@ -540,7 +541,6 @@
 
         // Start countdown when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Ambil waktu kadaluarsa dari PHP dan terjemahkan ke JavaScript Date object
             const paymentExpiryTime = new Date("{{ $paymentExpiry->toIso8601String() }}");
             startCountdown(paymentExpiryTime);
         });
