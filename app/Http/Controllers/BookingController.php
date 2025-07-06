@@ -20,14 +20,14 @@ class BookingController extends Controller
         $plateNumber = $request->input('plate_number');
         $durationType = $request->input('duration_type');
         $quantity = $request->input('quantity');
-        $totalPrice = $request->input('total_price');
+        $subTotalPrice = $request->input('total_price');
 
         // Ambil data kendaraan dari database
         $vehicle = Vehicle::findOrFail($vehicleId);
 
         // Contoh perhitungan sederhana untuk pajak/biaya admin (5%)
-        $taxAdminFee = $totalPrice * 0.05;
-        $finalTotalPrice = $totalPrice + $taxAdminFee;
+        $taxAdminFee = $subTotalPrice * 0.05;
+        $finalTotalPrice = $subTotalPrice + $taxAdminFee;
 
 
         return view('pages.booking-detail', compact(
@@ -35,7 +35,7 @@ class BookingController extends Controller
             'plateNumber',
             'durationType',
             'quantity',
-            'totalPrice',
+            'subTotalPrice',
             'taxAdminFee',
             'finalTotalPrice'
         ));

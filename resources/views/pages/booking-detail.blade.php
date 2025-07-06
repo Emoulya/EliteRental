@@ -77,7 +77,6 @@
                         Informasi Penyewa
                     </h2>
 
-                    {{-- MENAMBAHKAN ID PADA FORM --}}
                     <form id="bookingForm" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -165,7 +164,7 @@
                             switch ($durationType) {
                                 case 'daily':
                                     $durationLabelSingular = 'hari';
-                                    $durationLabelPlural = 'Hari'; // Untuk ditampilkan di Durasi (misal: 1 Hari)
+                                    $durationLabelPlural = 'Hari';
                                     break;
                                 case 'weekly':
                                     $durationLabelSingular = 'minggu';
@@ -176,14 +175,15 @@
                                     $durationLabelPlural = 'Bulan';
                                     break;
                                 default:
-                                    $durationLabelSingular = 'unit'; // Fallback
-                                    $durationLabelPlural = 'Unit'; // Fallback
+                                    $durationLabelSingular = 'unit';
+                                    $durationLabelPlural = 'Unit';
                                     break;
                             }
                         @endphp
                         <div class="flex justify-between">
                             <span class="text-gray-600">Harga Sewa (per {{ $durationLabelSingular }})</span>
-                            <span class="font-medium">Rp {{ number_format($totalPrice / $quantity, 0, ',', '.') }}</span>
+                            <span class="font-medium">Rp
+                                {{ number_format($subTotalPrice / $quantity, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Durasi</span>
@@ -191,7 +191,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Sub Total</span>
-                            <span class="font-medium">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
+                            <span class="font-medium">Rp {{ number_format($subTotalPrice, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Pajak & Biaya Admin</span>
@@ -220,24 +220,35 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('bookingForm'); // Mengambil form berdasarkan ID
+            const form = document.getElementById('bookingForm');
             const continueButton = document.getElementById('continueButton');
 
-            if (continueButton && form) { // Pastikan kedua elemen ditemukan
+            if (continueButton) {
                 continueButton.addEventListener("click", function(e) {
-                    e.preventDefault(); // Mencegah perilaku default tombol
+                    e.preventDefault();
+
+                    // Mengumpulkan data dari form
+                    const formData = new FormData(form);
+                    // Menambahkan data booking yang sudah ada
+                    formData.append('vehicle_id', {{ $vehicle->id }});
+                    formData.append('plate_number', '{{ $plateNumber }}');
+                    formData.append('duration_type', '{{ $durationType }}');
+                    formData.append('quantity', {{ $quantity }});
+                    formData.append('total_price', {{ $subTotalPrice }});
+
+                    // Membuat query string
+                    const queryString = new URLSearchParams(formData).toString();
+
+                    // URL untuk halaman pembayaran
+                    const paymentUrl = `{{ route('payment.show') }}?${queryString}`;
 
                     // Menggunakan metode validasi HTML5 bawaan browser
                     if (!form.checkValidity()) {
-                        // Jika ada field required yang kosong atau tidak valid
                         alert("Mohon lengkapi semua field yang wajib diisi.");
-                        // Meminta browser untuk menampilkan pesan validasi bawaan pada field yang relevan
-                        form.reportValidity();
+                        form.reportValidity(); // Meminta browser menampilkan tooltip validasi
                     } else {
-                        // Jika semua field valid
-                        alert("Data berhasil disimpan! Menuju ke halaman pembayaran...");
-                        // Di sini Anda bisa melanjutkan proses submit form ke server
-                        // form.submit(); // Jika Anda ingin form disubmit secara native ke action URL
+                        // Jika form valid, arahkan ke halaman pembayaran
+                        window.location.href = paymentUrl;
                     }
                 });
             }

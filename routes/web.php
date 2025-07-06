@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
 use App\Http\Controllers\VehicleDetailController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\RoleMiddleware;
 
 // --- Rute Publik (Bisa diakses siapa saja: Guest, User, Admin) ---
@@ -74,6 +75,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     // Route untuk halaman detail booking
     Route::get('/booking-detail', [BookingController::class, 'show'])->name('booking.show');
+
+    // Route untuk halaman pembayaran
+    Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
 });
 
 
