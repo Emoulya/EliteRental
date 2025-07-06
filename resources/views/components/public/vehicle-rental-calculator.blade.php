@@ -79,6 +79,7 @@
     </div>
 
     @if ($availableUnits->isNotEmpty())
+        {{-- Tombol untuk pengguna yang sudah login atau tamu --}}
         <button id="bookNowButton"
             class="w-full bg-gold hover:bg-yellow-500 text-navy font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105">
             <i class="fas fa-calendar-check mr-2"></i>
@@ -103,8 +104,7 @@
             const quantityLabel = document.getElementById('quantityLabel');
             const totalPriceDisplay = document.getElementById('totalPriceDisplay');
             const bookNowButton = document.getElementById('bookNowButton');
-            const platOptionRadios = document.querySelectorAll(
-            'input[name="platOption"]');
+            const platOptionRadios = document.querySelectorAll('input[name="platOption"]');
 
             const vehiclePrices = {
                 daily: {{ $vehicle->daily_price ?? 0 }},
@@ -151,7 +151,6 @@
                 let total = currentBasePrice * currentQuantity;
                 totalPriceDisplay.textContent = formatRupiah(total);
 
-                // Aktifkan/nonaktifkan tombol Pesan Sekarang berdasarkan pilihan plat
                 updateBookNowButtonState();
             }
 
@@ -160,11 +159,13 @@
                 platOptionRadios.forEach(radio => {
                     if (radio.checked) {
                         isPlateSelected = true;
+                        selectedPlateNumber = radio.value; // Pastikan selectedPlateNumber terupdate
                     }
                 });
 
                 if (bookNowButton) {
-                    if (isPlateSelected) {
+                    // Tombol 'Pesan Sekarang' hanya aktif jika ada unit tersedia DAN plat nomor sudah dipilih
+                    if ({{ $availableUnits->isNotEmpty() ? 'true' : 'false' }} && isPlateSelected) {
                         bookNowButton.disabled = false;
                         bookNowButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
                         bookNowButton.classList.add('bg-gold', 'hover:bg-yellow-500', 'text-navy');
@@ -201,62 +202,78 @@
                 updatePriceAndTotal();
             });
 
-            // Event listener untuk radio button plat nomor
             platOptionRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    if (this.checked) {
-                        selectedPlateNumber = this.value;
-                    }
                     updateBookNowButtonState();
                 });
             });
 
-            // Event listener untuk tombol "Pesan Sekarang"
+            // Perubahan di sini: Logika event listener tombol "Pesan Sekarang"
             if (bookNowButton) {
                 bookNowButton.addEventListener('click', function() {
-                    // Validasi akhir sebelum submit
-                    if (!selectedPlateNumber) {
-                        alert('Mohon pilih plat nomor kendaraan.');
-                        return;
-                    }
+                        // Validasi apakah plat nomor sudah dipilih
+                        if (!selectedPlateNumber) { // selectedPlateNumber akan null jika tidak ada yang dipilih
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Peringatan',
+                                text: 'Mohon pilih plat nomor kendaraan terlebih dahulu.',
+                                confirmButtonColor: '#F4B000' // Gold color
+                            });
+                            return;
+                        }
 
-                    const vehicleId = {{ $vehicle->id }}; // Ambil ID kendaraan
-                    const quantity = currentQuantity;
-                    const totalPrice = currentBasePrice *
-                    currentQuantity; // Hitung ulang total untuk akurasi
+                        // --- Logika Kondisional Autentikasi ---
+                        @auth
+                        // Jika pengguna sudah login, lanjutkan ke halaman booking
+                        const vehicleId = {{ $vehicle->id }};
+                        const quantity = currentQuantity;
+                        const subTotalPrice = currentBasePrice * currentQuantity;
 
-                    // Buat URL dengan query parameters
-                    const url =
-                        `{{ route('booking.show') }}?vehicle_id=${vehicleId}&plate_number=${selectedPlateNumber}&duration_type=${currentDurationType}&quantity=${quantity}&total_price=${totalPrice}`;
-
-                    window.location.href = url; // Arahkan ke halaman detail booking
+                        const url =
+                            `{{ route('booking.show') }}?vehicle_id=${vehicleId}&plate_number=${selectedPlateNumber}&duration_type=${currentDurationType}&quantity=${quantity}&total_price=${subTotalPrice}`;
+                        window.location.href = url;
+                    @else
+                        // Jika pengguna belum login, tampilkan SweetAlert
+                        Swal.fire({
+                            title: 'Login atau Daftar Akun',
+                            text: 'Anda harus login atau mendaftar untuk melanjutkan proses pemesanan.',
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'Login Sekarang',
+                            cancelButtonText: 'Daftar Akun',
+                            confirmButtonColor: '#0A1F33', // Navy
+                            cancelButtonColor: '#F4B000' // Gold
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Redirect ke halaman login
+                                window.location.href = '{{ route('login') }}';
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                // Redirect ke halaman daftar
+                                window.location.href = '{{ route('register') }}';
+                            }
+                        });
+                    @endauth
                 });
-            }
+        }
 
-
-            // Inisialisasi tampilan awal
-            const initialDailyOption = document.getElementById('dailyOption');
-            if (initialDailyOption) {
-                initialDailyOption.classList.add('active-duration');
-            }
-            updatePriceAndTotal();
-            updateBookNowButtonState();
+        // Inisialisasi tampilan awal
+        const initialDailyOption = document.getElementById('dailyOption');
+        if (initialDailyOption) {
+            initialDailyOption.classList.add('active-duration');
+        }
+        updatePriceAndTotal(); updateBookNowButtonState(); // Panggil untuk mengatur status tombol saat load
         });
     </script>
     <style>
         /* CSS untuk menandai durasi yang aktif */
         .duration-option.active-duration {
-            border-color: gold;
-            /* Menggunakan variabel CSS untuk warna gold */
-            background-color: gold;
-            /* Menggunakan variabel CSS untuk warna gold */
-            color: navy;
-            /* Menggunakan variabel CSS untuk warna navy */
+            border-color: var(--color-gold);
+            background-color: var(--color-gold);
+            color: var(--color-navy);
         }
 
         .duration-option.active-duration div {
-            color: navy;
-            /* Memastikan teks di dalamnya juga navy */
+            color: var(--color-navy);
         }
     </style>
 @endpush
