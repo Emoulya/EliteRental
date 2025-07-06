@@ -54,34 +54,7 @@
         </div>
     </section>
 
-    <div class="bg-white border-b">
-        <div class="container mx-auto px-4 py-6">
-            <div class="flex items-center justify-center space-x-8">
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-bold">
-                        1
-                    </div>
-                    <span class="ml-3 text-gray-500">Detail Booking</span>
-                </div>
-                <div class="w-16 h-0.5 bg-gray-300"></div>
-                <div class="flex items-center">
-                    <div
-                        class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-bold">
-                        2
-                    </div>
-                    <span class="ml-3 text-gray-500">Pembayaran</span>
-                </div>
-                <div class="w-16 h-0.5 bg-navy"></div>
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-navy text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        3
-                    </div>
-                    <span class="ml-3 text-navy font-medium">Konfirmasi</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-public.booking-timeline :currentStep="3" />
 
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-4xl mx-auto">
