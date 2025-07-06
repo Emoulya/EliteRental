@@ -79,7 +79,7 @@
     </div>
 
     @if ($availableUnits->isNotEmpty())
-        <button
+        <button id="bookNowButton"
             class="w-full bg-gold hover:bg-yellow-500 text-navy font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105">
             <i class="fas fa-calendar-check mr-2"></i>
             Pesan Sekarang
@@ -102,29 +102,28 @@
             const quantityInput = document.getElementById('quantityInput');
             const quantityLabel = document.getElementById('quantityLabel');
             const totalPriceDisplay = document.getElementById('totalPriceDisplay');
+            const bookNowButton = document.getElementById('bookNowButton');
+            const platOptionRadios = document.querySelectorAll(
+            'input[name="platOption"]');
 
-            // Data harga dari props, diakses via elemen HTML atau bisa juga langsung dari Blade ke JS
             const vehiclePrices = {
                 daily: {{ $vehicle->daily_price ?? 0 }},
                 weekly: {{ $vehicle->weekly_price ?? 0 }},
                 monthly: {{ $vehicle->monthly_price ?? 0 }}
             };
 
-            // Menginisialisasi durasi dan harga yang dipilih
             let currentDurationType = 'daily';
             let currentBasePrice = vehiclePrices.daily;
             let currentQuantity = parseInt(quantityInput.value);
+            let selectedPlateNumber = null;
 
-            // Fungsi untuk format angka ke Rupiah
             function formatRupiah(number) {
                 return 'Rp ' + number.toLocaleString('id-ID');
             }
 
-            // Fungsi untuk mengupdate tampilan harga utama dan total
             function updatePriceAndTotal() {
-                // Update label jumlah
                 let labelText = '';
-                let durationUnit = ''; // Variabel baru untuk label durasi
+                let durationUnit = '';
                 switch (currentDurationType) {
                     case 'daily':
                         labelText = 'Jumlah Hari';
@@ -141,33 +140,51 @@
                 }
                 quantityLabel.textContent = labelText;
 
-                // Pastikan kuantitas minimal 1
                 if (currentQuantity < 1) {
                     currentQuantity = 1;
                     quantityInput.value = 1;
                 }
 
-                // Update harga dasar yang ditampilkan
                 displayPrice.textContent = formatRupiah(currentBasePrice);
-                displayDurationLabel.textContent = durationUnit; // Menggunakan variabel durationUnit yang benar
+                displayDurationLabel.textContent = durationUnit;
 
-                // Hitung dan update total harga
                 let total = currentBasePrice * currentQuantity;
                 totalPriceDisplay.textContent = formatRupiah(total);
+
+                // Aktifkan/nonaktifkan tombol Pesan Sekarang berdasarkan pilihan plat
+                updateBookNowButtonState();
             }
 
-            // Event listener untuk pilihan durasi (harian, mingguan, bulanan)
+            function updateBookNowButtonState() {
+                let isPlateSelected = false;
+                platOptionRadios.forEach(radio => {
+                    if (radio.checked) {
+                        isPlateSelected = true;
+                    }
+                });
+
+                if (bookNowButton) {
+                    if (isPlateSelected) {
+                        bookNowButton.disabled = false;
+                        bookNowButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                        bookNowButton.classList.add('bg-gold', 'hover:bg-yellow-500', 'text-navy');
+                    } else {
+                        bookNowButton.disabled = true;
+                        bookNowButton.classList.remove('bg-gold', 'hover:bg-yellow-500', 'text-navy');
+                        bookNowButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    }
+                }
+            }
+
+
             durationOptions.forEach(option => {
                 option.addEventListener('click', function() {
-                    // Hapus kelas aktif dari semua opsi
                     durationOptions.forEach(opt => opt.classList.remove('active-duration'));
-                    // Tambahkan kelas aktif ke opsi yang diklik
                     this.classList.add('active-duration');
 
                     currentDurationType = this.dataset.durationType;
                     currentBasePrice = parseInt(this.dataset.price);
 
-                    // Reset kuantitas ke 1 setiap kali durasi diubah
                     currentQuantity = 1;
                     quantityInput.value = 1;
 
@@ -175,10 +192,8 @@
                 });
             });
 
-            // Event listener untuk perubahan kuantitas
             quantityInput.addEventListener('input', function() {
                 currentQuantity = parseInt(this.value);
-                // Pastikan input tidak kosong dan merupakan angka valid
                 if (isNaN(currentQuantity) || currentQuantity < 1) {
                     currentQuantity = 1;
                     this.value = 1;
@@ -186,28 +201,61 @@
                 updatePriceAndTotal();
             });
 
+            // Event listener untuk radio button plat nomor
+            platOptionRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedPlateNumber = this.value;
+                    }
+                    updateBookNowButtonState();
+                });
+            });
+
+            // Event listener untuk tombol "Pesan Sekarang"
+            if (bookNowButton) {
+                bookNowButton.addEventListener('click', function() {
+                    // Validasi akhir sebelum submit
+                    if (!selectedPlateNumber) {
+                        alert('Mohon pilih plat nomor kendaraan.');
+                        return;
+                    }
+
+                    const vehicleId = {{ $vehicle->id }}; // Ambil ID kendaraan
+                    const quantity = currentQuantity;
+                    const totalPrice = currentBasePrice *
+                    currentQuantity; // Hitung ulang total untuk akurasi
+
+                    // Buat URL dengan query parameters
+                    const url =
+                        `{{ route('booking.show') }}?vehicle_id=${vehicleId}&plate_number=${selectedPlateNumber}&duration_type=${currentDurationType}&quantity=${quantity}&total_price=${totalPrice}`;
+
+                    window.location.href = url; // Arahkan ke halaman detail booking
+                });
+            }
+
+
             // Inisialisasi tampilan awal
-            // Menandai 'Harian' sebagai aktif saat pertama kali dimuat
             const initialDailyOption = document.getElementById('dailyOption');
             if (initialDailyOption) {
                 initialDailyOption.classList.add('active-duration');
             }
             updatePriceAndTotal();
+            updateBookNowButtonState();
         });
     </script>
     <style>
         /* CSS untuk menandai durasi yang aktif */
         .duration-option.active-duration {
-            border-color: var(--color-gold);
+            border-color: gold;
             /* Menggunakan variabel CSS untuk warna gold */
-            background-color: var(--color-gold);
+            background-color: gold;
             /* Menggunakan variabel CSS untuk warna gold */
-            color: var(--color-navy);
+            color: navy;
             /* Menggunakan variabel CSS untuk warna navy */
         }
 
         .duration-option.active-duration div {
-            color: var(--color-navy);
+            color: navy;
             /* Memastikan teks di dalamnya juga navy */
         }
     </style>

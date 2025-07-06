@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
 use App\Http\Controllers\VehicleDetailController;
+use App\Http\Controllers\BookingController;
 use App\Http\Middleware\RoleMiddleware;
 
 // --- Rute Publik (Bisa diakses siapa saja: Guest, User, Admin) ---
@@ -70,6 +71,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route untuk halaman detail booking
+    Route::get('/booking-detail', [BookingController::class, 'show'])->name('booking.show');
 });
 
 
