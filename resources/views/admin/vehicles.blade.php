@@ -16,20 +16,12 @@
             iconTextColor="text-yellow-600" />
         <x-statistics.stat-card title="Tidak Tersedia" :value="$unavailableUnits" icon="ban" iconBgColor="bg-gray-100"
             iconTextColor="text-gray-600" />
-
     </div>
 
     @if (session('success_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: @json(session('success_message')),
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
+                showSuccess(@json(session('success_message')));
             });
         </script>
     @endif
@@ -37,14 +29,7 @@
     @if (session('error_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: @json(session('error_message')),
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
+                showError(@json(session('error_message')));
             });
         </script>
     @endif
@@ -100,7 +85,7 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        showCustomMessage('Menghapus kendaraan...', 'info');
+                        showLoading('Menghapus kendaraan...');
                         form.submit();
                     }
                 });
@@ -139,8 +124,6 @@
 
         // Fungsi untuk melakukan permintaan AJAX dan memperbarui tabel
         async function fetchFilteredVehicles(url) {
-            showCustomMessage('Memfilter kendaraan...', 'info'); // Tampilkan pesan loading
-
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -161,7 +144,6 @@
 
             } catch (error) {
                 console.error('Error fetching filtered vehicles:', error);
-                showCustomMessage('Gagal memfilter kendaraan. Silakan coba lagi.', 'error');
             }
         }
 

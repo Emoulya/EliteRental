@@ -17,7 +17,7 @@
 
         <form id="editVehicleForm" method="POST" action="{{ route('admin.vehicles.update', $vehicle->id) }}"
             enctype="multipart/form-data" class="space-y-6"
-            onsubmit="showCustomMessage('Memperbarui kendaraan...', 'info');">
+            onsubmit="showLoading('Memperbarui kendaraan...');">
             @csrf
             @method('PUT')
             <input type="hidden" name="_referrer" value="{{ request()->query('_referrer') }}">
@@ -439,7 +439,7 @@
             document.addEventListener('DOMContentLoaded', function() {
                 // Periksa apakah ada error validasi
                 @if ($errors->any())
-                    showCustomMessage('Terdapat kesalahan validasi, mohon periksa kembali input Anda.', 'error');
+                    showError('Terdapat kesalahan validasi, mohon periksa kembali input Anda.');
                 @endif
             });
         </script>

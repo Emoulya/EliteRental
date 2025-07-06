@@ -12,14 +12,7 @@
     @if (session('success_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: @json(session('success_message')),
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
+                showSuccess(@json(session('success_message')));
             });
         </script>
     @endif
@@ -27,14 +20,7 @@
     @if (session('error_message'))
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: @json(session('error_message')),
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
+                showError(@json(session('error_message')));
             });
         </script>
     @endif
@@ -511,7 +497,6 @@
             <p class="text-gray-500">Belum ada unit kendaraan terdaftar untuk model ini.</p>
         @endforelse
     </div>
-
 @endsection
 
 @push('scripts')
@@ -637,43 +622,21 @@
                             }
                             return response.json();
                         } catch (error) {
-                            Swal.showValidationMessage(`Gagal: ${error.message}`);
+                            showError(
+                                `Gagal: ${error.message}`);
                             return false;
                         }
                     },
                     allowOutsideClick: () => !Swal.isLoading()
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        showSuccess(result.value.message || 'Unit kendaraan berhasil diperbarui.');
+                        showSuccess(result.value.message ||
+                            'Unit kendaraan berhasil diperbarui.');
                         setTimeout(() => location.reload(), 1500);
                     }
                 });
             });
         });
-
-        // Fungsi untuk menampilkan loading
-        function showLoading(message) {
-            Swal.fire({
-                title: 'Memproses...',
-                html: message,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        }
-
-        // Fungsi untuk menampilkan pesan sukses
-        function showSuccess(message) {
-            Swal.fire({
-                title: 'Berhasil!',
-                text: message,
-                icon: 'success',
-                confirmButtonText: 'OK',
-                timer: 3000,
-                timerProgressBar: true
-            });
-        }
 
         // Fungsi untuk menangani error validasi
         function handleValidationErrors(errors) {
@@ -711,16 +674,7 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Tambahkan loading state
-                        Swal.fire({
-                            title: 'Menghapus...',
-                            text: 'Sedang memproses penghapusan unit',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-
+                        showLoading('Sedang memproses penghapusan unit');
                         // Submit form
                         form.submit();
                     }

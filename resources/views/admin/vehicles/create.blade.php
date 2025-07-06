@@ -16,7 +16,7 @@
         </div>
 
         <form id="addVehicleForm" method="POST" action="{{ route('admin.vehicles.store') }}" enctype="multipart/form-data"
-            class="space-y-6" onsubmit="showCustomMessage('Menambah kendaraan...', 'info');">
+            class="space-y-6" onsubmit="showLoading('Menambah kendaraan...');">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
@@ -342,7 +342,7 @@
             document.addEventListener('DOMContentLoaded', function() {
                 // Periksa apakah ada error validasi
                 @if ($errors->any())
-                    showCustomMessage('Terdapat kesalahan validasi, mohon periksa kembali input Anda.', 'error');
+                    showError('Terdapat kesalahan validasi, mohon periksa kembali input Anda.');
                 @endif
             });
         </script>
