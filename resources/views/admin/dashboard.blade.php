@@ -1,8 +1,9 @@
 {{-- resources/views/admin/dashboard.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin - Elite Rental') {{-- Judul untuk tag <title> --}}
-@section('page_title', 'Dashboard') {{-- Judul yang akan ditampilkan di header --}}
+@section('title', 'Dashboard Admin - Elite Rental')
+
+@section('page_title', 'Dashboard')
 
 @section('content')
     <!-- Top Statistics Cards -->
@@ -10,9 +11,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-2xl font-bold text-navy">
-                        Rp 45.2M
-                    </div>
+                    <div class="text-2xl font-bold text-navy"> {{ $revenueThisMonth }} </div>
                     <div class="text-gray-custom">
                         Pendapatan Bulan Ini
                     </div>
@@ -29,9 +28,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-2xl font-bold text-navy">
-                        156
-                    </div>
+                    <div class="text-2xl font-bold text-navy"> {{ $totalBookings }} </div>
                     <div class="text-gray-custom">Total Booking</div>
                     <div class="text-sm text-green-600 mt-1">
                         <i class="fas fa-arrow-up mr-1"></i>+8.2%
@@ -46,9 +43,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-2xl font-bold text-navy">
-                        24
-                    </div>
+                    <div class="text-2xl font-bold text-navy"> {{ $totalVehicles }} </div>
                     <div class="text-gray-custom">Total Kendaraan</div>
                     <div class="text-sm text-blue-600 mt-1">
                         <i class="fas fa-plus mr-1"></i>2 baru
@@ -63,9 +58,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-2xl font-bold text-navy">
-                        89
-                    </div>
+                    <div class="text-2xl font-bold text-navy"> {{ $totalCustomers }} </div>
                     <div class="text-gray-custom">Pelanggan Aktif</div>
                     <div class="text-sm text-green-600 mt-1">
                         <i class="fas fa-arrow-up mr-1"></i>+15.3%
@@ -92,12 +85,12 @@
                         <span class="text-gray-700">Tersedia</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-navy font-semibold mr-2">18</span>
-                        <span class="text-sm text-gray-500">(75%)</span>
+                        <span class="text-navy font-semibold mr-2">{{ $availableUnits }}</span>
+                        <span class="text-sm text-gray-500">({{ $availablePercentage }}%)</span>
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                    <div class="bg-green-500 h-2 rounded-full" style="width: {{ $availablePercentage }}%"></div>
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -106,12 +99,12 @@
                         <span class="text-gray-700">Disewa</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-navy font-semibold mr-2">4</span>
-                        <span class="text-sm text-gray-500">(17%)</span>
+                        <span class="text-navy font-semibold mr-2">{{ $rentedUnits }}</span>
+                        <span class="text-sm text-gray-500">({{ $rentedPercentage }}%)</span>
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-red-500 h-2 rounded-full" style="width: 17%"></div>
+                    <div class="bg-red-500 h-2 rounded-full" style="width: {{ $rentedPercentage }}%"></div>
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -120,12 +113,12 @@
                         <span class="text-gray-700">Maintenance</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-navy font-semibold mr-2">2</span>
-                        <span class="text-sm text-gray-500">(8%)</span>
+                        <span class="text-navy font-semibold mr-2">{{ $maintenanceUnits }}</span>
+                        <span class="text-sm text-gray-500">({{ $maintenancePercentage }}%)</span>
                     </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 8%"></div>
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ $maintenancePercentage }}%"></div>
                 </div>
             </div>
 
@@ -211,9 +204,7 @@
                     </div>
                     <div class="absolute inset-0 flex items-center justify-center">
                         <div class="text-center">
-                            <div class="text-lg font-bold text-navy">
-                                24
-                            </div>
+                            <div class="text-lg font-bold text-navy"> {{ $totalUnits }} </div>
                             <div class="text-xs text-gray-500">
                                 Total
                             </div>

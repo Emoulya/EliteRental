@@ -2,6 +2,7 @@
 // routes\web.php
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\VehicleUnitController;
 use App\Http\Controllers\VehicleListController;
@@ -25,9 +26,7 @@ Route::get('/kendaraan/{vehicle}', [VehicleDetailController::class, 'show'])->na
 // Middleware 'role:admin' memastikan user memiliki role 'admin'.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard Admin
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Rute manajemen kendaraan (model)
     Route::get('/vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
