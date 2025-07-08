@@ -11,7 +11,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-2xl font-bold text-navy"> {{ $revenueThisMonth }} </div>
+                    <div class="text-2xl font-bold text-navy"> {{ $revenueThisMonthFormatted }} </div>
                     <div class="text-gray-custom">
                         Pendapatan Bulan Ini
                     </div>
