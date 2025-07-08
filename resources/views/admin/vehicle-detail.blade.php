@@ -510,22 +510,8 @@
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: 'Data model kendaraan ini dan SEMUA UNIT terkait akan dihapus secara permanen!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        showLoading('Menghapus model kendaraan...');
-                        form.submit();
-                    }
-                });
+                confirmAndDelete(form, 'Yakin ingin menghapus?',
+                    'Data model kendaraan ini dan SEMUA UNIT terkait akan dihapus secara permanen!');
             });
         });
 
@@ -533,24 +519,10 @@
         document.querySelectorAll('.delete-unit-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
                 const licensePlate = form.closest('.flex').querySelector('p.text-lg').textContent;
-
-                Swal.fire({
-                    title: 'Yakin ingin menghapus unit ini?',
-                    html: `Unit kendaraan dengan plat nomor <strong>${licensePlate}</strong> akan dihapus secara permanen!`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        showLoading('Menghapus unit kendaraan...');
-                        form.submit();
-                    }
-                });
+                confirmAndDelete(form, 'Yakin ingin menghapus unit ini?',
+                    `Unit kendaraan dengan plat nomor <strong>${licensePlate}</strong> akan dihapus secara permanen!`
+                );
             });
         });
 
@@ -662,23 +634,9 @@
             button.addEventListener('click', function() {
                 const form = this.closest('form');
                 const licensePlate = this.dataset.licensePlate;
-
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    html: `Unit dengan plat <strong>${licensePlate}</strong> akan dihapus permanen!`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        showLoading('Sedang memproses penghapusan unit');
-                        // Submit form
-                        form.submit();
-                    }
-                });
+                // Memanggil fungsi generik confirmAndDelete
+                confirmAndDelete(form, 'Yakin ingin menghapus?',
+                    `Unit dengan plat <strong>${licensePlate}</strong> akan dihapus permanen!`);
             });
         });
     </script>

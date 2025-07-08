@@ -69,26 +69,13 @@
 
 @push('scripts')
     <script>
-        // Fungsi Helper untuk SweetAlert2 pada Delete Form (tetap sama)
+        // Fungsi SweetAlert2 pada Delete Form
         document.querySelectorAll('.delete-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: 'Data kendaraan akan dihapus secara permanen!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        showLoading('Menghapus kendaraan...');
-                        form.submit();
-                    }
-                });
+                // Panggil fungsi generik
+                confirmAndDelete(form, 'Yakin ingin menghapus?',
+                    'Data kendaraan akan dihapus secara permanen!');
             });
         });
 
