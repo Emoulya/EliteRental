@@ -210,28 +210,70 @@
 
             // Perubahan di sini: Logika event listener tombol "Pesan Sekarang"
             if (bookNowButton) {
-                bookNowButton.addEventListener('click', function() {
+                bookNowButton.addEventListener('click', async function() {
                         // Validasi apakah plat nomor sudah dipilih
-                        if (!selectedPlateNumber) { // selectedPlateNumber akan null jika tidak ada yang dipilih
+                        if (!selectedPlateNumber) {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Peringatan',
                                 text: 'Mohon pilih plat nomor kendaraan terlebih dahulu.',
-                                confirmButtonColor: '#F4B000' // Gold color
+                                confirmButtonColor: '#F4B000'
                             });
                             return;
                         }
 
-                        // --- Logika Kondisional Autentikasi ---
                         @auth
-                        // Jika pengguna sudah login, lanjutkan ke halaman booking
-                        const vehicleId = {{ $vehicle->id }};
-                        const quantity = currentQuantity;
-                        const subTotalPrice = currentBasePrice * currentQuantity;
+                        // Jika pengguna sudah login, kirim data via AJAX POST
+                        showLoading('Membuat ringkasan pesanan...');
 
-                        const url =
-                            `{{ route('booking.show') }}?vehicle_id=${vehicleId}&plate_number=${selectedPlateNumber}&duration_type=${currentDurationType}&quantity=${quantity}&total_price=${subTotalPrice}`;
-                        window.location.href = url;
+                        const vehicleId = {{ $vehicle->id }};
+                        const totalCalculatedPrice = currentBasePrice * currentQuantity;
+
+                        const formData = new FormData();
+                        formData.append('vehicle_id', vehicleId);
+                        formData.append('plate_number', selectedPlateNumber);
+                        formData.append('duration_type', currentDurationType);
+                        formData.append('quantity', currentQuantity);
+                        formData.append('total_price', totalCalculatedPrice);
+                        formData.append('_token', '{{ csrf_token() }}');
+
+                        try {
+                            const response = await fetch('{{ route('booking.store_summary') }}', {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                if (response.status === 422 && errorData.errors) {
+                                    let errorMessages = Object.values(errorData.errors).flat().join('<br>');
+                                    showError(`Kesalahan Validasi:<br>${errorMessages}`);
+                                } else {
+                                    showError(errorData.message ||
+                                        'Terjadi kesalahan saat memproses pesanan Anda.');
+                                }
+                                return;
+                            }
+
+                            const result = await response.json();
+                            showSuccess(result.message || 'Ringkasan pesanan berhasil dibuat!');
+                            // === PERBAIKAN PENTING DI SINI ===
+                            // Gunakan URL dasar rute dan tambahkan ID booking secara dinamis
+                            const bookingShowBaseUrl =
+                                '{{ route('booking.show', ['booking' => 'BOOKING_ID_PLACEHOLDER']) }}';
+                            window.location.href = bookingShowBaseUrl.replace('BOOKING_ID_PLACEHOLDER',
+                                result.booking_id);
+
+                        } catch (error) {
+                            console.error('Error saat mengirimkan booking:', error);
+                            showError('Gagal memproses pesanan. Silakan coba lagi.');
+                        } finally {
+                            Swal.close();
+                        }
                     @else
                         // Jika pengguna belum login, tampilkan SweetAlert
                         Swal.fire({
@@ -241,14 +283,12 @@
                             showCancelButton: true,
                             confirmButtonText: 'Login Sekarang',
                             cancelButtonText: 'Daftar Akun',
-                            confirmButtonColor: '#0A1F33', // Navy
-                            cancelButtonColor: '#F4B000' // Gold
+                            confirmButtonColor: '#0A1F33',
+                            cancelButtonColor: '#F4B000'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Redirect ke halaman login
                                 window.location.href = '{{ route('login') }}';
                             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                // Redirect ke halaman daftar
                                 window.location.href = '{{ route('register') }}';
                             }
                         });

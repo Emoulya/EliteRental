@@ -1,9 +1,10 @@
+{{-- resources\views\pages\vehicle-detail.blade.php --}}
 @extends('layouts.app')
 
 @section('title', $vehicle->brand . ' ' . $vehicle->model . ' - Elite Rental')
 
 @section('content')
-    <section class="bg-white pt-20 pb-4 border-b">
+    <section class="bg-white py-4 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">

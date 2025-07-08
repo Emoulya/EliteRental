@@ -1,5 +1,5 @@
 <?php
-
+// app\Models\Booking.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +18,8 @@ class Booking extends Model
         'total_price',
         'status',
         'notes',
+        'duration_type',
+        'quantity',
     ];
 
     protected $casts = [

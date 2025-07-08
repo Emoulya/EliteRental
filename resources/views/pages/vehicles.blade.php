@@ -3,7 +3,7 @@
 @section('title', 'Daftar Kendaraan - Elite Rental')
 
 @section('content')
-    <section class="bg-navy pt-20 pb-12">
+    <section class="bg-navy py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">

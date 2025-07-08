@@ -74,8 +74,13 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Route untuk halaman detail booking
-    Route::get('/booking-detail', [BookingController::class, 'show'])->name('booking.show');
+    // Rute baru untuk menyimpan ringkasan booking awal
+    Route::post('/booking/summary', [BookingController::class, 'storeBookingSummary'])->name('booking.store_summary');
+
+    // Mengubah rute untuk halaman detail booking, sekarang menerima ID booking
+    Route::get('/booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
+        // Rute untuk mengupdate catatan khusus pada booking
+    Route::put('/booking/{booking}/update-notes', [App\Http\Controllers\BookingController::class, 'updateNotes'])->name('booking.update_notes');
 
     // Route untuk halaman pembayaran
     Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
