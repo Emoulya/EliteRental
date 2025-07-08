@@ -12,7 +12,7 @@
 <body class="bg-light-gray">
     @include('components.navigation.navbar')
 
-    <main>
+    <main class="pt-16">
         @yield('content')
     </main>
 

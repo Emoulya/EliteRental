@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Http\Requests\UpdateCustomerProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -16,25 +17,37 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
+        // Load customerProfile jika ada
+        $user = $request->user()->load('customerProfile');
+
+        return view('pages.profile-edit', [
+            'user' => $user,
         ]);
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(UpdateCustomerProfileRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Update data User
+        $user->fill($request->only('name', 'email'));
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        // Update atau buat CustomerProfile
+        $user->customerProfile()->updateOrCreate(
+            ['user_id' => $user->id], // Cari berdasarkan user_id
+            $request->only('phone_number', 'ktp_number', 'sim_number', 'full_address') // Data yang akan diupdate/dibuat
+        );
+
+        return redirect()->route('profile.edit')->with('status', 'profile-updated'); // Redirect dengan pesan sukses
     }
 
     /**
