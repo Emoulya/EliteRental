@@ -98,12 +98,10 @@
             }
 
             async function fetchVehicles(url, append = false) {
-                showLoading('Memuat kendaraan...');
-
                 try {
                     const response = await fetch(url, {
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest', // Penting untuk permintaan AJAX Laravel
+                            'X-Requested-With': 'XMLHttpRequest',
                         }
                     });
 
@@ -128,7 +126,7 @@
                         const newLoadMoreButton = document.getElementById('loadMoreButton');
                         if (newLoadMoreButton) {
                             newLoadMoreButton.removeEventListener('click',
-                            handleLoadMoreClick); // Hapus event listener lama
+                                handleLoadMoreClick); // Hapus event listener lama
                             newLoadMoreButton.addEventListener('click', handleLoadMoreClick); // Tambahkan yang baru
                             if (noMoreVehiclesMessage) noMoreVehiclesMessage.remove(); // Hapus pesan jika ada
                         } else {
@@ -148,13 +146,9 @@
                         endMessage.textContent = 'Semua kendaraan telah ditampilkan.';
                         paginationSection.appendChild(endMessage);
                     }
-
-                    hideLoading();
-
                 } catch (error) {
                     console.error('Error fetching vehicles:', error);
-                    hideLoading();
-                    // showCustomMessage('Gagal memuat kendaraan. Silakan coba lagi.', 'error'); // Jika menggunakan custom-message
+                    // showCustomMessage('Gagal memuat kendaraan. Silakan coba lagi.', 'error');
                     alert('Gagal memuat kendaraan. Silakan coba lagi.');
                 }
             }

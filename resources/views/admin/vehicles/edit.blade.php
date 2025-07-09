@@ -16,8 +16,7 @@
         </div>
 
         <form id="editVehicleForm" method="POST" action="{{ route('admin.vehicles.update', $vehicle->id) }}"
-            enctype="multipart/form-data" class="space-y-6"
-            onsubmit="showLoading('Memperbarui kendaraan...');">
+            enctype="multipart/form-data" class="space-y-6" onsubmit="showLoading('Memperbarui kendaraan...');">
             @csrf
             @method('PUT')
             <input type="hidden" name="_referrer" value="{{ request()->query('_referrer') }}">

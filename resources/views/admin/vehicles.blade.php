@@ -18,22 +18,6 @@
             iconTextColor="text-gray-600" />
     </div>
 
-    @if (session('success_message'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                showSuccess(@json(session('success_message')));
-            });
-        </script>
-    @endif
-
-    @if (session('error_message'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                showError(@json(session('error_message')));
-            });
-        </script>
-    @endif
-
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">

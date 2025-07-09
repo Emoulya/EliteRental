@@ -86,4 +86,29 @@ class Vehicle extends Model
         }
     }
 
+    /**
+     * Scope untuk mengaplikasikan filter pencarian, kategori, dan harga.
+     */
+    public function scopeApplyFilters($query, $search, $categoryFilter, $priceFilter)
+    {
+        $query->when($search, function ($q) use ($search) {
+            $q->where('brand', 'like', '%' . $search . '%')
+                ->orWhere('model', 'like', '%' . $search . '%');
+        });
+
+        $query->when($categoryFilter, function ($q) use ($categoryFilter) {
+            $q->where('category', $categoryFilter);
+        });
+
+        $query->when($priceFilter, function ($q) use ($priceFilter) {
+            $prices = explode('-', $priceFilter);
+            // Pastikan ada 2 nilai setelah explode, jika tidak, handle kasusnya
+            $minPrice = isset($prices[0]) ? (int) $prices[0] : 0;
+            $maxPrice = isset($prices[1]) ? (int) $prices[1] : 999999999; // Nilai default max jika tidak ada
+
+            $q->whereBetween('daily_price', [$minPrice, $maxPrice]);
+        });
+
+        return $query;
+    }
 }

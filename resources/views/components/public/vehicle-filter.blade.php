@@ -27,9 +27,7 @@
         <x-forms.select-input id="availabilityFilter" name="availability_filter">
             <option value="">Semua Status</option>
             <option value="available" @selected(request('availability_filter') == 'available')>Tersedia</option>
-            <option value="disewa" @selected(request('availability_filter') == 'disewa')>Disewa</option>
-            <option value="maintenance" @selected(request('availability_filter') == 'maintenance')>Maintenance</option>
-            <option value="unavailable" @selected(request('availability_filter') == 'unavailable')>Tidak Tersedia</option>
+            <option value="not_available" @selected(request('availability_filter') == 'not_available')>Tidak Tersedia</option> {{-- Perubahan di sini --}}
         </x-forms.select-input>
     </div>
     <div class="flex justify-end">

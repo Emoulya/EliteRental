@@ -486,12 +486,15 @@
                         return;
                     }
 
-                    showLoading('Memproses konfirmasi pembayaran...'); // Tampilkan loading
+                    // Menonaktifkan tombol dan menampilkan loading pada tombol itu sendiri
+                    confirmPaymentButton.disabled = true;
+                    confirmPaymentButton.innerHTML =
+                        '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
 
                     const formData = new FormData();
                     formData.append('payment_method', selectedMethod.value);
                     formData.append('_token', '{{ csrf_token() }}');
-                    formData.append('_method', 'POST');
+                    formData.append('_method', 'POST'); // Pastikan method POST untuk confirmPayment
 
                     try {
                         const response = await fetch(
@@ -499,44 +502,59 @@
                                 method: 'POST',
                                 body: formData,
                                 headers: {
-                                    'Accept': 'application/json',
+                                    'Accept': 'application/json', // Mengharapkan respons JSON
                                     'X-Requested-With': 'XMLHttpRequest'
                                 }
                             });
 
-                        // Tutup pop-up loading SweetAlert sebelum menampilkan hasil
-                        Swal
-                    .close(); // Ini akan menutup pop-up loading yang ditampilkan oleh showLoading()
-
                         if (!response.ok) {
-                            const errorData = await response.json();
+                            // Coba parsing respons sebagai JSON jika status bukan OK
+                            let errorData;
+                            try {
+                                errorData = await response.json();
+                            } catch (jsonError) {
+                                // Jika respons bukan JSON (misal, HTML dari error 500), tangani secara umum
+                                console.error('Failed to parse error response as JSON:', jsonError);
+                                showError(
+                                    'Terjadi kesalahan yang tidak terduga dari server. Silakan coba lagi.'
+                                    );
+                                return; // Keluar setelah menampilkan error umum
+                            }
+
                             let errorMessage = errorData.message || 'Gagal mengkonfirmasi pembayaran.';
-                            if (response.status === 422 && errorData.errors) {
+                            if (response.status === 422 && errorData
+                                .errors) { // Validasi error dari server
                                 errorMessage = Object.values(errorData.errors).flat().join('<br>');
-                            } else if (response.status ===
-                                409) { // Menangani status conflict dari controller
+                            } else if (response.status === 409) { // Konflik, booking sudah dikonfirmasi
                                 errorMessage = errorData.message ||
                                     'Pembayaran sudah dilakukan untuk pesanan ini.';
                             }
                             showError(`Terjadi kesalahan:<br>${errorMessage}`);
-                            return;
+                            return; // Keluar setelah menampilkan error spesifik
                         }
 
+                        // Jika respons OK (status 2xx)
                         const result = await response.json();
                         showSuccess(result.message || 'Pembayaran berhasil dikonfirmasi!');
+
                         // Redirect ke halaman konfirmasi akhir setelah SweetAlert sukses tampil
                         setTimeout(() => {
                             window.location.href =
                                 `{{ route('booking.confirmation', ['booking' => $booking->id, 'payment_method' => '${selectedMethod.value}']) }}`;
-                        }, 1500); // Tunda redirect 1.5 detik
+                        }, 1500); // Tunda redirect 1.5 detik agar user bisa melihat pesan sukses
 
                     } catch (error) {
-                        // Pastikan SweetAlert loading ditutup jika ada error jaringan sebelum respons
-                        Swal.close();
+                        // Ini menangani error jaringan atau fetch promise reject lainnya
                         console.error('Error saat konfirmasi pembayaran:', error);
-                        showError('Gagal mengkonfirmasi pembayaran. Silakan coba lagi.');
+                        showError(
+                            'Gagal mengkonfirmasi pembayaran. Silakan coba lagi. Pastikan koneksi internet stabil.'
+                            );
+                    } finally {
+                        // Selalu aktifkan kembali tombol dan kembalikan teks asli setelah proses selesai
+                        confirmPaymentButton.disabled = false;
+                        confirmPaymentButton.innerHTML =
+                            '<i class="fas fa-check mr-2"></i> Konfirmasi Pembayaran';
                     }
-                    // Hapus blok finally, karena Swal.close() sudah dipindahkan ke try/catch
                 });
             }
         });

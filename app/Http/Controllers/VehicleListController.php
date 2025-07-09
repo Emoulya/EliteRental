@@ -27,25 +27,8 @@ class VehicleListController extends Controller
                 $q->where('status', 'tersedia');
             }]);
 
-
-        // Filter berdasarkan pencarian (merk atau model)
-        $query->when($search, function ($q) use ($search) {
-            $q->where('brand', 'like', '%' . $search . '%')
-                ->orWhere('model', 'like', '%' . $search . '%');
-        });
-
-        // Filter berdasarkan kategori
-        $query->when($categoryFilter, function ($q) use ($categoryFilter) {
-            $q->where('category', $categoryFilter);
-        });
-
-        // Filter berdasarkan rentang harga harian
-        $query->when($priceFilter, function ($q) use ($priceFilter) {
-            $prices = explode('-', $priceFilter);
-            $minPrice = (int) $prices[0];
-            $maxPrice = (int) $prices[1];
-            $q->whereBetween('daily_price', [$minPrice, $maxPrice]);
-        });
+        // Terapkan filter umum menggunakan scope
+        $query->applyFilters($search, $categoryFilter, $priceFilter);
 
         // Filter berdasarkan ketersediaan unit
         $query->when($availabilityFilter === 'available', function ($q) {
@@ -53,11 +36,10 @@ class VehicleListController extends Controller
                 $unitQuery->where('status', 'tersedia');
             });
         });
-        // Jika status yang dicari adalah 'disewa', 'maintenance', atau 'unavailable',
-        // maka model kendaraan akan ditampilkan jika ada setidaknya satu unit dengan status tersebut
-        $query->when(in_array($availabilityFilter, ['disewa', 'maintenance', 'unavailable']), function ($q) use ($availabilityFilter) {
-            $q->whereHas('units', function ($unitQuery) use ($availabilityFilter) {
-                $unitQuery->where('status', $availabilityFilter);
+        // Jika status yang dicari adalah 'not_available', maka kendaraan akan ditampilkan jika ada setidaknya satu unit dengan status selain 'tersedia'
+        $query->when($availabilityFilter === 'not_available', function ($q) {
+            $q->whereHas('units', function ($unitQuery) {
+                $unitQuery->where('status', '!=', 'tersedia');
             });
         });
 

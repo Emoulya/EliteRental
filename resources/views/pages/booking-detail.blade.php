@@ -252,14 +252,14 @@
 
                     try {
                         const response = await fetch(
-                        `/booking/${bookingId}/update-notes`, { // Route baru untuk update catatan
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
+                            `/booking/${bookingId}/update-notes`, { // Route baru untuk update catatan
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
 
                         if (!response.ok) {
                             const errorData = await response.json();

@@ -43,6 +43,23 @@
     {{-- Component Pesan Kustom --}}
     <x-messages.custom-message />
 
+    {{-- Script untuk menampilkan pesan sukses/error dari session --}}
+    @if (session('success_message'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                showSuccess(@json(session('success_message')));
+            });
+        </script>
+    @endif
+
+    @if (session('error_message'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                showError(@json(session('error_message')));
+            });
+        </script>
+    @endif
+
     {{-- Semua script JS akan di-push ke sini --}}
     @stack('scripts')
 

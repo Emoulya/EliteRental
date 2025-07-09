@@ -22,30 +22,14 @@ class VehicleController extends Controller
 
         $query = Vehicle::query();
 
-        // Terapkan filter berdasarkan atribut Model Kendaraan
-        $query->when($search, function ($q) use ($search) {
-            $q->where('brand', 'like', '%' . $search . '%')
-                ->orWhere('model', 'like', '%' . $search . '%');
-        });
+        // Terapkan filter umum menggunakan scope
+        $query->applyFilters($search, $categoryFilter, $priceFilter);
 
-        $query->when($categoryFilter, function ($q) use ($categoryFilter) {
-            $q->where('category', $categoryFilter);
-        });
-
-        // Logika filter berdasarkan status unit kendaraan
+        // Logika filter spesifik admin berdasarkan status unit kendaraan
         $query->when($statusFilter, function ($q) use ($statusFilter) {
             $q->whereHas('units', function ($unitQuery) use ($statusFilter) {
                 $unitQuery->where('status', $statusFilter);
             });
-        });
-
-        // Logika filter harga berdasarkan daily_price Model Kendaraan
-        $query->when($priceFilter, function ($q) use ($priceFilter) {
-            $prices = explode('-', $priceFilter);
-            $minPrice = (int) $prices[0];
-            $maxPrice = (int) $prices[1];
-
-            $q->whereBetween('daily_price', [$minPrice, $maxPrice]);
         });
 
         // Ambil model kendaraan yang sudah difilter dengan paginasi
@@ -191,7 +175,7 @@ class VehicleController extends Controller
                 }
             }
         }
-        
+
         $vehicle->delete();
 
         return redirect()->route('admin.vehicles')->with('success_message', 'Model Kendaraan berhasil dihapus!');
