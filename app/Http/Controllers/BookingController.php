@@ -71,9 +71,8 @@ class BookingController extends Controller
             'quantity' => $quantity,
         ]);
 
-        // Opsional: Ubah status unit kendaraan menjadi 'disewa_sementara' atau 'pending_booking'
-        // untuk mencegah double booking sebelum pembayaran
-        // $vehicleUnit->update(['status' => 'pending_booking']); // Perlu tambahkan status ini di enum migrasi VehicleUnit
+        $vehicleUnit->status = 'pending_booking';
+        $vehicleUnit->save();
 
         // Mengembalikan respons JSON dengan ID booking
         return response()->json([

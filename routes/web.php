@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ConfirmationController;
 use App\Http\Middleware\RoleMiddleware;
 use Carbon\Carbon;
+use App\Http\Controllers\TransactionController;
 
 // --- Rute Publik (Bisa diakses siapa saja: Guest, User, Admin) ---
 Route::get('/', function () {
@@ -90,6 +91,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     // Route untuk halaman konfirmasi
     Route::get('/confirmation/{booking}', [ConfirmationController::class, 'show'])->name('booking.confirmation');
+
+    // RUTE BARU UNTUK HALAMAN TRANSAKSI
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 });
 
 

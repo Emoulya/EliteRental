@@ -14,6 +14,11 @@
             {{ __('Profil') }}
         </x-dropdown-link>
 
+        {{-- Tambahkan link baru ini --}}
+        <x-dropdown-link :href="route('transactions.index')">
+            {{ __('Transaksi Saya') }}
+        </x-dropdown-link>
+
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">

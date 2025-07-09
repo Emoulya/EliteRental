@@ -8,6 +8,8 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Models\VehicleUnit;
+
 class PaymentController extends Controller
 {
     /**
@@ -75,11 +77,18 @@ class PaymentController extends Controller
                 'payment_method' => $request->input('payment_method'),
                 'transaction_id' => 'TRX-' . time() . '-' . $booking->id,
                 'payment_date' => Carbon::now(),
-                'status' => 'pending',
+                'status' => 'pending', // Status pembayaran awalnya pending, menunggu verifikasi admin
             ]);
 
-            // Perbarui status booking
+            // Perbarui status booking menjadi confirmed
             $booking->update(['status' => 'confirmed']);
+
+            // PERUBAHAN DI SINI: Perbarui status unit kendaraan menjadi 'disewa'
+            // Pastikan relasi vehicleUnit sudah dimuat, atau muat di sini jika belum.
+            // Jika booking->vehicleUnit tidak pernah null, ini aman.
+            if ($booking->vehicleUnit) {
+                $booking->vehicleUnit->update(['status' => 'disewa']);
+            }
 
             DB::commit(); // Mengakhiri transaksi jika semua berhasil
 

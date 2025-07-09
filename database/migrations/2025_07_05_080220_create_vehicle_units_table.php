@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->string('license_plate')->unique();
-            $table->enum('status', ['tersedia', 'disewa', 'maintenance', 'unavailable'])->default('tersedia');
+            $table->enum('status', ['tersedia', 'disewa', 'maintenance', 'unavailable', 'pending_booking'])->default('tersedia');
             $table->timestamps();
         });
     }
