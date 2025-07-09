@@ -2,12 +2,12 @@
 // app\Http\Controllers\PaymentController.php
 namespace App\Http\Controllers;
 
-use App\Models\Vehicle; // Mungkin tidak lagi diperlukan secara langsung jika semua melalui Booking
-use App\Models\Booking; // Import model Booking
-use App\Models\Payment; // Import model Payment
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+use App\Models\Booking;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 class PaymentController extends Controller
 {
     /**
@@ -24,29 +24,79 @@ class PaymentController extends Controller
 
         // Data booking sudah ada di objek $booking
         $finalTotalPrice = $booking->total_price;
-
-        // Perhitungan biaya tambahan (misal: 5% dari sub total)
-        // Kita perlu menghitung ulang sub total jika kita hanya menyimpan final total di booking
-        $taxRate = 0.05;
-        $subTotalPrice = $finalTotalPrice / (1 + $taxRate);
-        $taxAdminFee = $finalTotalPrice - $subTotalPrice;
+        $subTotalPrice = $booking->sub_total_price;
+        $taxAdminFee = $booking->tax_admin_fee;
 
         // Waktu kadaluarsa pembayaran (misal: 24 jam dari sekarang)
         $paymentExpiry = Carbon::now()->addHours(24);
 
         // ID Pesanan bisa diambil dari ID Booking itu sendiri, atau generate yang lebih kompleks
-        $orderId = '#ER' . $booking->id . Carbon::now()->format('His'); // Contoh ID yang lebih unik per transaksi
+        $orderId = '#ER' . $booking->id . $booking->created_at->format('His');
 
         return view('pages.payment', compact(
-            'booking', // Sekarang meneruskan objek booking
-            'subTotalPrice', // Tetap teruskan jika perlu ditampilkan terpisah
-            'taxAdminFee',   // Tetap teruskan jika perlu ditampilkan terpisah
+            'booking',
+            'subTotalPrice',
+            'taxAdminFee',
             'finalTotalPrice',
             'paymentExpiry',
             'orderId'
         ));
     }
 
-    // Metode lain untuk memproses konfirmasi pembayaran akan ditambahkan nanti
-    // public function processPayment(Request $request, Booking $booking) { ... }
+    /**
+     * Memproses konfirmasi pembayaran untuk booking tertentu.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Booking  $booking
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function confirmPayment(Request $request, Booking $booking): JsonResponse
+    {
+        // Validasi data yang masuk
+        $request->validate([
+            'payment_method' => 'required|string|in:bank_transfer,e_wallet,cash',
+        ]);
+
+        // Jika statusnya sudah 'confirmed' atau status lain yang menunjukkan pembayaran sudah selesai
+        if ($booking->status === 'confirmed') {
+            return response()->json([
+                'message' => 'Pesanan ini sudah dikonfirmasi pembayarannya.',
+                'booking_id' => $booking->id,
+            ], 409);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Buat entri pembayaran baru
+            $payment = Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $booking->total_price,
+                'payment_method' => $request->input('payment_method'),
+                'transaction_id' => 'TRX-' . time() . '-' . $booking->id,
+                'payment_date' => Carbon::now(),
+                'status' => 'pending',
+            ]);
+
+            // Perbarui status booking
+            $booking->update(['status' => 'confirmed']);
+
+            DB::commit(); // Mengakhiri transaksi jika semua berhasil
+
+            return response()->json([
+                'message' => 'Konfirmasi pembayaran berhasil diproses. Menunggu verifikasi admin.',
+                'booking_id' => $booking->id,
+                'payment_id' => $payment->id,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Catat error untuk debugging
+            \Log::error('Error processing payment confirmation: ' . $e->getMessage(), ['booking_id' => $booking->id, 'user_id' => auth()->id()]);
+
+            return response()->json([
+                'message' => 'Gagal memproses pembayaran. Silakan coba lagi.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

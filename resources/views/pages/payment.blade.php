@@ -66,7 +66,7 @@
                         <div class="border rounded-lg p-4 hover:border-navy transition-colors">
                             <label class="flex items-center space-x-3 cursor-pointer">
                                 <input type="radio" name="payment_method" value="bank_transfer"
-                                    class="text-navy focus:ring-navy" checked /> {{-- Ubah value menjadi bank_transfer --}}
+                                    class="text-navy focus:ring-navy" checked />
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-navy text-white rounded-lg flex items-center justify-center">
                                         <i class="fas fa-university"></i>
@@ -85,7 +85,7 @@
 
                         <div class="border rounded-lg p-4 hover:border-navy transition-colors">
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="payment_method" value="e_wallet" {{-- Ubah value menjadi e_wallet --}}
+                                <input type="radio" name="payment_method" value="e_wallet"
                                     class="text-navy focus:ring-navy" />
                                 <div class="flex items-center space-x-3">
                                     <div
@@ -132,7 +132,7 @@
                         Instruksi Pembayaran
                     </h2>
 
-                    <div id="bank_transfer-instructions" class="payment-instruction"> {{-- Ubah ID --}}
+                    <div id="bank_transfer-instructions" class="payment-instruction">
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                             <h3 class="font-semibold text-blue-800 mb-2">
                                 Transfer ke Rekening Berikut:
@@ -206,7 +206,7 @@
                         </div>
                     </div>
 
-                    <div id="e_wallet-instructions" class="payment-instruction hidden"> {{-- Ubah ID --}}
+                    <div id="e_wallet-instructions" class="payment-instruction hidden">
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                             <h3 class="font-semibold text-green-800 mb-2">
                                 Scan QR Code di bawah ini:
@@ -347,7 +347,7 @@
                         <div class="flex justify-between">
                             <span class="text-gray-600">Durasi</span>
                             <span class="font-medium">{{ $booking->quantity }}
-                                {{ ucfirst($booking->duration_type) }}</span> {{-- Menggunakan data dari booking --}}
+                                {{ ucfirst($booking->duration_type) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Tanggal Sewa</span>
@@ -381,14 +381,13 @@
                         </div>
                         <div class="text-center">
                             <div id="countdown" class="text-2xl font-bold text-red-600">
-                                {{-- Initial value will be set by JS --}}
                                 Loading...
                             </div>
                         </div>
                     </div>
 
                     <div class="space-y-3">
-                        <button id="confirmPaymentButton" {{-- Ubah ID tombol --}}
+                        <button id="confirmPaymentButton"
                             class="w-full bg-gold hover:bg-yellow-600 text-navy font-bold py-3 px-4 rounded-lg transition duration-200">
                             <i class="fas fa-check mr-2"></i>
                             Konfirmasi Pembayaran
@@ -424,9 +423,9 @@
             method.addEventListener('change', function() {
                 instructionDivs.forEach(div => div.classList.add('hidden'));
 
-                if (this.value === 'bank_transfer') { // Ubah case 'bank' menjadi 'bank_transfer'
+                if (this.value === 'bank_transfer') {
                     document.getElementById('bank_transfer-instructions').classList.remove('hidden');
-                } else if (this.value === 'e_wallet') { // Ubah case 'ewallet' menjadi 'e_wallet'
+                } else if (this.value === 'e_wallet') {
                     document.getElementById('e_wallet-instructions').classList.remove('hidden');
                 } else if (this.value === 'cash') {
                     document.getElementById('cash-instructions').classList.remove('hidden');
@@ -525,25 +524,32 @@
                     const formData = new FormData();
                     formData.append('payment_method', selectedMethod.value);
                     formData.append('_token', '{{ csrf_token() }}');
-                    formData.append('_method',
-                    'POST'); // Menggunakan POST untuk menyimpan Payment, atau PUT jika update status booking
+                    formData.append('_method', 'POST');
 
                     try {
                         const response = await fetch(
-                        `/booking/${bookingId}/confirm-payment`, { // Route baru untuk konfirmasi pembayaran
-                            method: 'POST', // Kirim sebagai POST, Laravel akan mengenali _method jika ada PUT
-                            body: formData,
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
+                            `/booking/${bookingId}/confirm-payment`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+
+                        // Tutup pop-up loading SweetAlert sebelum menampilkan hasil
+                        Swal
+                    .close(); // Ini akan menutup pop-up loading yang ditampilkan oleh showLoading()
 
                         if (!response.ok) {
                             const errorData = await response.json();
                             let errorMessage = errorData.message || 'Gagal mengkonfirmasi pembayaran.';
                             if (response.status === 422 && errorData.errors) {
                                 errorMessage = Object.values(errorData.errors).flat().join('<br>');
+                            } else if (response.status ===
+                                409) { // Menangani status conflict dari controller
+                                errorMessage = errorData.message ||
+                                    'Pembayaran sudah dilakukan untuk pesanan ini.';
                             }
                             showError(`Terjadi kesalahan:<br>${errorMessage}`);
                             return;
@@ -551,18 +557,19 @@
 
                         const result = await response.json();
                         showSuccess(result.message || 'Pembayaran berhasil dikonfirmasi!');
-                        // Redirect ke halaman konfirmasi akhir
+                        // Redirect ke halaman konfirmasi akhir setelah SweetAlert sukses tampil
                         setTimeout(() => {
                             window.location.href =
-                                `{{ route('booking.confirmation') }}?booking_id=${bookingId}&payment_method=${selectedMethod.value}`;
-                        }, 1500);
+                                `{{ route('booking.confirmation', ['booking' => $booking->id, 'payment_method' => '${selectedMethod.value}']) }}`;
+                        }, 1500); // Tunda redirect 1.5 detik
 
                     } catch (error) {
+                        // Pastikan SweetAlert loading ditutup jika ada error jaringan sebelum respons
+                        Swal.close();
                         console.error('Error saat konfirmasi pembayaran:', error);
                         showError('Gagal mengkonfirmasi pembayaran. Silakan coba lagi.');
-                    } finally {
-                        Swal.close(); // Tutup loading
                     }
+                    // Hapus blok finally, karena Swal.close() sudah dipindahkan ke try/catch
                 });
             }
         });

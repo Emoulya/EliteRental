@@ -1,9 +1,10 @@
+{{-- resources/views/pages/confirmation.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Elite Rental - Konfirmasi Pesanan')
 
 @section('content')
-    <section class="bg-white pt-20 pb-4 border-b">
+    <section class="bg-white py-4 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -24,22 +25,25 @@
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('vehicles.show_public', $vehicle->id) }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">{{ $vehicle->brand }}
-                                {{ $vehicle->model }}</a>
+                            {{-- Gunakan $booking->vehicleUnit->vehicle->id --}}
+                            <a href="{{ route('vehicles.show_public', $booking->vehicleUnit->vehicle->id) }}"
+                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">{{ $booking->vehicleUnit->vehicle->brand }}
+                                {{ $booking->vehicleUnit->vehicle->model }}</a>
                         </div>
                     </li>
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('booking.show', ['vehicle_id' => $vehicle->id, 'plate_number' => $plateNumber, 'duration_type' => $durationType, 'quantity' => $quantity, 'total_price' => $subTotalPrice]) }}"
+                            {{-- Gunakan $booking->id --}}
+                            <a href="{{ route('booking.show', $booking->id) }}"
                                 class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Detail Booking</a>
                         </div>
                     </li>
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('payment.show', ['vehicle_id' => $vehicle->id, 'plate_number' => $plateNumber, 'duration_type' => $durationType, 'quantity' => $quantity, 'total_price' => $subTotalPrice, 'tax_admin_fee' => $taxAdminFee, 'final_total_price' => $finalTotalPrice, 'order_id' => $orderId, 'payment_method' => $paymentMethod]) }}"
+                            {{-- Gunakan $booking->id --}}
+                            <a href="{{ route('payment.show', $booking->id) }}"
                                 class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Pembayaran</a>
                         </div>
                     </li>
@@ -130,26 +134,30 @@
                         </h2>
                         <div class="flex items-center space-x-4 mb-4">
                             <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <img src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : asset('placeholder.svg?height=60&width=60&text=' . urlencode($vehicle->model)) }}"
-                                    alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                <img src="{{ $booking->vehicleUnit->vehicle->main_image ? asset('storage/' . $booking->vehicleUnit->vehicle->main_image) : asset('placeholder.svg?height=60&width=60&text=' . urlencode($booking->vehicleUnit->vehicle->model)) }}"
+                                    alt="{{ $booking->vehicleUnit->vehicle->brand }} {{ $booking->vehicleUnit->vehicle->model }}"
                                     class="w-full h-full object-cover rounded-lg" />
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-800">
-                                    {{ $vehicle->brand }} {{ $vehicle->model }}
+                                    {{ $booking->vehicleUnit->vehicle->brand }}
+                                    {{ $booking->vehicleUnit->vehicle->model }}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {{ ucwords(str_replace('-', ' ', $vehicle->category)) }} • {{ $vehicle->year }} •
-                                    {{ $vehicle->passenger_capacity }} Penumpang •
-                                    {{ ucfirst($vehicle->transmission_type) }}
+                                    {{ ucwords(str_replace('-', ' ', $booking->vehicleUnit->vehicle->category)) }} •
+                                    {{ $booking->vehicleUnit->vehicle->year }} •
+                                    {{ $booking->vehicleUnit->vehicle->passenger_capacity ?? '-' }} Penumpang •
+                                    {{ ucfirst($booking->vehicleUnit->vehicle->transmission_type ?? '-') }}
                                 </p>
                                 <div class="flex items-center space-x-2 mt-2">
                                     <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                        <i class="fas fa-users mr-1"></i>{{ $vehicle->passenger_capacity }}
+                                        <i
+                                            class="fas fa-users mr-1"></i>{{ $booking->vehicleUnit->vehicle->passenger_capacity ?? '-' }}
                                         Penumpang
                                     </span>
                                     <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                                        <i class="fas fa-cogs mr-1"></i>{{ ucfirst($vehicle->transmission_type) }}
+                                        <i
+                                            class="fas fa-cogs mr-1"></i>{{ ucfirst($booking->vehicleUnit->vehicle->transmission_type ?? '-') }}
                                     </span>
                                 </div>
                             </div>
@@ -157,11 +165,11 @@
                         <div class="grid grid-cols-2 gap-4 text-sm">
                             <div>
                                 <span class="text-gray-600">Plat Nomor:</span>
-                                <p class="font-semibold">{{ $plateNumber }}</p>
+                                <p class="font-semibold">{{ $booking->vehicleUnit->license_plate }}</p>
                             </div>
                             <div>
                                 <span class="text-gray-600">Warna:</span>
-                                <p class="font-semibold">{{ $vehicle->color }}</p>
+                                <p class="font-semibold">{{ $booking->vehicleUnit->vehicle->color }}</p>
                             </div>
                         </div>
                     </div>
@@ -178,7 +186,7 @@
                                         Tanggal Mulai
                                     </p>
                                     <p class="font-semibold">
-                                        {{ $rentalStartDate->translatedFormat('l, d F Y') }}
+                                        {{ $booking->start_date->translatedFormat('l, d F Y') }}
                                     </p>
                                 </div>
                             </div>
@@ -189,14 +197,14 @@
                                         Tanggal Selesai
                                     </p>
                                     <p class="font-semibold">
-                                        {{ $rentalEndDate->translatedFormat('l, d F Y') }}
+                                        {{ $booking->end_date->translatedFormat('l, d F Y') }}
                                     </p>
                                 </div>
                             </div>
                             @php
                                 $durationLabelSingular = '';
                                 $durationLabelPlural = '';
-                                switch ($durationType) {
+                                switch ($booking->duration_type) {
                                     case 'daily':
                                         $durationLabelSingular = 'hari';
                                         $durationLabelPlural = 'Hari';
@@ -221,7 +229,7 @@
                                     <p class="text-sm text-gray-600">
                                         Durasi
                                     </p>
-                                    <p class="font-semibold">{{ $quantity }} {{ $durationLabelPlural }}</p>
+                                    <p class="font-semibold">{{ $booking->quantity }} {{ $durationLabelPlural }}</p>
                                 </div>
                             </div>
                         </div>
@@ -282,7 +290,7 @@
                                     <p class="text-sm text-gray-600">
                                         Nama Lengkap
                                     </p>
-                                    <p class="font-semibold">{{ $userName }}</p>
+                                    <p class="font-semibold">{{ $booking->user->name ?? 'N/A' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-3">
@@ -292,7 +300,7 @@
                                         No. Telepon
                                     </p>
                                     <p class="font-semibold">
-                                        {{ $userPhone }}
+                                        {{ $booking->user->customerProfile->phone_number ?? 'N/A' }}
                                     </p>
                                 </div>
                             </div>
@@ -303,7 +311,7 @@
                                         Email
                                     </p>
                                     <p class="font-semibold">
-                                        {{ $userEmail }}
+                                        {{ $booking->user->email ?? 'N/A' }}
                                     </p>
                                 </div>
                             </div>
@@ -314,7 +322,18 @@
                                         No. KTP
                                     </p>
                                     <p class="font-semibold">
-                                        {{ $userKtp }}
+                                        {{ $booking->user->customerProfile->ktp_number ?? 'N/A' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-id-card-alt text-navy"></i>
+                                <div>
+                                    <p class="text-sm text-gray-600">
+                                        No. SIM
+                                    </p>
+                                    <p class="font-semibold">
+                                        {{ $booking->user->customerProfile->sim_number ?? 'N/A' }}
                                     </p>
                                 </div>
                             </div>
@@ -355,7 +374,7 @@
                                     <i class="fas fa-info-circle text-yellow-600"></i>
                                     <p class="text-sm text-yellow-700">
                                         <strong>Metode Pembayaran:</strong>
-                                        {{ ucfirst($paymentMethod) }}
+                                        {{ ucfirst($paymentMethod ?? 'N/A') }}
                                     </p>
                                 </div>
                             </div>
@@ -385,7 +404,6 @@
                 </button>
                 <button onclick="goHome()"
                     class="flex items-center justify-center px-6 py-3 bg-gold text-white rounded-lg hover:bg-yellow-600 transition duration-200">
-                    {{-- elite-yellow -> gold --}}
                     <i class="fas fa-home mr-2"></i>
                     Kembali ke Beranda
                 </button>
@@ -434,7 +452,7 @@
         // Send email function (global)
         window.sendEmail = function() {
             alert(
-                "Konfirmasi pesanan telah dikirim ke email Anda: {{ Auth::user()->email ?? 'email@example.com' }}"
+                "Konfirmasi pesanan telah dikirim ke email Anda: {{ $booking->user->email ?? 'email@example.com' }}"
             );
         };
 

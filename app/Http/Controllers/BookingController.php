@@ -31,14 +31,14 @@ class BookingController extends Controller
             ->firstOrFail();
 
         // Ambil quantity dan pastikan di-cast ke integer
-        $quantity = (int) $validatedData['quantity']; // PERBAIKAN DI SINI: Cast ke integer
+        $quantity = (int) $validatedData['quantity'];
 
         $durationType = $validatedData['duration_type'];
         $subTotalPrice = $validatedData['total_price'];
 
         // Perhitungan tanggal sewa dan pengembalian
-        $startDate = Carbon::now()->startOfDay()->addDay(); // Contoh: sewa dimulai besok
-        $endDate = clone $startDate; // Buat salinan untuk perhitungan end date
+        $startDate = Carbon::now()->startOfDay()->addDay();
+        $endDate = clone $startDate;
 
         switch ($durationType) {
             case 'daily':
@@ -52,8 +52,8 @@ class BookingController extends Controller
                 break;
         }
 
-        // Perhitungan pajak/biaya admin (contoh: 5%)
-        $taxAdminFee = $subTotalPrice * 0.05;
+        $taxAdminRate = 0.05;
+        $taxAdminFee = $subTotalPrice * $taxAdminRate;
         $finalTotalPrice = $subTotalPrice + $taxAdminFee;
 
         // Buat entri booking di database dengan status 'pending'
@@ -63,6 +63,8 @@ class BookingController extends Controller
             'start_date' => $startDate,
             'end_date' => $endDate,
             'total_price' => $finalTotalPrice,
+            'sub_total_price' => $subTotalPrice,
+            'tax_admin_fee' => $taxAdminFee,
             'status' => 'pending',
             'notes' => null,
             'duration_type' => $durationType,
@@ -93,7 +95,6 @@ class BookingController extends Controller
         $booking->load('user.customerProfile', 'vehicleUnit.vehicle');
 
         // Data yang dibutuhkan sudah ada di objek $booking
-        // Anda bisa meneruskan objek $booking langsung ke view
         return view('pages.booking-detail', compact('booking'));
     }
 
@@ -107,7 +108,7 @@ class BookingController extends Controller
     public function updateNotes(Request $request, Booking $booking): JsonResponse
     {
         $request->validate([
-            'notes' => 'nullable|string|max:1000', // Validasi catatan
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         $booking->notes = $request->input('notes');

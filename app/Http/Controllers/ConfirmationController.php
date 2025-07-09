@@ -2,45 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class ConfirmationController extends Controller
 {
     /**
      * Menampilkan halaman konfirmasi pesanan.
+     * Sekarang menerima objek Booking melalui Route Model Binding.
      *
+     * @param  \App\Models\Booking  $booking
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function show(Request $request)
+    public function show(Booking $booking, Request $request)
     {
-        // Mendapatkan data dari query parameter (contoh, dalam nyata bisa dari DB berdasarkan order_id)
-        $vehicleId = $request->input('vehicle_id');
-        $plateNumber = $request->input('plate_number');
-        $durationType = $request->input('duration_type');
-        $quantity = $request->input('quantity');
-        $subTotalPrice = $request->input('sub_total_price');
-        $taxAdminFee = $request->input('tax_admin_fee');
-        $finalTotalPrice = $request->input('final_total_price');
-        $orderId = $request->input('order_id');
+        // Muat relasi yang diperlukan untuk objek booking
+        $booking->load('user.customerProfile', 'vehicleUnit.vehicle');
+
+        // Ambil data yang dibutuhkan langsung dari objek $booking dan relasinya
+        $vehicle = $booking->vehicleUnit->vehicle;
+        $plateNumber = $booking->vehicleUnit->license_plate;
+        $durationType = $booking->duration_type;
+        $quantity = $booking->quantity;
+
+        // Ambil detail harga yang sudah disimpan di database
+        $subTotalPrice = $booking->sub_total_price;
+        $taxAdminFee = $booking->tax_admin_fee;
+        $finalTotalPrice = $booking->total_price;
+
+        // Ambil payment_method dari query parameter yang dikirim dari PaymentController
         $paymentMethod = $request->input('payment_method');
-        // Asumsi data user dari Auth
-        $userName = Auth::user()->name ?? 'Pengguna';
-        $userEmail = Auth::user()->email ?? 'email@example.com';
-        // Asumsi data lain seperti phone, ktp, sim tidak di pass, tapi bisa ditambahkan ke model User jika diperlukan
-        $userPhone = 'N/A'; // Placeholder
-        $userKtp = 'N/A'; // Placeholder
 
-        // Ambil data kendaraan dari database
-        $vehicle = Vehicle::findOrFail($vehicleId);
+        // Informasi user dari relasi booking
+        $userName = $booking->user->name ?? 'Pengguna';
+        $userEmail = $booking->user->email ?? 'email@example.com';
+        $userPhone = $booking->user->customerProfile->phone_number ?? 'N/A';
+        $userKtp = $booking->user->customerProfile->ktp_number ?? 'N/A';
+        $userSim = $booking->user->customerProfile->sim_number ?? 'N/A';
 
-        // Contoh periode sewa (tanggal mulai dan selesai)
-        // Dalam aplikasi nyata, ini akan dari data booking yang sebenarnya
-        $rentalStartDate = Carbon::now()->addDay(); // Mulai besok
-        $rentalEndDate = $rentalStartDate->copy()->addDays($quantity - 1);
+        // Order ID bisa diambil dari ID Booking atau format yang lebih kompleks
+        $orderId = '#ER' . $booking->id . $booking->created_at->format('His');
+
+        // Tanggal sewa dan pengembalian dari objek booking
+        $rentalStartDate = $booking->start_date;
+        $rentalEndDate = $booking->end_date;
 
         // Data lokasi (contoh hardcoded)
         $pickupLocationName = 'Elite Rental - Bandung';
@@ -50,8 +57,8 @@ class ConfirmationController extends Controller
         $returnLocationAddress = 'Jl. Asia Afrika No. 123, Bandung';
         $returnLocationHours = '08:00 - 17:00 WIB';
 
-
         return view('pages.confirmation', compact(
+            'booking',
             'vehicle',
             'plateNumber',
             'durationType',
@@ -65,6 +72,7 @@ class ConfirmationController extends Controller
             'userEmail',
             'userPhone',
             'userKtp',
+            'userSim',
             'rentalStartDate',
             'rentalEndDate',
             'pickupLocationName',

@@ -85,8 +85,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     // Mengubah rute untuk halaman pembayaran, sekarang menerima ID booking
     Route::get('/payment/{booking}', [PaymentController::class, 'show'])->name('payment.show');
 
+    // Tambahkan RUTE INI untuk menangani konfirmasi pembayaran
+    Route::post('/booking/{booking}/confirm-payment', [PaymentController::class, 'confirmPayment'])->name('payment.confirm');
+
     // Route untuk halaman konfirmasi
-    Route::get('/confirmation', [ConfirmationController::class, 'show'])->name('booking.confirmation');
+    Route::get('/confirmation/{booking}', [ConfirmationController::class, 'show'])->name('booking.confirmation');
 });
 
 

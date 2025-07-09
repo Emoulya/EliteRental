@@ -16,6 +16,8 @@ class Booking extends Model
         'start_date',
         'end_date',
         'total_price',
+        'sub_total_price',
+        'tax_admin_fee',
         'status',
         'notes',
         'duration_type',
