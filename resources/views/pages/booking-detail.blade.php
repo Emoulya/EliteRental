@@ -133,13 +133,10 @@
 
                     <div class="space-y-3 mb-6">
                         @php
-                            // Ambil total harga final dari booking
+                            // Ambil nilai harga langsung dari objek booking yang sudah disimpan di database
                             $finalTotalPrice = $booking->total_price;
-                            // Asumsikan biaya admin 5% dari sub total
-                            // Maka, subTotal = finalTotal / (1 + taxRate)
-                            $taxRate = 0.05;
-                            $subTotalPrice = $finalTotalPrice / (1 + $taxRate);
-                            $taxAdminFee = $finalTotalPrice - $subTotalPrice;
+                            $subTotalPrice = $booking->sub_total_price;
+                            $taxAdminFee = $booking->tax_admin_fee;
 
                             // Mengambil duration_type dan quantity langsung dari objek $booking
                             $currentDurationType = $booking->duration_type;
@@ -165,7 +162,7 @@
                                     $durationLabelPlural = 'Bulan';
                                     break;
                                 default:
-                                    $durationLabelSingular = 'unit'; // Fallback jika tidak dikenali
+                                    $durationLabelSingular = 'unit';
                                     $durationLabelPlural = 'Unit';
                                     break;
                             }

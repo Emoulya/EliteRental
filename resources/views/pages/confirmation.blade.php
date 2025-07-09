@@ -310,25 +310,27 @@
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Harga Sewa (per {{ $durationLabelSingular }})</span>
                                 <span class="font-medium">Rp
-                                    {{ number_format($subTotalPrice / $quantity, 0, ',', '.') }}</span>
+                                    {{ number_format($booking->sub_total_price / $booking->quantity, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Durasi</span>
-                                <span class="font-medium">{{ $quantity }} {{ $durationLabelPlural }}</span>
+                                <span class="font-medium">{{ $booking->quantity }} {{ $durationLabelPlural }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Sub Total</span>
-                                <span class="font-medium">Rp {{ number_format($subTotalPrice, 0, ',', '.') }}</span>
+                                <span class="font-medium">Rp
+                                    {{ number_format($booking->sub_total_price, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Pajak & Biaya Admin</span>
-                                <span class="font-medium">Rp {{ number_format($taxAdminFee, 0, ',', '.') }}</span>
+                                <span class="font-medium">Rp
+                                    {{ number_format($booking->tax_admin_fee, 0, ',', '.') }}</span>
                             </div>
                             <div class="border-t pt-3">
                                 <div class="flex justify-between items-center">
                                     <span class="text-lg font-bold text-slate-800">Total Pembayaran</span>
                                     <span class="text-lg font-bold text-gold">Rp
-                                        {{ number_format($finalTotalPrice, 0, ',', '.') }}</span>
+                                        {{ number_format($booking->total_price, 0, ',', '.') }}</span>
                                 </div>
                             </div>
                             <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
