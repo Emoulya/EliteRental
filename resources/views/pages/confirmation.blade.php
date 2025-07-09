@@ -6,55 +6,17 @@
 @section('content')
     <section class="bg-white py-4 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('home') }}"
-                            class="inline-flex items-center text-sm font-medium text-gray-custom hover:text-gold">
-                            <i class="fas fa-home mr-2"></i>
-                            Beranda
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('vehicles.index') }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Kendaraan</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            {{-- Gunakan $booking->vehicleUnit->vehicle->id --}}
-                            <a href="{{ route('vehicles.show_public', $booking->vehicleUnit->vehicle->id) }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">{{ $booking->vehicleUnit->vehicle->brand }}
-                                {{ $booking->vehicleUnit->vehicle->model }}</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            {{-- Gunakan $booking->id --}}
-                            <a href="{{ route('booking.show', $booking->id) }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Detail Booking</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            {{-- Gunakan $booking->id --}}
-                            <a href="{{ route('payment.show', $booking->id) }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Pembayaran</a>
-                        </div>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="ml-1 text-sm font-medium text-navy md:ml-2">Konfirmasi</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <x-common.breadcrumbs :links="[
+                ['url' => route('home'), 'label' => 'Beranda', 'icon' => 'fas fa-home'],
+                ['url' => route('vehicles.index'), 'label' => 'Kendaraan'],
+                [
+                    'url' => route('vehicles.show_public', $booking->vehicleUnit->vehicle->id),
+                    'label' => $booking->vehicleUnit->vehicle->brand . ' ' . $booking->vehicleUnit->vehicle->model,
+                ],
+                ['url' => route('booking.show', $booking->id), 'label' => 'Detail Booking'],
+                ['url' => route('payment.show', $booking->id), 'label' => 'Pembayaran'],
+                ['label' => 'Konfirmasi', 'active' => true],
+            ]" />
         </div>
     </section>
 

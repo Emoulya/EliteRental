@@ -6,31 +6,11 @@
 @section('content')
     <section class="bg-white py-4 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('home') }}"
-                            class="inline-flex items-center text-sm font-medium text-gray-custom hover:text-gold">
-                            <i class="fas fa-home mr-2"></i>
-                            Beranda
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('vehicles.index') }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Kendaraan</a>
-                        </div>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="ml-1 text-sm font-medium text-navy md:ml-2">{{ $vehicle->brand }}
-                                {{ $vehicle->model }}</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <x-common.breadcrumbs :links="[
+                ['url' => route('home'), 'label' => 'Beranda', 'icon' => 'fas fa-home'],
+                ['url' => route('vehicles.index'), 'label' => 'Kendaraan'],
+                ['label' => $vehicle->brand . ' ' . $vehicle->model, 'active' => true],
+            ]" />
         </div>
     </section>
 
