@@ -1,9 +1,10 @@
+{{-- resources\views\pages\payment.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Elite Rental - Pembayaran')
 
 @section('content')
-    <section class="bg-white pt-20 pb-4 border-b">
+    <section class="bg-white py-4 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -24,15 +25,19 @@
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('vehicles.show_public', $vehicle->id) }}"
-                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">{{ $vehicle->brand }}
-                                {{ $vehicle->model }}</a>
+                            {{-- Menggunakan objek booking untuk mendapatkan vehicle ID --}}
+                            <a href="{{ route('vehicles.show_public', $booking->vehicleUnit->vehicle->id) }}"
+                                class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">
+                                {{ $booking->vehicleUnit->vehicle->brand }}
+                                {{ $booking->vehicleUnit->vehicle->model }}
+                            </a>
                         </div>
                     </li>
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="{{ route('booking.show', ['vehicle_id' => $vehicle->id, 'plate_number' => $plateNumber, 'duration_type' => $durationType, 'quantity' => $quantity, 'total_price' => $subTotalPrice]) }}"
+                            {{-- Menggunakan objek booking untuk detail booking --}}
+                            <a href="{{ route('booking.show', $booking->id) }}"
                                 class="ml-1 text-sm font-medium text-gray-custom hover:text-gold md:ml-2">Detail Booking</a>
                         </div>
                     </li>
@@ -60,8 +65,8 @@
                     <div class="space-y-4">
                         <div class="border rounded-lg p-4 hover:border-navy transition-colors">
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="payment_method" value="bank" class="text-navy focus:ring-navy"
-                                    checked />
+                                <input type="radio" name="payment_method" value="bank_transfer"
+                                    class="text-navy focus:ring-navy" checked /> {{-- Ubah value menjadi bank_transfer --}}
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-navy text-white rounded-lg flex items-center justify-center">
                                         <i class="fas fa-university"></i>
@@ -80,7 +85,7 @@
 
                         <div class="border rounded-lg p-4 hover:border-navy transition-colors">
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="payment_method" value="ewallet"
+                                <input type="radio" name="payment_method" value="e_wallet" {{-- Ubah value menjadi e_wallet --}}
                                     class="text-navy focus:ring-navy" />
                                 <div class="flex items-center space-x-3">
                                     <div
@@ -127,7 +132,7 @@
                         Instruksi Pembayaran
                     </h2>
 
-                    <div id="bank-instructions" class="payment-instruction">
+                    <div id="bank_transfer-instructions" class="payment-instruction"> {{-- Ubah ID --}}
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                             <h3 class="font-semibold text-blue-800 mb-2">
                                 Transfer ke Rekening Berikut:
@@ -174,34 +179,34 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <h4 class="font-semibold text-yellow-800 mb-2">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Penting!
-                            </h4>
-                            <ul class="text-sm text-yellow-700 space-y-1">
-                                <li>
-                                    • Transfer sesuai dengan nominal yang
-                                    tertera <strong>Rp {{ number_format($finalTotalPrice, 0, ',', '.') }}</strong>
-                                </li>
-                                <li>
-                                    • Simpan bukti transfer untuk verifikasi
-                                </li>
-                                <li>
-                                    • Pembayaran akan diverifikasi dalam
-                                    1x24 jam
-                                </li>
-                                <li>
-                                    • Jika ada kendala, hubungi customer
-                                    service kami
-                                </li>
-                            </ul>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-yellow-800 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    Penting!
+                                </h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>
+                                        • Transfer sesuai dengan nominal yang
+                                        tertera <strong>Rp {{ number_format($finalTotalPrice, 0, ',', '.') }}</strong>
+                                    </li>
+                                    <li>
+                                        • Simpan bukti transfer untuk verifikasi
+                                    </li>
+                                    <li>
+                                        • Pembayaran akan diverifikasi dalam
+                                        1x24 jam
+                                    </li>
+                                    <li>
+                                        • Jika ada kendala, hubungi customer
+                                        service kami
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="ewallet-instructions" class="payment-instruction hidden">
+                    <div id="e_wallet-instructions" class="payment-instruction hidden"> {{-- Ubah ID --}}
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                             <h3 class="font-semibold text-green-800 mb-2">
                                 Scan QR Code di bawah ini:
@@ -292,22 +297,26 @@
                     <div class="border-b pb-4 mb-4">
                         <div class="flex items-center space-x-4">
                             <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <img src="{{ $vehicle->main_image ? asset('storage/' . $vehicle->main_image) : asset('placeholder.svg?height=60&width=60&text=' . urlencode($vehicle->model)) }}"
-                                    alt="{{ $vehicle->brand }} {{ $vehicle->model }}"
+                                <img src="{{ $booking->vehicleUnit->vehicle->main_image ? asset('storage/' . $booking->vehicleUnit->vehicle->main_image) : asset('placeholder.svg?height=60&width=60&text=' . urlencode($booking->vehicleUnit->vehicle->model)) }}"
+                                    alt="{{ $booking->vehicleUnit->vehicle->brand }} {{ $booking->vehicleUnit->vehicle->model }}"
                                     class="w-full h-full object-cover rounded-lg" />
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-800">
-                                    {{ $vehicle->brand }} {{ $vehicle->model }}
+                                    {{ $booking->vehicleUnit->vehicle->brand }}
+                                    {{ $booking->vehicleUnit->vehicle->model }}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {{ ucwords(str_replace('-', ' ', $vehicle->category)) }} • {{ $vehicle->year }} •
-                                    {{ $vehicle->passenger_capacity }} Penumpang •
-                                    {{ ucfirst($vehicle->transmission_type) }} • Warna {{ $vehicle->color }}
+                                    {{ ucwords(str_replace('-', ' ', $booking->vehicleUnit->vehicle->category)) }} •
+                                    {{ $booking->vehicleUnit->vehicle->year }} •
+                                    {{ $booking->vehicleUnit->vehicle->passenger_capacity }} Penumpang •
+                                    {{ ucfirst($booking->vehicleUnit->vehicle->transmission_type) }} • Warna
+                                    {{ $booking->vehicleUnit->vehicle->color }}
                                 </p>
                                 <div class="flex items-center space-x-2 mt-1">
                                     <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Tersedia</span>
-                                    <span class="bg-gray-100 text-xs px-2 py-1 rounded">{{ $plateNumber }}</span>
+                                    <span
+                                        class="bg-gray-100 text-xs px-2 py-1 rounded">{{ $booking->vehicleUnit->license_plate }}</span>
                                 </div>
                             </div>
                         </div>
@@ -320,51 +329,33 @@
                         <div class="space-y-1 text-sm">
                             <p>
                                 <span class="text-gray-600">Nama:</span>
-                                <span class="font-medium">{{ Auth::user()->name ?? 'N/A' }}</span>
+                                <span class="font-medium">{{ $booking->user->name ?? 'N/A' }}</span>
                             </p>
                             <p>
                                 <span class="text-gray-600">Email:</span>
-                                <span class="font-medium">{{ Auth::user()->email ?? 'N/A' }}</span>
+                                <span class="font-medium">{{ $booking->user->email ?? 'N/A' }}</span>
                             </p>
-                            {{-- Anda mungkin perlu menambahkan No. HP, No. KTP, Alamat, No. SIM ke model User --}}
-                            <p class="text-gray-500">
-                                Data kontak dan identitas akan diambil dari profil Anda atau data yang Anda masukkan
-                                sebelumnya.
+                            <p>
+                                <span class="text-gray-600">No. HP:</span>
+                                <span
+                                    class="font-medium">{{ $booking->user->customerProfile->phone_number ?? 'N/A' }}</span>
                             </p>
                         </div>
                     </div>
 
                     <div class="space-y-3 mb-6">
-                        @php
-                            $durationLabelSingular = '';
-                            $durationLabelPlural = '';
-                            switch ($durationType) {
-                                case 'daily':
-                                    $durationLabelSingular = 'hari';
-                                    $durationLabelPlural = 'Hari';
-                                    break;
-                                case 'weekly':
-                                    $durationLabelSingular = 'minggu';
-                                    $durationLabelPlural = 'Minggu';
-                                    break;
-                                case 'monthly':
-                                    $durationLabelSingular = 'bulan';
-                                    $durationLabelPlural = 'Bulan';
-                                    break;
-                                default:
-                                    $durationLabelSingular = 'unit';
-                                    $durationLabelPlural = 'Unit';
-                                    break;
-                            }
-                        @endphp
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Harga Sewa (per {{ $durationLabelSingular }})</span>
-                            <span class="font-medium">Rp
-                                {{ number_format($subTotalPrice / $quantity, 0, ',', '.') }}</span>
-                        </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Durasi</span>
-                            <span class="font-medium">{{ $quantity }} {{ $durationLabelPlural }}</span>
+                            <span class="font-medium">{{ $booking->quantity }}
+                                {{ ucfirst($booking->duration_type) }}</span> {{-- Menggunakan data dari booking --}}
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tanggal Sewa</span>
+                            <span class="font-medium">{{ $booking->start_date->format('d M Y') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tanggal Pengembalian</span>
+                            <span class="font-medium">{{ $booking->end_date->format('d M Y') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Sub Total</span>
@@ -397,7 +388,7 @@
                     </div>
 
                     <div class="space-y-3">
-                        <button onclick="processPayment()"
+                        <button id="confirmPaymentButton" {{-- Ubah ID tombol --}}
                             class="w-full bg-gold hover:bg-yellow-600 text-navy font-bold py-3 px-4 rounded-lg transition duration-200">
                             <i class="fas fa-check mr-2"></i>
                             Konfirmasi Pembayaran
@@ -433,10 +424,10 @@
             method.addEventListener('change', function() {
                 instructionDivs.forEach(div => div.classList.add('hidden'));
 
-                if (this.value === 'bank') {
-                    document.getElementById('bank-instructions').classList.remove('hidden');
-                } else if (this.value === 'ewallet') {
-                    document.getElementById('ewallet-instructions').classList.remove('hidden');
+                if (this.value === 'bank_transfer') { // Ubah case 'bank' menjadi 'bank_transfer'
+                    document.getElementById('bank_transfer-instructions').classList.remove('hidden');
+                } else if (this.value === 'e_wallet') { // Ubah case 'ewallet' menjadi 'e_wallet'
+                    document.getElementById('e_wallet-instructions').classList.remove('hidden');
                 } else if (this.value === 'cash') {
                     document.getElementById('cash-instructions').classList.remove('hidden');
                 }
@@ -487,25 +478,6 @@
             timerElement.dataset.timerInterval = timerInterval; // Simpan ID interval
         }
 
-        // Process payment (fungsi ini terpanggil oleh onclick)
-        window.processPayment = function() {
-            const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
-
-            if (!selectedMethod) {
-                alert('Silakan pilih metode pembayaran');
-                return;
-            }
-
-            if (selectedMethod.value === 'cash') {
-                alert('Pesanan berhasil dibuat! Silakan bayar tunai saat pengambilan kendaraan.');
-            } else {
-                alert('Menunggu konfirmasi pembayaran. Anda akan menerima notifikasi setelah pembayaran diverifikasi.');
-            }
-
-            // Redirect ke halaman konfirmasi
-            window.location.href =
-                `{{ route('booking.confirmation') }}?vehicle_id={{ $vehicle->id }}&plate_number={{ $plateNumber }}&duration_type={{ $durationType }}&quantity={{ $quantity }}&sub_total_price={{ $subTotalPrice }}&tax_admin_fee={{ $taxAdminFee }}&final_total_price={{ $finalTotalPrice }}&order_id={{ $orderId }}&payment_method=${selectedMethod.value}`;
-        };
 
         // Go back (fungsi ini terpanggil oleh onclick)
         window.goBack = function() {
@@ -514,8 +486,85 @@
 
         // Start countdown when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Pastikan paymentExpiry adalah string ISO 8601 yang valid
             const paymentExpiryTime = new Date("{{ $paymentExpiry->toIso8601String() }}");
             startCountdown(paymentExpiryTime);
+
+            // Trigger change event on load for the initially checked radio button
+            const initialCheckedMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (initialCheckedMethod) {
+                initialCheckedMethod.dispatchEvent(new Event('change'));
+            }
+        });
+
+
+        // === Logika untuk tombol Konfirmasi Pembayaran ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmPaymentButton = document.getElementById('confirmPaymentButton');
+            const bookingId = {{ $booking->id }}; // Ambil ID booking dari Blade
+
+            if (confirmPaymentButton) {
+                confirmPaymentButton.addEventListener("click", async function(e) {
+                    e.preventDefault();
+
+                    const selectedMethod = document.querySelector(
+                        'input[name="payment_method"]:checked');
+
+                    if (!selectedMethod) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Peringatan',
+                            text: 'Mohon pilih metode pembayaran terlebih dahulu.',
+                            confirmButtonColor: '#F4B000'
+                        });
+                        return;
+                    }
+
+                    showLoading('Memproses konfirmasi pembayaran...'); // Tampilkan loading
+
+                    const formData = new FormData();
+                    formData.append('payment_method', selectedMethod.value);
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('_method',
+                    'POST'); // Menggunakan POST untuk menyimpan Payment, atau PUT jika update status booking
+
+                    try {
+                        const response = await fetch(
+                        `/booking/${bookingId}/confirm-payment`, { // Route baru untuk konfirmasi pembayaran
+                            method: 'POST', // Kirim sebagai POST, Laravel akan mengenali _method jika ada PUT
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            let errorMessage = errorData.message || 'Gagal mengkonfirmasi pembayaran.';
+                            if (response.status === 422 && errorData.errors) {
+                                errorMessage = Object.values(errorData.errors).flat().join('<br>');
+                            }
+                            showError(`Terjadi kesalahan:<br>${errorMessage}`);
+                            return;
+                        }
+
+                        const result = await response.json();
+                        showSuccess(result.message || 'Pembayaran berhasil dikonfirmasi!');
+                        // Redirect ke halaman konfirmasi akhir
+                        setTimeout(() => {
+                            window.location.href =
+                                `{{ route('booking.confirmation') }}?booking_id=${bookingId}&payment_method=${selectedMethod.value}`;
+                        }, 1500);
+
+                    } catch (error) {
+                        console.error('Error saat konfirmasi pembayaran:', error);
+                        showError('Gagal mengkonfirmasi pembayaran. Silakan coba lagi.');
+                    } finally {
+                        Swal.close(); // Tutup loading
+                    }
+                });
+            }
         });
     </script>
 @endpush

@@ -79,11 +79,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
     // Mengubah rute untuk halaman detail booking, sekarang menerima ID booking
     Route::get('/booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
-        // Rute untuk mengupdate catatan khusus pada booking
+    // Rute untuk mengupdate catatan khusus pada booking
     Route::put('/booking/{booking}/update-notes', [App\Http\Controllers\BookingController::class, 'updateNotes'])->name('booking.update_notes');
 
-    // Route untuk halaman pembayaran
-    Route::get('/payment', [PaymentController::class, 'show'])->name('payment.show');
+    // Mengubah rute untuk halaman pembayaran, sekarang menerima ID booking
+    Route::get('/payment/{booking}', [PaymentController::class, 'show'])->name('payment.show');
 
     // Route untuk halaman konfirmasi
     Route::get('/confirmation', [ConfirmationController::class, 'show'])->name('booking.confirmation');
