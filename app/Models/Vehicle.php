@@ -66,4 +66,24 @@ class Vehicle extends Model
     {
         return $this->hasMany(VehicleUnit::class); // Relasi ke model VehicleUnit
     }
+
+    /**
+     * Accessor untuk mendapatkan kelas ikon Font Awesome berdasarkan fitur utama.
+     */
+    public function getFeatureIconAttribute(): string
+    {
+        switch ($this->features) {
+            case 'ac':
+                return 'fas fa-snowflake';
+            case 'air_vent':
+                return 'fas fa-wind';
+            case 'helmet':
+                return 'fas fa-helmet-safety';
+            case 'open_tub':
+                return 'fas fa-truck-pickup';
+            default:
+                return 'fas fa-check-circle'; // Ikon default jika fitur tidak dikenali
+        }
+    }
+
 }

@@ -71,27 +71,7 @@
             </div>
             <div class="flex items-center">
                 @if ($vehicle->features)
-                    @php
-                        $featureIcon = '';
-                        switch ($vehicle->features) {
-                            case 'ac':
-                                $featureIcon = 'fas fa-snowflake';
-                                break;
-                            case 'air_vent':
-                                $featureIcon = 'fas fa-wind';
-                                break;
-                            case 'helmet':
-                                $featureIcon = 'fas fa-helmet-safety';
-                                break;
-                            case 'open_tub':
-                                $featureIcon = 'fas fa-truck-pickup';
-                                break;
-                            default:
-                                $featureIcon = 'fas fa-check-circle';
-                                break;
-                        }
-                    @endphp
-                    <i class="{{ $featureIcon }} mr-2 text-gold"></i>
+                    <i class="{{ $vehicle->feature_icon }} mr-2 text-gold"></i>
                     {{ ucwords(str_replace('_', ' ', $vehicle->features)) }}
                 @else
                     <span class="text-gray-500">Tidak ada fitur utama</span>

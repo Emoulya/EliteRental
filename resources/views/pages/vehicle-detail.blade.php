@@ -94,28 +94,9 @@
                             </div>
                         @endif
                         @if ($vehicle->features)
-                            @php
-                                $featureIcon = '';
-                                switch ($vehicle->features) {
-                                    case 'ac':
-                                        $featureIcon = 'fas fa-snowflake';
-                                        break;
-                                    case 'air_vent':
-                                        $featureIcon = 'fas fa-wind';
-                                        break;
-                                    case 'helmet':
-                                        $featureIcon = 'fas fa-helmet-safety';
-                                        break;
-                                    case 'open_tub':
-                                        $featureIcon = 'fas fa-truck-pickup';
-                                        break;
-                                    default:
-                                        $featureIcon = 'fas fa-check-circle';
-                                        break;
-                                }
-                            @endphp
                             <div class="flex items-center p-3 bg-white rounded-lg shadow">
-                                <i class="{{ $featureIcon }} text-gold text-xl mr-3"></i>
+
+                                <i class="{{ $vehicle->feature_icon }} text-gold text-xl mr-3"></i>
                                 <div>
                                     <div class="font-semibold text-navy">
                                         {{ ucwords(str_replace('_', ' ', $vehicle->features)) }}</div>
