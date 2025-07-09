@@ -2,17 +2,23 @@
 // app\Http\Controllers\BookingController.php
 namespace App\Http\Controllers;
 
-use App\Models\Vehicle;
-use App\Models\VehicleUnit;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use App\Http\Requests\StoreBookingRequest;
 use Illuminate\Http\JsonResponse;
+use App\Services\BookingService;
 
 class BookingController extends Controller
 {
+    protected $bookingService; // Deklarasikan properti
+
+    // Inject BookingService melalui constructor
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
     /**
      * Menyimpan ringkasan booking awal dan mengarahkan ke halaman detail booking.
      * Metode ini akan dipanggil via POST dari tombol "Pesan Sekarang".
@@ -22,63 +28,24 @@ class BookingController extends Controller
      */
     public function storeBookingSummary(StoreBookingRequest $request): JsonResponse
     {
-        // Data sudah divalidasi oleh StoreBookingRequest
         $validatedData = $request->validated();
+        $userId = Auth::id();
 
-        $user = Auth::user();
-        $vehicleUnit = VehicleUnit::where('license_plate', $validatedData['plate_number'])
-            ->where('vehicle_id', $validatedData['vehicle_id'])
-            ->firstOrFail();
+        try {
+            // Panggil service untuk membuat booking
+            $booking = $this->bookingService->createBooking($validatedData, $userId);
 
-        // Ambil quantity dan pastikan di-cast ke integer
-        $quantity = (int) $validatedData['quantity'];
-
-        $durationType = $validatedData['duration_type'];
-        $subTotalPrice = $validatedData['total_price'];
-
-        // Perhitungan tanggal sewa dan pengembalian
-        $startDate = Carbon::now()->startOfDay()->addDay();
-        $endDate = clone $startDate;
-
-        switch ($durationType) {
-            case 'daily':
-                $endDate->addDays($quantity);
-                break;
-            case 'weekly':
-                $endDate->addWeeks($quantity);
-                break;
-            case 'monthly':
-                $endDate->addMonths($quantity);
-                break;
+            // Mengembalikan respons JSON dengan ID booking
+            return response()->json([
+                'message' => 'Ringkasan pesanan berhasil dibuat!',
+                'booking_id' => $booking->id,
+            ]);
+        } catch (\Exception $e) {
+            // Tangani error yang mungkin dilempar dari service
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        $taxAdminRate = 0.05;
-        $taxAdminFee = $subTotalPrice * $taxAdminRate;
-        $finalTotalPrice = $subTotalPrice + $taxAdminFee;
-
-        // Buat entri booking di database dengan status 'pending'
-        $booking = Booking::create([
-            'user_id' => $user->id,
-            'vehicle_unit_id' => $vehicleUnit->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'total_price' => $finalTotalPrice,
-            'sub_total_price' => $subTotalPrice,
-            'tax_admin_fee' => $taxAdminFee,
-            'status' => 'pending',
-            'notes' => null,
-            'duration_type' => $durationType,
-            'quantity' => $quantity,
-        ]);
-
-        $vehicleUnit->status = 'pending_booking';
-        $vehicleUnit->save();
-
-        // Mengembalikan respons JSON dengan ID booking
-        return response()->json([
-            'message' => 'Ringkasan pesanan berhasil dibuat!',
-            'booking_id' => $booking->id,
-        ]);
     }
 
     /**

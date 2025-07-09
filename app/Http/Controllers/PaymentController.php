@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Booking;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use App\Models\VehicleUnit;
+use App\Services\BookingService;
 
 class PaymentController extends Controller
 {
+    protected $bookingService;
+
+    // Inject BookingService melalui constructor
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
     /**
      * Menampilkan halaman pembayaran untuk booking tertentu.
      * Sekarang menerima objek Booking melalui Route Model Binding.
@@ -59,38 +65,9 @@ class PaymentController extends Controller
             'payment_method' => 'required|string|in:bank_transfer,e_wallet,cash',
         ]);
 
-        // Jika statusnya sudah 'confirmed' atau status lain yang menunjukkan pembayaran sudah selesai
-        if ($booking->status === 'confirmed') {
-            return response()->json([
-                'message' => 'Pesanan ini sudah dikonfirmasi pembayarannya.',
-                'booking_id' => $booking->id,
-            ], 409);
-        }
-
         try {
-            DB::beginTransaction();
-
-            // Buat entri pembayaran baru
-            $payment = Payment::create([
-                'booking_id' => $booking->id,
-                'amount' => $booking->total_price,
-                'payment_method' => $request->input('payment_method'),
-                'transaction_id' => 'TRX-' . time() . '-' . $booking->id,
-                'payment_date' => Carbon::now(),
-                'status' => 'pending', // Status pembayaran awalnya pending, menunggu verifikasi admin
-            ]);
-
-            // Perbarui status booking menjadi confirmed
-            $booking->update(['status' => 'confirmed']);
-
-            // PERUBAHAN DI SINI: Perbarui status unit kendaraan menjadi 'disewa'
-            // Pastikan relasi vehicleUnit sudah dimuat, atau muat di sini jika belum.
-            // Jika booking->vehicleUnit tidak pernah null, ini aman.
-            if ($booking->vehicleUnit) {
-                $booking->vehicleUnit->update(['status' => 'disewa']);
-            }
-
-            DB::commit(); // Mengakhiri transaksi jika semua berhasil
+            // Panggil service untuk mengkonfirmasi pembayaran booking
+            $payment = $this->bookingService->confirmBookingPayment($booking, $request->input('payment_method'));
 
             return response()->json([
                 'message' => 'Konfirmasi pembayaran berhasil diproses. Menunggu verifikasi admin.',
@@ -98,13 +75,9 @@ class PaymentController extends Controller
                 'payment_id' => $payment->id,
             ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
-            // Catat error untuk debugging
-            \Log::error('Error processing payment confirmation: ' . $e->getMessage(), ['booking_id' => $booking->id, 'user_id' => auth()->id()]);
-
+            // Tangani error yang mungkin dilempar dari service
             return response()->json([
-                'message' => 'Gagal memproses pembayaran. Silakan coba lagi.',
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
