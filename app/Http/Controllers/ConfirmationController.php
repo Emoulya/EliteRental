@@ -18,6 +18,11 @@ class ConfirmationController extends Controller
      */
     public function show(Booking $booking, Request $request)
     {
+        if ($booking->user_id !== Auth::id()) {
+            // Jika booking bukan milik user yang login, arahkan kembali ke halaman transaksi mereka
+            // atau Anda bisa menggunakan abort(403, 'Unauthorized access.'); untuk menampilkan error 403.
+            return redirect()->route('transactions.index')->with('error_message', 'Anda tidak diizinkan melihat detail pesanan ini.');
+        }
         // Muat relasi yang diperlukan untuk objek booking
         $booking->load('user.customerProfile', 'vehicleUnit.vehicle');
 

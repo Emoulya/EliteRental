@@ -10,8 +10,6 @@ use App\Http\Controllers\VehicleDetailController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ConfirmationController;
-use App\Http\Middleware\RoleMiddleware;
-use Carbon\Carbon;
 use App\Http\Controllers\TransactionController;
 
 // --- Rute Publik (Bisa diakses siapa saja: Guest, User, Admin) ---

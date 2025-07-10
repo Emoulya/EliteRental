@@ -202,12 +202,17 @@
 
                     <button id="continueButton"
                         class="w-full bg-gold hover:bg-yellow-600 text-navy font-bold py-3 px-4 rounded-lg transition duration-200"
-                        @if (!$isProfileComplete) disabled @endif>
+                        @if (
+                            !$isProfileComplete ||
+                                $booking->status === 'confirmed' ||
+                                $booking->status === 'rented' ||
+                                $booking->status === 'completed') disabled @endif>
                         <i class="fas fa-arrow-right mr-2"></i>
                         Lanjutkan ke Pembayaran
                     </button>
-                    @if (!$isProfileComplete)
-                        <p class="text-red-500 text-sm mt-2 text-center">Mohon lengkapi profil untuk melanjutkan.</p>
+                    @if ($booking->status === 'confirmed' || $booking->status === 'rented' || $booking->status === 'completed')
+                        <p class="text-green-500 text-sm mt-2 text-center">Pembayaran untuk pesanan ini sudah dikonfirmasi.
+                        </p>
                     @endif
                 </div>
             </div>
